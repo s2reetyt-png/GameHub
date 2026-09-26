@@ -1,0 +1,3635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameHub</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #08090c;
+    color: #e8e8e8;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* =========================================================
+   OLD GAMEHUB OS STARTUP
+========================================================= */
+
+#boot {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: #050608;
+    color: #d8d8d8;
+    font-family: Consolas, "Courier New", monospace;
+}
+
+.osBoot {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    background:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.osTop {
+    display: flex;
+    justify-content: space-between;
+    color: #73777e;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.osTop span {
+    color: #454950;
+}
+
+.osCenter {
+    width: 560px;
+    max-width: 90%;
+    margin: auto;
+}
+
+.osLogo {
+    font-size: 58px;
+    font-weight: 800;
+    letter-spacing: 9px;
+    color: #eeeeee;
+    margin-bottom: 8px;
+}
+
+.osEdition {
+    color: #555a61;
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 42px;
+}
+
+.osLoading {
+    color: #777c83;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.osBar {
+    width: 100%;
+    height: 3px;
+    background: #1b1d21;
+}
+
+.osBarFill {
+    width: 0%;
+    height: 100%;
+    background: #d9d9d9;
+    transition: width .3s ease;
+}
+
+.osDetails {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    color: #41454b;
+    font-size: 9px;
+}
+
+.osBottom {
+    display: flex;
+    justify-content: space-between;
+    color: #41454b;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+#app {
+    display: none;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+}
+
+/* =========================================================
+   TOP NAVIGATION
+========================================================= */
+
+.topbar {
+    height: 64px;
+    min-height: 64px;
+    background: #101217;
+    border-bottom: 1px solid #24272e;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    gap: 22px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+.logo span {
+    color: #686d76;
+    font-weight: 400;
+}
+
+.nav {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.nav button {
+    height: 38px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #858a94;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nav button:hover {
+    background: #191c22;
+    color: #ddd;
+}
+
+.nav button.active {
+    background: #20242b;
+    color: #fff;
+}
+
+.search {
+    margin-left: auto;
+    width: 230px;
+}
+
+.search input {
+    width: 100%;
+    height: 36px;
+    background: #0b0d11;
+    border: 1px solid #292c33;
+    border-radius: 6px;
+    color: #fff;
+    padding: 0 12px;
+    outline: none;
+    font-size: 12px;
+}
+
+.search input:focus {
+    border-color: #51565f;
+}
+
+.profileButton {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #30343c;
+    border-radius: 6px;
+    background: #171a20;
+    color: #ddd;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+
+.page {
+    display: none;
+    min-height: 100%;
+}
+
+.page.active {
+    display: block;
+}
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.homeHeader {
+    padding: 45px 5% 35px;
+    border-bottom: 1px solid #1e2127;
+    background:
+        linear-gradient(110deg, #15181e, #0b0d11 65%);
+}
+
+.homeHeaderSmall {
+    color: #70757e;
+    font-family: Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+}
+
+.homeHeader h1 {
+    margin: 0;
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.homeHeader p {
+    margin: 10px 0 22px;
+    color: #777c85;
+    font-size: 14px;
+    max-width: 600px;
+}
+
+.homeButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.buttonPrimary,
+.buttonSecondary {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.buttonPrimary {
+    border: 1px solid #ddd;
+    background: #eee;
+    color: #111;
+}
+
+.buttonSecondary {
+    border: 1px solid #30343c;
+    background: #191c22;
+    color: #ddd;
+}
+
+.section {
+    padding: 30px 5%;
+}
+
+.sectionHeading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.sectionHeading h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.sectionHeading span {
+    color: #5f646d;
+    font-size: 11px;
+    font-family: Consolas, monospace;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 13px;
+}
+
+.card {
+    min-height: 218px;
+    background: #111319;
+    border: 1px solid #22262d;
+    border-radius: 7px;
+    overflow: hidden;
+    cursor: pointer;
+    transition:
+        border-color .15s,
+        transform .15s,
+        background .15s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: #3b4049;
+    background: #15181e;
+}
+
+.cardArt {
+    height: 142px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 13px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 80% 20%, #ffffff10, transparent 28%),
+        linear-gradient(135deg, #252a32, #101217);
+}
+
+.cardArt::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    right: -80px;
+    bottom: -100px;
+    border: 1px solid #ffffff10;
+    border-radius: 50%;
+}
+
+.cardType {
+    position: absolute;
+    top: 12px;
+    left: 13px;
+    color: #858b94;
+    font-family: Consolas, monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+}
+
+.cardNumber {
+    position: absolute;
+    top: 9px;
+    right: 12px;
+    color: #ffffff0c;
+    font-size: 46px;
+    font-weight: 900;
+}
+
+.cardName {
+    position: relative;
+    z-index: 2;
+    color: #eee;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.cardInfo {
+    padding: 12px 13px;
+}
+
+.cardInfo h3 {
+    margin: 0 0 5px;
+    font-size: 13px;
+}
+
+.cardInfo p {
+    margin: 0;
+    color: #656b74;
+    font-size: 11px;
+}
+
+/* =========================================================
+   PHONE
+========================================================= */
+
+.phonePage {
+    height: calc(100vh - 64px);
+}
+
+.phoneLayout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.phoneSidebar {
+    width: 230px;
+    min-width: 230px;
+    background: #0d0f14;
+    border-right: 1px solid #22252c;
+    padding: 22px 12px;
+}
+
+.phoneTitle {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.myUsername {
+    margin: 8px 0 25px;
+    color: #5e636c;
+    font-size: 11px;
+}
+
+.phoneSideButton {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 4px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #777c85;
+    text-align: left;
+    padding: 0 11px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.phoneSideButton:hover,
+.phoneSideButton.active {
+    color: #fff;
+    background: #1a1d23;
+}
+
+.phonePanel {
+    flex: 1;
+    min-width: 0;
+    padding: 27px;
+    overflow: auto;
+}
+
+.phonePanel h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+}
+
+.phoneMuted {
+    color: #61666f;
+    font-size: 12px;
+}
+
+.phoneSearchRow {
+    max-width: 520px;
+    margin: 18px 0;
+}
+
+.phoneSearchRow input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #292d34;
+    border-radius: 6px;
+    background: #0e1015;
+    color: #fff;
+    padding: 0 12px;
+    outline: none;
+}
+
+.phoneSectionTitle {
+    color: #50555e;
+    font-family: Consolas, monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    margin: 25px 0 10px;
+}
+
+.userResult,
+.contact {
+    width: min(650px, 100%);
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 6px;
+    padding: 9px;
+    background: #111319;
+    border: 1px solid #22262d;
+    border-radius: 6px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: #272b33;
+    color: #ddd;
+    font-weight: 800;
+}
+
+.userInfo {
+    flex: 1;
+}
+
+.userName {
+    color: #ddd;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.onlineDot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-left: 5px;
+    border-radius: 50%;
+    background: #555a62;
+}
+
+.onlineDot.online {
+    background: #7ed99a;
+}
+
+.phoneAction {
+    border: 1px solid #2c3038;
+    background: #1a1d23;
+    color: #bbb;
+    border-radius: 5px;
+    padding: 7px 9px;
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.phoneAction:hover {
+    background: #242830;
+    color: white;
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chatHeader {
+    height: 48px;
+    border-bottom: 1px solid #23262d;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.messageList {
+    height: calc(100% - 105px);
+    overflow-y: auto;
+    padding: 18px 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.message {
+    max-width: 65%;
+    padding: 9px 11px;
+    background: #1a1d23;
+    border: 1px solid #252931;
+    border-radius: 7px;
+    color: #d7d7d7;
+    font-size: 12px;
+    align-self: flex-start;
+}
+
+.message.mine {
+    background: #e7e7e7;
+    color: #111;
+    border-color: #e7e7e7;
+    align-self: flex-end;
+}
+
+.messageTime {
+    display: block;
+    margin-top: 4px;
+    opacity: .4;
+    font-family: Consolas, monospace;
+    font-size: 8px;
+}
+
+.messageInputRow {
+    height: 57px;
+    display: flex;
+    gap: 6px;
+}
+
+.messageInputRow input {
+    flex: 1;
+    height: 38px;
+    border: 1px solid #292d34;
+    background: #0e1015;
+    border-radius: 6px;
+    color: #fff;
+    padding: 0 11px;
+    outline: none;
+}
+
+.messageInputRow button {
+    width: 70px;
+    height: 38px;
+    border: 0;
+    border-radius: 6px;
+    background: #e7e7e7;
+    color: #111;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* =========================================================
+   GAME OVERLAY
+========================================================= */
+
+#gameOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    background: #050609;
+    flex-direction: column;
+}
+
+.gameTop {
+    height: 50px;
+    min-height: 50px;
+    background: #111319;
+    border-bottom: 1px solid #252930;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+}
+
+.gameTop strong {
+    flex: 1;
+    font-size: 12px;
+}
+
+.gameTop button {
+    height: 30px;
+    border: 1px solid #2d3139;
+    border-radius: 5px;
+    background: #1b1e24;
+    color: #ccc;
+    padding: 0 10px;
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+#gameFrame {
+    flex: 1;
+    width: 100%;
+    border: 0;
+    background: white;
+}
+
+/* =========================================================
+   CINEJOY STREAM WINDOW
+========================================================= */
+
+#movieWindow {
+    display: none;
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    width: min(850px, 90vw);
+    height: min(560px, 75vh);
+    z-index: 8000;
+    background: #050608;
+    border: 1px solid #343840;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px #000;
+}
+
+.movieTop {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background: #111319;
+    border-bottom: 1px solid #24272e;
+    cursor: move;
+}
+
+.movieTop strong {
+    flex: 1;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.movieTop button {
+    width: 28px;
+    height: 28px;
+    margin-left: 4px;
+    border: 0;
+    border-radius: 5px;
+    background: #20242b;
+    color: #bbb;
+    cursor: pointer;
+}
+
+#movieVideo {
+    width: 100%;
+    height: calc(100% - 42px);
+    border: 0;
+    background: #000;
+}
+
+/* =========================================================
+   CALL WINDOW
+========================================================= */
+
+#incomingCall {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: #000b;
+    align-items: center;
+    justify-content: center;
+}
+
+.incomingBox {
+    width: 350px;
+    padding: 30px;
+    border: 1px solid #343840;
+    border-radius: 8px;
+    background: #111319;
+    text-align: center;
+}
+
+.incomingAvatar {
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: #272b33;
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.incomingBox h2 {
+    margin: 17px 0 5px;
+    font-size: 18px;
+}
+
+.incomingBox p {
+    color: #777c85;
+    font-size: 12px;
+}
+
+.incomingButtons {
+    display: flex;
+    gap: 7px;
+    margin-top: 22px;
+}
+
+.incomingButtons button {
+    flex: 1;
+    height: 38px;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.declineCall {
+    background: #24272e;
+    color: #ddd;
+}
+
+.acceptCall {
+    background: #e8e8e8;
+    color: #111;
+}
+
+#callWindow {
+    display: none;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: min(850px, 92vw);
+    height: min(580px, 75vh);
+    z-index: 99990;
+    background: #050608;
+    border: 1px solid #353941;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 30px 100px #000;
+}
+
+.callBox {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.callTop {
+    height: 45px;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 13px;
+    background: #111319;
+    border-bottom: 1px solid #24272e;
+}
+
+.callTop strong {
+    font-size: 11px;
+}
+
+#callStatus {
+    color: #696f78;
+    font-size: 10px;
+}
+
+.videoArea {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #030405;
+}
+
+#remoteVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #050608;
+}
+
+#localVideo {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 175px;
+    height: 125px;
+    object-fit: cover;
+    background: #111;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+}
+
+.callControls {
+    height: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: #111319;
+}
+
+.callControls button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 5px;
+    background: #242830;
+    color: white;
+    cursor: pointer;
+}
+
+.callControls .hangup {
+    background: #8f3636;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    z-index: 200000;
+    transform: translate(-50%, 70px);
+    opacity: 0;
+    padding: 10px 14px;
+    border: 1px solid #343840;
+    border-radius: 6px;
+    background: #e8e8e8;
+    color: #111;
+    font-size: 11px;
+    font-weight: 700;
+    transition: .25s;
+    pointer-events: none;
+}
+
+#toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width: 800px) {
+
+    .topbar {
+        padding: 0 9px;
+        gap: 8px;
+    }
+
+    .logo {
+        font-size: 14px;
+    }
+
+    .nav {
+        overflow-x: auto;
+    }
+
+    .nav button {
+        padding: 0 8px;
+        font-size: 9px;
+    }
+
+    .search {
+        display: none;
+    }
+
+    .homeHeader {
+        padding: 35px 25px;
+    }
+
+    .homeHeader h1 {
+        font-size: 35px;
+    }
+
+    .section {
+        padding: 25px;
+    }
+
+    .phoneSidebar {
+        width: 70px;
+        min-width: 70px;
+        padding: 15px 6px;
+    }
+
+    .phoneTitle {
+        font-size: 8px;
+        text-align: center;
+    }
+
+    .myUsername {
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .phoneSideButton {
+        font-size: 0;
+        text-align: center;
+    }
+
+    .phonePanel {
+        padding: 18px;
+    }
+
+    #localVideo {
+        width: 120px;
+        height: 90px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     OLD OS BOOT
+========================================================= -->
+
+<div id="boot">
+
+    <div class="osBoot">
+
+        <div class="osTop">
+            <span>GAMEHUB SYSTEM</span>
+            <span>BOOT / LOCAL</span>
+        </div>
+
+        <div class="osCenter">
+
+            <div class="osLogo">
+                GAMEHUB
+            </div>
+
+            <div class="osEdition">
+                GAMEHUB OS — GAMING ENVIRONMENT
+            </div>
+
+            <div
+                id="bootStatus"
+                class="osLoading"
+            >
+                Initializing system...
+            </div>
+
+            <div class="osBar">
+                <div
+                    id="bootProgress"
+                    class="osBarFill"
+                ></div>
+            </div>
+
+            <div class="osDetails">
+                <span id="bootLeft">
+                    SYSTEM CHECK
+                </span>
+
+                <span>
+                    v2.0
+                </span>
+            </div>
+
+        </div>
+
+        <div class="osBottom">
+            <span>SYSTEM READY</span>
+            <span>GAMEHUB CORE</span>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     GAMEHUB
+========================================================= -->
+
+<div id="app">
+
+    <header class="topbar">
+
+        <div class="logo">
+            GAME<span>HUB</span>
+        </div>
+
+        <nav class="nav">
+
+            <button
+                id="navHome"
+                class="active"
+                onclick="showPage('home')"
+            >
+                HOME
+            </button>
+
+            <button
+                id="navGames"
+                onclick="showPage('games')"
+            >
+                GAMES
+            </button>
+
+            <button
+                id="navApps"
+                onclick="showPage('apps')"
+            >
+                APPS
+            </button>
+
+            <button
+                id="navMovies"
+                onclick="showPage('movies')"
+            >
+                MOVIES
+            </button>
+
+            <button
+                id="navNews"
+                onclick="showPage('news')"
+            >
+                NEWS
+            </button>
+
+            <button
+                id="navPhone"
+                onclick="showPage('phone')"
+            >
+                PHONE
+            </button>
+
+        </nav>
+
+        <div class="search">
+
+            <input
+                id="searchInput"
+                placeholder="Search..."
+                oninput="searchAll()"
+            >
+
+        </div>
+
+        <button
+            class="profileButton"
+            onclick="showPage('phone')"
+        >
+            ?
+        </button>
+
+    </header>
+
+    <main>
+
+        <!-- =================================================
+             HOME
+        ================================================== -->
+
+        <section
+            id="home"
+            class="page active"
+        >
+
+            <div class="homeHeader">
+
+                <div class="homeHeaderSmall">
+                    GAMEHUB OS
+                </div>
+
+                <h1>
+                    Your games. One place.
+                </h1>
+
+                <p>
+                    Launch your games, open apps, watch movies,
+                    and connect with other GameHub users.
+                </p>
+
+                <div class="homeButtons">
+
+                    <button
+                        class="buttonPrimary"
+                        onclick="showPage('games')"
+                    >
+                        VIEW GAMES
+                    </button>
+
+                    <button
+                        class="buttonSecondary"
+                        onclick="showPage('phone')"
+                    >
+                        OPEN PHONE
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="section">
+
+                <div class="sectionHeading">
+
+                    <h2>
+                        Featured
+                    </h2>
+
+                    <span>
+                        GAME LIBRARY
+                    </span>
+
+                </div>
+
+                <div
+                    id="featuredGrid"
+                    class="grid"
+                ></div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             GAMES
+        ================================================== -->
+
+        <section
+            id="games"
+            class="page"
+        >
+
+            <div class="section">
+
+                <div class="sectionHeading">
+
+                    <h2>
+                        Games
+                    </h2>
+
+                    <span id="gameCount"></span>
+
+                </div>
+
+                <div
+                    id="gamesGrid"
+                    class="grid"
+                ></div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             APPS
+        ================================================== -->
+
+        <section
+            id="apps"
+            class="page"
+        >
+
+            <div class="section">
+
+                <div class="sectionHeading">
+
+                    <h2>
+                        Apps
+                    </h2>
+
+                    <span>
+                        APPLICATIONS
+                    </span>
+
+                </div>
+
+                <div
+                    id="appsGrid"
+                    class="grid"
+                ></div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             MOVIES
+        ================================================== -->
+
+        <section
+            id="movies"
+            class="page"
+        >
+
+            <div class="homeHeader">
+
+                <div class="homeHeaderSmall">
+                    MEDIA CENTER
+                </div>
+
+                <h1>
+                    Cinejoy
+                </h1>
+
+                <p>
+                    Browse Cinejoy and use the GameHub
+                    movie window for supported pages.
+                </p>
+
+                <div class="homeButtons">
+
+                    <button
+                        class="buttonPrimary"
+                        onclick="openCinejoy()"
+                    >
+                        OPEN CINEJOY
+                    </button>
+
+                    <button
+                        class="buttonSecondary"
+                        onclick="openCinejoyExternal()"
+                    >
+                        OPEN IN BROWSER
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="section">
+
+                <div class="sectionHeading">
+
+                    <h2>
+                        Streaming
+                    </h2>
+
+                    <span>
+                        CINEJOY.PK
+                    </span>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="cardArt">
+
+                        <div class="cardType">
+                            STREAMING
+                        </div>
+
+                        <div class="cardNumber">
+                            01
+                        </div>
+
+                        <div class="cardName">
+                            CINEJOY
+                        </div>
+
+                    </div>
+
+                    <div class="cardInfo">
+
+                        <h3>
+                            Cinejoy streaming
+                        </h3>
+
+                        <p>
+                            Opens Cinejoy inside the GameHub
+                            media window when embedding is allowed.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             NEWS
+        ================================================== -->
+
+        <section
+            id="news"
+            class="page"
+        >
+
+            <div class="section">
+
+                <div class="sectionHeading">
+
+                    <h2>
+                        GameHub News
+                    </h2>
+
+                    <span>
+                        SYSTEM
+                    </span>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="cardArt">
+
+                        <div class="cardType">
+                            GAMEHUB
+                        </div>
+
+                        <div class="cardNumber">
+                            01
+                        </div>
+
+                        <div class="cardName">
+                            GAMEHUB 2.0
+                        </div>
+
+                    </div>
+
+                    <div class="cardInfo">
+
+                        <h3>
+                            GameHub OS
+                        </h3>
+
+                        <p>
+                            Games, apps, media and communication
+                            are being brought together.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             PHONE
+        ================================================== -->
+
+        <section
+            id="phone"
+            class="page phonePage"
+        >
+
+            <div class="phoneLayout">
+
+                <aside class="phoneSidebar">
+
+                    <div class="phoneTitle">
+                        GAMEHUB
+                    </div>
+
+                    <div class="phoneTitle">
+                        PHONE
+                    </div>
+
+                    <div
+                        id="myUsername"
+                        class="myUsername"
+                    >
+                        Not signed in
+                    </div>
+
+                    <button
+                        class="phoneSideButton active"
+                        onclick="showPhonePanel('contacts')"
+                    >
+                        Contacts
+                    </button>
+
+                    <button
+                        class="phoneSideButton"
+                        onclick="showPhonePanel('messages')"
+                    >
+                        Messages
+                    </button>
+
+                    <button
+                        class="phoneSideButton"
+                        onclick="requestNotifications()"
+                    >
+                        Notifications
+                    </button>
+
+                    <button
+                        class="phoneSideButton"
+                        onclick="changeUsername()"
+                    >
+                        Username
+                    </button>
+
+                </aside>
+
+                <div
+                    id="phoneContacts"
+                    class="phonePanel"
+                >
+
+                    <h2>
+                        Contacts
+                    </h2>
+
+                    <p class="phoneMuted">
+                        Find GameHub users.
+                    </p>
+
+                    <div class="phoneSearchRow">
+
+                        <input
+                            id="userSearch"
+                            placeholder="Search username..."
+                            oninput="searchUsers()"
+                        >
+
+                    </div>
+
+                    <div id="userResults"></div>
+
+                    <div class="phoneSectionTitle">
+                        YOUR CONTACTS
+                    </div>
+
+                    <div id="contactsList"></div>
+
+                </div>
+
+                <div
+                    id="phoneMessages"
+                    class="phonePanel"
+                    style="display:none"
+                >
+
+                    <div
+                        id="chatHeader"
+                        class="chatHeader"
+                    >
+                        Select a contact
+                    </div>
+
+                    <div
+                        id="messageList"
+                        class="messageList"
+                    ></div>
+
+                    <div class="messageInputRow">
+
+                        <input
+                            id="messageInput"
+                            placeholder="Type a message..."
+                            onkeydown="messageEnter(event)"
+                        >
+
+                        <button
+                            onclick="sendMessage()"
+                        >
+                            SEND
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- =========================================================
+     GAME PLAYER
+========================================================= -->
+
+<div id="gameOverlay">
+
+    <div class="gameTop">
+
+        <strong id="gameTitle">
+            Game
+        </strong>
+
+        <button onclick="fullscreenGame()">
+            FULLSCREEN
+        </button>
+
+        <button onclick="closeGame()">
+            CLOSE
+        </button>
+
+    </div>
+
+    <iframe
+        id="gameFrame"
+        allow="autoplay; fullscreen; gamepad; microphone; camera"
+    ></iframe>
+
+</div>
+
+<!-- =========================================================
+     CINEJOY PLAYER
+========================================================= -->
+
+<div id="movieWindow">
+
+    <div class="movieTop">
+
+        <strong>
+            CINEJOY
+        </strong>
+
+        <button onclick="fullscreenMovie()">
+            ⛶
+        </button>
+
+        <button onclick="minimizeMovie()">
+            −
+        </button>
+
+        <button onclick="closeMovie()">
+            ×
+        </button>
+
+    </div>
+
+    <iframe
+        id="movieVideo"
+        src="about:blank"
+        allow="
+            autoplay;
+            fullscreen;
+            picture-in-picture;
+            encrypted-media
+        "
+        allowfullscreen
+    ></iframe>
+
+</div>
+
+<!-- =========================================================
+     INCOMING CALL
+========================================================= -->
+
+<div id="incomingCall">
+
+    <div class="incomingBox">
+
+        <div
+            id="incomingAvatar"
+            class="incomingAvatar"
+        >
+            ?
+        </div>
+
+        <h2>
+            Incoming Video Call
+        </h2>
+
+        <p id="incomingCaller">
+            Someone is calling you...
+        </p>
+
+        <div class="incomingButtons">
+
+            <button
+                class="declineCall"
+                onclick="declineIncomingCall()"
+            >
+                DECLINE
+            </button>
+
+            <button
+                class="acceptCall"
+                onclick="acceptIncomingCall()"
+            >
+                ACCEPT
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     CALL WINDOW
+========================================================= -->
+
+<div id="callWindow">
+
+    <div class="callBox">
+
+        <div class="callTop">
+
+            <strong id="callTitle">
+                GameHub Call
+            </strong>
+
+            <span id="callStatus">
+                Connecting...
+            </span>
+
+        </div>
+
+        <div class="videoArea">
+
+            <video
+                id="remoteVideo"
+                autoplay
+                playsinline
+            ></video>
+
+            <video
+                id="localVideo"
+                autoplay
+                muted
+                playsinline
+            ></video>
+
+        </div>
+
+        <div class="callControls">
+
+            <button
+                id="micButton"
+                onclick="toggleMicrophone()"
+            >
+                🎙
+            </button>
+
+            <button
+                id="cameraButton"
+                onclick="toggleCamera()"
+            >
+                📷
+            </button>
+
+            <button
+                class="hangup"
+                onclick="endCall()"
+            >
+                ☎
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="toast"></div>
+
+<!-- =========================================================
+     SOCKET.IO
+========================================================= -->
+
+<script src="http://localhost:3002/socket.io/socket.io.js"></script>
+
+<script>
+
+/* =========================================================
+   GAME DATA
+========================================================= */
+
+const games = [
+
+    {
+        name: "Among Us",
+        file: "Among-Us.html",
+        description: "Find the impostor.",
+        type: "GAME"
+    },
+
+    {
+        name: "FNAF 1",
+        file: "FNAF-1.html",
+        description: "Five Nights at Freddy's.",
+        type: "HORROR"
+    },
+
+    {
+        name: "FNAF 2",
+        file: "FNAF-2.html",
+        description: "Survive another night.",
+        type: "HORROR"
+    },
+
+    {
+        name: "FNAF 3",
+        file: "FNAF-3.html",
+        description: "The nightmare continues.",
+        type: "HORROR"
+    },
+
+    {
+        name: "FNAF 4",
+        file: "FNAF-4.html",
+        description: "Don't fall asleep.",
+        type: "HORROR"
+    },
+
+    {
+        name: "Geomorty Dash",
+        file: "Geomorty-Dash.html",
+        description: "Jump through the chaos.",
+        type: "ARCADE"
+    },
+
+    {
+        name: "GTA Clone",
+        file: "GTA-Clone.html",
+        description: "Open-world chaos.",
+        type: "ACTION"
+    },
+
+    {
+        name: "Happy Wheels",
+        file: "Happy-Wheels.html",
+        description: "Physics-based madness.",
+        type: "ACTION"
+    },
+
+    {
+        name: "Mortal Kombat",
+        file: "Mortal-Kombat.html",
+        description: "Fight.",
+        type: "FIGHTING"
+    },
+
+    {
+        name: "PVZ Clone",
+        file: "PVZ-Clone.html",
+        description: "Defend your lawn.",
+        type: "STRATEGY"
+    },
+
+    {
+        name: "Crazy Cattle 3D",
+        file: "Crazy-Cattle3d.html",
+        description: "Absolutely normal cattle.",
+        type: "3D"
+    },
+
+    {
+        name: "Subway Surfer",
+        file: "Subway-Surfer.html",
+        description: "Run forever.",
+        type: "RUNNER"
+    },
+
+    {
+        name: "Minecraft",
+        file: "Minecraft.html",
+        description: "Build your world.",
+        type: "SANDBOX"
+    },
+
+    {
+        name: "Melon Playground",
+        file: "Melon-Playground.html",
+        description: "Create chaos.",
+        type: "SANDBOX"
+    },
+
+    {
+        name: "Level Devil",
+        file: "Level-Devil.html",
+        description: "The level hates you.",
+        type: "PLATFORMER"
+    },
+
+    {
+        name: "Doblox",
+        file: "Doblox.html",
+        description: "Blocky adventures.",
+        type: "3D"
+    },
+
+    {
+        name: "Dublix",
+        url: "https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",
+        description: "Online 3D multiplayer.",
+        type: "ONLINE"
+    }
+
+];
+
+const apps = [
+
+    {
+        name: "AI",
+        file: "AI.html",
+        description: "GameHub AI.",
+        type: "AI"
+    },
+
+    {
+        name: "Helios Offline",
+        file: "Helios-Offline.html",
+        description: "Offline AI.",
+        type: "AI"
+    }
+
+];
+
+/* =========================================================
+   CARD CREATION
+========================================================= */
+
+function makeCard(item, index) {
+
+    const action =
+        item.url
+            ? `openGame(${JSON.stringify(item)})`
+            : `openGame(${JSON.stringify(item)})`;
+
+    return `
+
+        <div
+            class="card searchable"
+            data-name="${escapeHTML(item.name)}"
+            onclick='${action}'
+        >
+
+            <div class="cardArt">
+
+                <div class="cardType">
+                    ${escapeHTML(item.type || "GAME")}
+                </div>
+
+                <div class="cardNumber">
+                    ${String(index + 1).padStart(2, "0")}
+                </div>
+
+                <div class="cardName">
+                    ${escapeHTML(item.name)}
+                </div>
+
+            </div>
+
+            <div class="cardInfo">
+
+                <h3>
+                    ${escapeHTML(item.name)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(item.description || "")}
+                </p>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+function loadLibrary() {
+
+    document.getElementById("gamesGrid").innerHTML =
+        games.map(makeCard).join("");
+
+    document.getElementById("featuredGrid").innerHTML =
+        games.slice(0, 8).map(makeCard).join("");
+
+    document.getElementById("appsGrid").innerHTML =
+        apps.map(makeCard).join("");
+
+    document.getElementById("gameCount").textContent =
+        games.length + " games";
+
+}
+
+/* =========================================================
+   PAGE NAVIGATION
+========================================================= */
+
+function showPage(page) {
+
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.remove("active");
+    });
+
+    const target =
+        document.getElementById(page);
+
+    if (target) {
+        target.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav button").forEach(button => {
+        button.classList.remove("active");
+    });
+
+    const nav =
+        document.getElementById(
+            "nav" +
+            page.charAt(0).toUpperCase() +
+            page.slice(1)
+        );
+
+    if (nav) {
+        nav.classList.add("active");
+    }
+
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function searchAll() {
+
+    const query =
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    if (!query) {
+
+        document.querySelectorAll(".card")
+            .forEach(card => {
+                card.style.display = "";
+            });
+
+        return;
+    }
+
+    showPage("games");
+
+    document.querySelectorAll(".card")
+        .forEach(card => {
+
+            const name =
+                card.dataset.name.toLowerCase();
+
+            card.style.display =
+                name.includes(query)
+                    ? ""
+                    : "none";
+
+        });
+
+}
+
+/* =========================================================
+   GAMES / ADS
+========================================================= */
+
+let gamesPlayed = 0;
+
+function openGame(game) {
+
+    gamesPlayed++;
+
+    if (gamesPlayed >= 2) {
+
+        gamesPlayed = 0;
+
+        showAd();
+
+    }
+
+    document.getElementById("gameTitle")
+        .textContent = game.name;
+
+    document.getElementById("gameFrame")
+        .src = game.url || game.file;
+
+    document.getElementById("gameOverlay")
+        .style.display = "flex";
+
+}
+
+function showAd() {
+
+    showToast(
+        "GAMEHUB AD"
+    );
+
+}
+
+function closeGame() {
+
+    document.getElementById("gameOverlay")
+        .style.display = "none";
+
+    document.getElementById("gameFrame")
+        .src = "about:blank";
+
+}
+
+function fullscreenGame() {
+
+    const frame =
+        document.getElementById("gameFrame");
+
+    if (frame.requestFullscreen) {
+        frame.requestFullscreen();
+    }
+
+}
+
+/* =========================================================
+   CINEJOY
+========================================================= */
+
+const CINEJOY_URL =
+    "https://cinejoy.pk/";
+
+function openCinejoy() {
+
+    const windowElement =
+        document.getElementById("movieWindow");
+
+    const frame =
+        document.getElementById("movieVideo");
+
+    frame.src =
+        CINEJOY_URL;
+
+    windowElement.style.display =
+        "block";
+
+    windowElement.style.height =
+        "min(560px, 75vh)";
+
+    showToast(
+        "Loading Cinejoy..."
+    );
+
+}
+
+function openCinejoyExternal() {
+
+    window.open(
+        CINEJOY_URL,
+        "_blank"
+    );
+
+}
+
+function fullscreenMovie() {
+
+    const windowElement =
+        document.getElementById("movieWindow");
+
+    if (windowElement.requestFullscreen) {
+
+        windowElement.requestFullscreen();
+
+    }
+
+}
+
+function minimizeMovie() {
+
+    const windowElement =
+        document.getElementById("movieWindow");
+
+    if (
+        windowElement.style.height === "42px"
+    ) {
+
+        windowElement.style.height =
+            "min(560px, 75vh)";
+
+    } else {
+
+        windowElement.style.height =
+            "42px";
+
+    }
+
+}
+
+function closeMovie() {
+
+    document.getElementById("movieWindow")
+        .style.display = "none";
+
+    document.getElementById("movieVideo")
+        .src = "about:blank";
+
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent =
+        message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 2500);
+
+}
+
+/* =========================================================
+   PHONE
+========================================================= */
+
+const SERVER =
+    "http://localhost:3002";
+
+let socket = null;
+
+let myUsername =
+    localStorage.getItem("gamehub_username");
+
+let currentChat = null;
+
+let contacts =
+    JSON.parse(
+        localStorage.getItem("gamehub_contacts") || "[]"
+    );
+
+let incomingCallData = null;
+
+let currentCallUser = null;
+
+let peer = null;
+
+let localStream = null;
+
+let pendingIceCandidates = [];
+
+let remoteDescriptionReady = false;
+
+/* =========================================================
+   PHONE CONNECTION
+========================================================= */
+
+function connectPhone() {
+
+    if (typeof io === "undefined") {
+
+        showToast(
+            "Phone server unavailable."
+        );
+
+        return;
+
+    }
+
+    socket = io(SERVER);
+
+    socket.on("connect", () => {
+
+        if (myUsername) {
+
+            socket.emit(
+                "login",
+                myUsername
+            );
+
+        }
+
+    });
+
+    socket.on("online-users", users => {
+
+        updateOnlineUsers(users);
+
+    });
+
+    socket.on("message", message => {
+
+        if (
+            currentChat &&
+            (
+                message.sender === currentChat ||
+                message.receiver === currentChat
+            )
+        ) {
+
+            addMessage(message);
+
+        }
+
+        showToast(
+            "New message from @" +
+            message.sender
+        );
+
+    });
+
+    socket.on("incoming-call", data => {
+
+        incomingCallData = data;
+
+        document.getElementById(
+            "incomingCaller"
+        ).textContent =
+            "@" + data.from + " is calling you.";
+
+        document.getElementById(
+            "incomingAvatar"
+        ).textContent =
+            data.from
+                .charAt(0)
+                .toUpperCase();
+
+        document.getElementById(
+            "incomingCall"
+        ).style.display =
+            "flex";
+
+    });
+
+    socket.on("call-accepted", async data => {
+
+        if (!peer) {
+            return;
+        }
+
+        document.getElementById(
+            "callStatus"
+        ).textContent =
+            "Connecting...";
+
+        const offer =
+            await peer.createOffer();
+
+        await peer.setLocalDescription(
+            offer
+        );
+
+        socket.emit(
+            "webrtc-offer",
+            {
+                to: data.from,
+                offer
+            }
+        );
+
+    });
+
+    socket.on("call-declined", () => {
+
+        showToast(
+            "Call declined."
+        );
+
+        cleanupCall();
+
+    });
+
+    socket.on("webrtc-offer", async data => {
+
+        if (!peer) {
+
+            await createPeer(
+                data.from
+            );
+
+        }
+
+        await peer.setRemoteDescription(
+            new RTCSessionDescription(
+                data.offer
+            )
+        );
+
+        remoteDescriptionReady = true;
+
+        await flushIce();
+
+        const answer =
+            await peer.createAnswer();
+
+        await peer.setLocalDescription(
+            answer
+        );
+
+        socket.emit(
+            "webrtc-answer",
+            {
+                to: data.from,
+                answer
+            }
+        );
+
+    });
+
+    socket.on("webrtc-answer", async data => {
+
+        if (!peer) {
+            return;
+        }
+
+        await peer.setRemoteDescription(
+            new RTCSessionDescription(
+                data.answer
+            )
+        );
+
+        remoteDescriptionReady = true;
+
+        await flushIce();
+
+        document.getElementById(
+            "callStatus"
+        ).textContent =
+            "Connected";
+
+    });
+
+    socket.on("webrtc-ice", async data => {
+
+        if (
+            !peer ||
+            !remoteDescriptionReady
+        ) {
+
+            pendingIceCandidates.push(
+                data.candidate
+            );
+
+            return;
+
+        }
+
+        try {
+
+            await peer.addIceCandidate(
+                new RTCIceCandidate(
+                    data.candidate
+                )
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    });
+
+    socket.on("end-call", () => {
+
+        showToast(
+            "Call ended."
+        );
+
+        cleanupCall();
+
+    });
+
+}
+
+/* =========================================================
+   USERNAME
+========================================================= */
+
+async function setupUsername() {
+
+    if (myUsername) {
+
+        document.getElementById(
+            "myUsername"
+        ).textContent =
+            "@" + myUsername;
+
+        return;
+
+    }
+
+    await changeUsername();
+
+}
+
+async function changeUsername() {
+
+    const username =
+        prompt(
+            "Choose your GameHub username:\n\n3-20 characters\nLetters, numbers and underscores only."
+        );
+
+    if (username === null) {
+        return;
+    }
+
+    const clean =
+        username.trim();
+
+    if (
+        !/^[a-zA-Z0-9_]{3,20}$/.test(clean)
+    ) {
+
+        showToast(
+            "Invalid username."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                SERVER + "/api/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: clean
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            showToast(
+                data.error ||
+                "Username unavailable."
+            );
+
+            return;
+
+        }
+
+        myUsername =
+            data.username;
+
+        localStorage.setItem(
+            "gamehub_username",
+            myUsername
+        );
+
+        document.getElementById(
+            "myUsername"
+        ).textContent =
+            "@" + myUsername;
+
+        if (socket) {
+
+            socket.emit(
+                "login",
+                myUsername
+            );
+
+        }
+
+        showToast(
+            "Username set to @" +
+            myUsername
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Phone server is offline."
+        );
+
+    }
+
+}
+
+/* =========================================================
+   PHONE PANELS
+========================================================= */
+
+function showPhonePanel(panel) {
+
+    if (panel === "contacts") {
+
+        document.getElementById(
+            "phoneContacts"
+        ).style.display =
+            "block";
+
+        document.getElementById(
+            "phoneMessages"
+        ).style.display =
+            "none";
+
+    }
+
+    if (panel === "messages") {
+
+        document.getElementById(
+            "phoneContacts"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "phoneMessages"
+        ).style.display =
+            "block";
+
+    }
+
+}
+
+/* =========================================================
+   USER SEARCH
+========================================================= */
+
+let searchTimer;
+
+async function searchUsers() {
+
+    clearTimeout(searchTimer);
+
+    const query =
+        document.getElementById(
+            "userSearch"
+        ).value
+        .trim();
+
+    const results =
+        document.getElementById(
+            "userResults"
+        );
+
+    if (!query) {
+
+        results.innerHTML = "";
+
+        return;
+
+    }
+
+    searchTimer =
+        setTimeout(async () => {
+
+            try {
+
+                const response =
+                    await fetch(
+                        SERVER +
+                        "/api/users?search=" +
+                        encodeURIComponent(query)
+                    );
+
+                const users =
+                    await response.json();
+
+                results.innerHTML =
+                    users
+                        .filter(
+                            user =>
+                                user.username !==
+                                myUsername
+                        )
+                        .map(
+                            user =>
+                                makeUserResult(user)
+                        )
+                        .join("");
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        }, 250);
+
+}
+
+function makeUserResult(user) {
+
+    return `
+
+        <div class="userResult">
+
+            <div class="avatar">
+                ${escapeHTML(
+                    user.username
+                        .charAt(0)
+                        .toUpperCase()
+                )}
+            </div>
+
+            <div class="userInfo">
+
+                <div class="userName">
+
+                    ${escapeHTML(user.username)}
+
+                    <span
+                        class="onlineDot ${
+                            user.online
+                                ? "online"
+                                : ""
+                        }"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                class="phoneAction"
+                onclick='openChat(${JSON.stringify(user.username)})'
+            >
+                MESSAGE
+            </button>
+
+            ${
+                user.online
+                    ? `
+                        <button
+                            class="phoneAction"
+                            onclick='startCall(${JSON.stringify(user.username)})'
+                        >
+                            CALL
+                        </button>
+                    `
+                    : ""
+            }
+
+        </div>
+
+    `;
+
+}
+
+/* =========================================================
+   CONTACTS
+========================================================= */
+
+function saveContacts() {
+
+    localStorage.setItem(
+        "gamehub_contacts",
+        JSON.stringify(contacts)
+    );
+
+}
+
+function addContact(username) {
+
+    if (
+        username !== myUsername &&
+        !contacts.includes(username)
+    ) {
+
+        contacts.push(username);
+
+        saveContacts();
+
+    }
+
+    renderContacts();
+
+}
+
+function renderContacts() {
+
+    const container =
+        document.getElementById(
+            "contactsList"
+        );
+
+    if (!contacts.length) {
+
+        container.innerHTML =
+            `<p class="phoneMuted">
+                No contacts yet.
+            </p>`;
+
+        return;
+
+    }
+
+    container.innerHTML =
+        contacts.map(username => `
+
+            <div class="contact">
+
+                <div class="avatar">
+                    ${escapeHTML(
+                        username
+                            .charAt(0)
+                            .toUpperCase()
+                    )}
+                </div>
+
+                <div class="userInfo">
+
+                    <div class="userName">
+                        ${escapeHTML(username)}
+                    </div>
+
+                </div>
+
+                <button
+                    class="phoneAction"
+                    onclick='openChat(${JSON.stringify(username)})'
+                >
+                    CHAT
+                </button>
+
+                <button
+                    class="phoneAction"
+                    onclick='startCall(${JSON.stringify(username)})'
+                >
+                    CALL
+                </button>
+
+            </div>
+
+        `).join("");
+
+}
+
+function updateOnlineUsers(users) {
+
+    renderContacts();
+
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+async function openChat(username) {
+
+    currentChat =
+        username;
+
+    addContact(username);
+
+    showPhonePanel(
+        "messages"
+    );
+
+    document.getElementById(
+        "chatHeader"
+    ).textContent =
+        "Chat with @" +
+        username;
+
+    document.getElementById(
+        "messageList"
+    ).innerHTML = "";
+
+    try {
+
+        const response =
+            await fetch(
+                SERVER +
+                "/api/messages?user1=" +
+                encodeURIComponent(myUsername) +
+                "&user2=" +
+                encodeURIComponent(username)
+            );
+
+        const messages =
+            await response.json();
+
+        messages.forEach(
+            addMessage
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+function addMessage(message) {
+
+    const list =
+        document.getElementById(
+            "messageList"
+        );
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.className =
+        "message" +
+        (
+            message.sender === myUsername
+                ? " mine"
+                : ""
+        );
+
+    div.innerHTML = `
+
+        ${escapeHTML(
+            message.message
+        )}
+
+        <span class="messageTime">
+            @${escapeHTML(
+                message.sender
+            )}
+        </span>
+
+    `;
+
+    list.appendChild(div);
+
+    list.scrollTop =
+        list.scrollHeight;
+
+}
+
+function messageEnter(event) {
+
+    if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        sendMessage();
+
+    }
+
+}
+
+function sendMessage() {
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+    const message =
+        input.value.trim();
+
+    if (
+        !message ||
+        !currentChat ||
+        !socket
+    ) {
+        return;
+    }
+
+    socket.emit(
+        "send-message",
+        {
+            to: currentChat,
+            message
+        }
+    );
+
+    input.value = "";
+
+}
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+async function requestNotifications() {
+
+    if (
+        !("Notification" in window)
+    ) {
+
+        showToast(
+            "Notifications aren't supported."
+        );
+
+        return;
+
+    }
+
+    const permission =
+        await Notification.requestPermission();
+
+    if (
+        permission === "granted"
+    ) {
+
+        new Notification(
+            "GameHub",
+            {
+                body:
+                    "Notifications are enabled."
+            }
+        );
+
+        showToast(
+            "Notifications enabled."
+        );
+
+    } else {
+
+        showToast(
+            "Notifications were denied."
+        );
+
+    }
+
+}
+
+/* =========================================================
+   WEBRTC
+========================================================= */
+
+async function createPeer(username) {
+
+    peer =
+        new RTCPeerConnection({
+
+            iceServers: [
+
+                {
+                    urls:
+                        "stun:stun.l.google.com:19302"
+                }
+
+            ]
+
+        });
+
+    currentCallUser =
+        username;
+
+    remoteDescriptionReady =
+        false;
+
+    pendingIceCandidates =
+        [];
+
+    peer.onicecandidate =
+        event => {
+
+            if (
+                event.candidate &&
+                socket &&
+                currentCallUser
+            ) {
+
+                socket.emit(
+                    "webrtc-ice",
+                    {
+                        to:
+                            currentCallUser,
+                        candidate:
+                            event.candidate
+                    }
+                );
+
+            }
+
+        };
+
+    peer.ontrack =
+        event => {
+
+            document.getElementById(
+                "remoteVideo"
+            ).srcObject =
+                event.streams[0];
+
+        };
+
+    peer.onconnectionstatechange =
+        () => {
+
+            if (!peer) {
+                return;
+            }
+
+            if (
+                peer.connectionState ===
+                "connected"
+            ) {
+
+                document.getElementById(
+                    "callStatus"
+                ).textContent =
+                    "Connected";
+
+            }
+
+        };
+
+    if (localStream) {
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+
+                peer.addTrack(
+                    track,
+                    localStream
+                );
+
+            });
+
+    }
+
+}
+
+/* =========================================================
+   START CALL
+========================================================= */
+
+async function startCall(username) {
+
+    if (!socket) {
+
+        showToast(
+            "Phone server is offline."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        localStream =
+            await navigator.mediaDevices
+                .getUserMedia({
+                    video: true,
+                    audio: true
+                });
+
+        document.getElementById(
+            "localVideo"
+        ).srcObject =
+            localStream;
+
+        document.getElementById(
+            "callTitle"
+        ).textContent =
+            "Calling @" + username;
+
+        document.getElementById(
+            "callStatus"
+        ).textContent =
+            "Calling...";
+
+        document.getElementById(
+            "callWindow"
+        ).style.display =
+            "block";
+
+        await createPeer(
+            username
+        );
+
+        socket.emit(
+            "call-user",
+            {
+                to: username
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Camera/microphone permission required."
+        );
+
+    }
+
+}
+
+/* =========================================================
+   ACCEPT CALL
+========================================================= */
+
+async function acceptIncomingCall() {
+
+    if (!incomingCallData) {
+        return;
+    }
+
+    const caller =
+        incomingCallData.from;
+
+    document.getElementById(
+        "incomingCall"
+    ).style.display =
+        "none";
+
+    try {
+
+        localStream =
+            await navigator.mediaDevices
+                .getUserMedia({
+                    video: true,
+                    audio: true
+                });
+
+        document.getElementById(
+            "localVideo"
+        ).srcObject =
+            localStream;
+
+        document.getElementById(
+            "callTitle"
+        ).textContent =
+            "Call with @" + caller;
+
+        document.getElementById(
+            "callStatus"
+        ).textContent =
+            "Connecting...";
+
+        document.getElementById(
+            "callWindow"
+        ).style.display =
+            "block";
+
+        await createPeer(
+            caller
+        );
+
+        socket.emit(
+            "call-accepted",
+            {
+                to: caller
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Camera/microphone permission required."
+        );
+
+    }
+
+}
+
+/* =========================================================
+   DECLINE
+========================================================= */
+
+function declineIncomingCall() {
+
+    if (
+        incomingCallData &&
+        socket
+    ) {
+
+        socket.emit(
+            "call-declined",
+            {
+                to:
+                    incomingCallData.from
+            }
+        );
+
+    }
+
+    incomingCallData =
+        null;
+
+    document.getElementById(
+        "incomingCall"
+    ).style.display =
+        "none";
+
+}
+
+/* =========================================================
+   END CALL
+========================================================= */
+
+function endCall() {
+
+    if (
+        socket &&
+        currentCallUser
+    ) {
+
+        socket.emit(
+            "end-call",
+            {
+                to:
+                    currentCallUser
+            }
+        );
+
+    }
+
+    cleanupCall();
+
+}
+
+function cleanupCall() {
+
+    if (localStream) {
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+                track.stop();
+            });
+
+        localStream =
+            null;
+
+    }
+
+    if (peer) {
+
+        peer.close();
+
+        peer =
+            null;
+
+    }
+
+    document.getElementById(
+        "localVideo"
+    ).srcObject =
+        null;
+
+    document.getElementById(
+        "remoteVideo"
+    ).srcObject =
+        null;
+
+    document.getElementById(
+        "callWindow"
+    ).style.display =
+        "none";
+
+    currentCallUser =
+        null;
+
+    pendingIceCandidates =
+        [];
+
+    remoteDescriptionReady =
+        false;
+
+}
+
+/* =========================================================
+   ICE
+========================================================= */
+
+async function flushIce() {
+
+    if (
+        !peer ||
+        !remoteDescriptionReady
+    ) {
+        return;
+    }
+
+    for (
+        const candidate
+        of pendingIceCandidates
+    ) {
+
+        try {
+
+            await peer.addIceCandidate(
+                new RTCIceCandidate(
+                    candidate
+                )
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+    pendingIceCandidates =
+        [];
+
+}
+
+/* =========================================================
+   MIC / CAMERA
+========================================================= */
+
+function toggleMicrophone() {
+
+    if (!localStream) {
+        return;
+    }
+
+    const track =
+        localStream
+            .getAudioTracks()[0];
+
+    if (!track) {
+        return;
+    }
+
+    track.enabled =
+        !track.enabled;
+
+    document.getElementById(
+        "micButton"
+    ).textContent =
+        track.enabled
+            ? "🎙"
+            : "🔇";
+
+}
+
+function toggleCamera() {
+
+    if (!localStream) {
+        return;
+    }
+
+    const track =
+        localStream
+            .getVideoTracks()[0];
+
+    if (!track) {
+        return;
+    }
+
+    track.enabled =
+        !track.enabled;
+
+    document.getElementById(
+        "cameraButton"
+    ).textContent =
+        track.enabled
+            ? "📷"
+            : "🚫";
+
+}
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+/* =========================================================
+   ESCAPE / CLOSE
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            if (
+                document.getElementById(
+                    "gameOverlay"
+                ).style.display === "flex"
+            ) {
+
+                closeGame();
+
+            }
+
+        }
+
+    }
+);
+
+/* =========================================================
+   STARTUP
+========================================================= */
+
+const bootMessages = [
+
+    "Initializing system...",
+    "Checking GameHub core...",
+    "Loading game library...",
+    "Loading applications...",
+    "Starting communication services...",
+    "Checking media services...",
+    "Loading user interface...",
+    "System ready."
+
+];
+
+let bootStep = 0;
+
+const bootInterval =
+    setInterval(() => {
+
+        const message =
+            bootMessages[
+                bootStep
+            ];
+
+        document.getElementById(
+            "bootStatus"
+        ).textContent =
+            message;
+
+        document.getElementById(
+            "bootLeft"
+        ).textContent =
+            "CHECK " +
+            String(
+                bootStep + 1
+            ).padStart(2, "0") +
+            " / " +
+            String(
+                bootMessages.length
+            ).padStart(2, "0");
+
+        const progress =
+            (
+                (bootStep + 1) /
+                bootMessages.length
+            ) * 100;
+
+        document.getElementById(
+            "bootProgress"
+        ).style.width =
+            progress + "%";
+
+        bootStep++;
+
+        if (
+            bootStep >=
+            bootMessages.length
+        ) {
+
+            clearInterval(
+                bootInterval
+            );
+
+            setTimeout(
+                startGameHub,
+                650
+            );
+
+        }
+
+    }, 430);
+
+async function startGameHub() {
+
+    loadLibrary();
+
+    renderContacts();
+
+    document.getElementById(
+        "app"
+    ).style.display =
+        "flex";
+
+    document.getElementById(
+        "boot"
+    ).style.opacity =
+        "0";
+
+    document.getElementById(
+        "boot"
+    ).style.transition =
+        "opacity .5s ease";
+
+    setTimeout(() => {
+
+        document.getElementById(
+            "boot"
+        ).style.display =
+            "none";
+
+    }, 500);
+
+    await setupUsername();
+
+    connectPhone();
+
+}
+
+/* =========================================================
+   CLOSE SOCKET
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if (socket) {
+            socket.disconnect();
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
