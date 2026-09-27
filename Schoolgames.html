@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>GameHub</title>
 
 <link rel="manifest" href="/manifest.webmanifest">
@@ -16,7 +17,8 @@
     padding:0;
 }
 
-html,body{
+html,
+body{
     width:100%;
     height:100%;
     overflow:hidden;
@@ -25,7 +27,8 @@ html,body{
     font-family:Arial,Helvetica,sans-serif;
 }
 
-button,input{
+button,
+input{
     font:inherit;
 }
 
@@ -33,9 +36,9 @@ button{
     cursor:pointer;
 }
 
-/* =========================
-   BOOT SCREEN
-========================= */
+/* =====================================================
+   BOOT
+===================================================== */
 
 #bootScreen{
     position:fixed;
@@ -45,7 +48,7 @@ button{
     display:flex;
     align-items:center;
     justify-content:center;
-    color:#fff;
+    transition:opacity .35s ease;
 }
 
 .bootBox{
@@ -54,7 +57,7 @@ button{
 
 .bootTitle{
     font-size:38px;
-    font-weight:900;
+    font-weight:950;
     letter-spacing:5px;
     margin-bottom:8px;
 }
@@ -84,26 +87,36 @@ button{
     background:#171b22;
     overflow:hidden;
     margin-top:25px;
+    border-radius:5px;
 }
 
 .bootProgressBar{
     height:100%;
-    width:0;
+    width:100%;
     background:#fff;
-    animation:bootProgress 3.5s forwards;
+    transform-origin:left;
+    animation:bootProgress 1.15s ease forwards;
 }
 
 @keyframes bootLine{
-    to{opacity:1}
+    to{
+        opacity:1;
+    }
 }
 
 @keyframes bootProgress{
-    to{width:100%}
+    from{
+        transform:scaleX(0);
+    }
+
+    to{
+        transform:scaleX(1);
+    }
 }
 
-/* =========================
+/* =====================================================
    APP
-========================= */
+===================================================== */
 
 #app{
     width:100%;
@@ -111,13 +124,17 @@ button{
     display:none;
     flex-direction:column;
     background:
-        radial-gradient(circle at 80% -20%,rgba(80,110,160,.16),transparent 35%),
+        radial-gradient(
+            circle at 80% -20%,
+            rgba(80,110,160,.16),
+            transparent 35%
+        ),
         #080b10;
 }
 
-/* =========================
+/* =====================================================
    TOP BAR
-========================= */
+===================================================== */
 
 .topbar{
     height:68px;
@@ -126,7 +143,7 @@ button{
     align-items:center;
     gap:20px;
     padding:0 22px;
-    background:rgba(10,13,18,.96);
+    background:rgba(10,13,18,.97);
     border-bottom:1px solid #202630;
     z-index:50;
 }
@@ -168,7 +185,6 @@ button{
 .searchBox{
     margin-left:auto;
     width:230px;
-    position:relative;
 }
 
 .searchBox input{
@@ -211,15 +227,16 @@ button{
         opacity:1;
         transform:scale(1);
     }
+
     50%{
         opacity:.45;
         transform:scale(.75);
     }
 }
 
-/* =========================
+/* =====================================================
    CONTENT
-========================= */
+===================================================== */
 
 #content{
     flex:1;
@@ -237,17 +254,25 @@ button{
     display:block;
 }
 
-/* =========================
+/* =====================================================
    HOME
-========================= */
+===================================================== */
 
 .hero{
     min-height:310px;
     border:1px solid #252c37;
     border-radius:15px;
     background:
-        linear-gradient(115deg,rgba(22,28,39,.98),rgba(10,13,18,.85)),
-        radial-gradient(circle at 80% 30%,#37466f,transparent 35%);
+        linear-gradient(
+            115deg,
+            rgba(22,28,39,.98),
+            rgba(10,13,18,.85)
+        ),
+        radial-gradient(
+            circle at 80% 30%,
+            #37466f,
+            transparent 35%
+        );
     display:flex;
     align-items:center;
     padding:45px;
@@ -264,8 +289,9 @@ button{
     top:-180px;
     border-radius:50%;
     border:1px solid #333b4b;
-    box-shadow:0 0 0 40px rgba(255,255,255,.015),
-               0 0 0 80px rgba(255,255,255,.01);
+    box-shadow:
+        0 0 0 40px rgba(255,255,255,.015),
+        0 0 0 80px rgba(255,255,255,.01);
 }
 
 .heroContent{
@@ -324,13 +350,14 @@ button{
     font-size:12px;
 }
 
-/* =========================
+/* =====================================================
    CARDS
-========================= */
+===================================================== */
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    grid-template-columns:
+        repeat(auto-fill,minmax(210px,1fr));
     gap:15px;
 }
 
@@ -341,7 +368,10 @@ button{
     border-radius:12px;
     overflow:hidden;
     cursor:pointer;
-    transition:.18s;
+    transition:
+        transform .18s,
+        border-color .18s,
+        background .18s;
 }
 
 .card:hover{
@@ -358,18 +388,23 @@ button{
     position:relative;
     overflow:hidden;
     background:
-        linear-gradient(135deg,#171d29,#0c1017);
+        linear-gradient(
+            135deg,
+            #171d29,
+            #0c1017
+        );
 }
 
 .cardArt:before{
     content:"";
     position:absolute;
     inset:-40%;
-    background:repeating-linear-gradient(
-        120deg,
-        transparent 0 18px,
-        rgba(255,255,255,.035) 19px 20px
-    );
+    background:
+        repeating-linear-gradient(
+            120deg,
+            transparent 0 18px,
+            rgba(255,255,255,.035) 19px 20px
+        );
     transform:rotate(10deg);
 }
 
@@ -378,6 +413,7 @@ button{
     font-size:28px;
     font-weight:950;
     letter-spacing:-1px;
+    z-index:1;
 }
 
 .cardType{
@@ -391,6 +427,7 @@ button{
     font-size:9px;
     font-weight:900;
     letter-spacing:1px;
+    z-index:2;
 }
 
 .cardInfo{
@@ -408,9 +445,9 @@ button{
     line-height:1.4;
 }
 
-/* =========================
+/* =====================================================
    APPS
-========================= */
+===================================================== */
 
 .appCard{
     min-height:180px;
@@ -431,11 +468,13 @@ button{
     font-size:22px;
     font-weight:950;
     border:1px solid #3a4354;
+    position:relative;
+    z-index:2;
 }
 
-/* =========================
+/* =====================================================
    NEWS
-========================= */
+===================================================== */
 
 .newsBox{
     border:1px solid #252c37;
@@ -463,17 +502,25 @@ button{
     font-size:13px;
 }
 
-/* =========================
+/* =====================================================
    MOVIES
-========================= */
+===================================================== */
 
 .cineHero{
     min-height:330px;
     border:1px solid #282f3a;
     border-radius:15px;
     background:
-        linear-gradient(90deg,#10151d 20%,rgba(16,21,29,.4)),
-        radial-gradient(circle at 75% 50%,#343c65,transparent 45%);
+        linear-gradient(
+            90deg,
+            #10151d 20%,
+            rgba(16,21,29,.4)
+        ),
+        radial-gradient(
+            circle at 75% 50%,
+            #343c65,
+            transparent 45%
+        );
     display:flex;
     align-items:center;
     padding:45px;
@@ -491,9 +538,9 @@ button{
     margin-bottom:22px;
 }
 
-/* =========================
+/* =====================================================
    PHONE
-========================= */
+===================================================== */
 
 .phoneLayout{
     height:calc(100vh - 128px);
@@ -620,6 +667,7 @@ button{
     font-size:13px;
     line-height:1.45;
     align-self:flex-start;
+    overflow-wrap:anywhere;
 }
 
 .message.mine{
@@ -644,9 +692,9 @@ button{
     padding:11px;
 }
 
-/* =========================
+/* =====================================================
    OVERLAYS
-========================= */
+===================================================== */
 
 .overlay{
     position:fixed;
@@ -704,6 +752,7 @@ button{
 .windowFrame{
     flex:1;
     width:100%;
+    height:100%;
     border:0;
     background:#000;
 }
@@ -719,9 +768,9 @@ button{
     flex-direction:column;
 }
 
-/* =========================
+/* =====================================================
    CALL UI
-========================= */
+===================================================== */
 
 .callModal{
     width:min(420px,92vw);
@@ -819,9 +868,9 @@ button{
     font-weight:900;
 }
 
-/* =========================
+/* =====================================================
    AD
-========================= */
+===================================================== */
 
 .adOverlay{
     position:fixed;
@@ -843,6 +892,7 @@ button{
     justify-content:center;
     flex-direction:column;
     text-align:center;
+    border-radius:12px;
 }
 
 .adBox h2{
@@ -856,9 +906,9 @@ button{
     margin-bottom:25px;
 }
 
-/* =========================
+/* =====================================================
    TOAST
-========================= */
+===================================================== */
 
 #toast{
     position:fixed;
@@ -882,11 +932,49 @@ button{
     transform:translateX(-50%) translateY(0);
 }
 
-/* =========================
+/* =====================================================
+   LOADING
+===================================================== */
+
+#gameLoading{
+    position:absolute;
+    inset:48px 0 0;
+    background:#050608;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:12px;
+    z-index:3;
+}
+
+.loadingSpinner{
+    width:38px;
+    height:38px;
+    border:3px solid #252c38;
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+}
+
+#gameLoadingText{
+    color:#8994a6;
+    font-size:12px;
+    font-weight:800;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+/* =====================================================
    RESPONSIVE
-========================= */
+===================================================== */
 
 @media(max-width:950px){
+
     .nav button{
         padding:8px;
     }
@@ -901,6 +989,7 @@ button{
 }
 
 @media(max-width:700px){
+
     .topbar{
         gap:8px;
         padding:0 10px;
@@ -944,7 +1033,8 @@ button{
     }
 
     .grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
     }
 }
 </style>
@@ -952,32 +1042,65 @@ button{
 
 <body>
 
-<!-- =========================
-     BOOT
-========================= -->
+<!-- =====================================================
+     BOOT SCREEN
+===================================================== -->
 
 <div id="bootScreen">
+
     <div class="bootBox">
-        <div class="bootTitle">GAMEHUB SYSTEM</div>
-        <div class="bootSubtitle">GAMEHUB OS — GAMING ENVIRONMENT</div>
+
+        <div class="bootTitle">
+            GAMEHUB SYSTEM
+        </div>
+
+        <div class="bootSubtitle">
+            GAMEHUB OS — GAMING ENVIRONMENT
+        </div>
 
         <div class="bootText">
-            <div class="bootLine" style="animation-delay:.2s">Initializing GameHub kernel...</div>
-            <div class="bootLine" style="animation-delay:.6s">Loading game library...</div>
-            <div class="bootLine" style="animation-delay:1s">Connecting communication services...</div>
-            <div class="bootLine" style="animation-delay:1.4s">Starting online services...</div>
-            <div class="bootLine" style="animation-delay:1.8s">Loading user interface...</div>
+
+            <div class="bootLine"
+                 style="animation-delay:.05s">
+                Initializing GameHub kernel...
+            </div>
+
+            <div class="bootLine"
+                 style="animation-delay:.25s">
+                Loading game library...
+            </div>
+
+            <div class="bootLine"
+                 style="animation-delay:.45s">
+                Connecting communication services...
+            </div>
+
+            <div class="bootLine"
+                 style="animation-delay:.65s">
+                Starting online services...
+            </div>
+
+            <div class="bootLine"
+                 style="animation-delay:.85s">
+                Loading user interface...
+            </div>
+
         </div>
 
         <div class="bootProgress">
+
             <div class="bootProgressBar"></div>
+
         </div>
+
     </div>
+
 </div>
 
-<!-- =========================
+
+<!-- =====================================================
      APP
-========================= -->
+===================================================== -->
 
 <div id="app">
 
@@ -988,154 +1111,291 @@ button{
         </div>
 
         <nav class="nav">
-            <button class="active" onclick="showPage('home',this)">HOME</button>
-            <button onclick="showPage('games',this)">GAMES</button>
-            <button onclick="showPage('apps',this)">APPS</button>
-            <button onclick="showPage('movies',this)">MOVIES</button>
-            <button onclick="showPage('news',this)">NEWS</button>
-            <button onclick="showPage('phone',this)">PHONE</button>
+
+            <button
+                class="active"
+                onclick="showPage('home',this)">
+                HOME
+            </button>
+
+            <button
+                onclick="showPage('games',this)">
+                GAMES
+            </button>
+
+            <button
+                onclick="showPage('apps',this)">
+                APPS
+            </button>
+
+            <button
+                onclick="showPage('movies',this)">
+                MOVIES
+            </button>
+
+            <button
+                onclick="showPage('news',this)">
+                NEWS
+            </button>
+
+            <button
+                onclick="showPage('phone',this)">
+                PHONE
+            </button>
+
         </nav>
 
         <div class="searchBox">
+
             <input
                 id="searchInput"
                 type="text"
                 placeholder="Search GameHub..."
-                oninput="searchEverything()"
-            >
+                oninput="searchEverything()">
+
         </div>
 
         <div class="onlineCounter">
+
             <span class="onlineDot"></span>
-            <span id="onlineCount">0</span>
+
+            <span id="onlineCount">
+                0
+            </span>
+
             ONLINE
+
         </div>
 
     </header>
+
 
     <main id="content">
 
         <!-- HOME -->
 
-        <section id="home" class="page active">
+        <section
+            id="home"
+            class="page active">
 
             <div class="hero">
-                <div class="heroContent">
-                    <div class="heroSmall">WELCOME TO GAMEHUB</div>
 
-                    <h1>PLAY.<br>CONNECT.<br>HAVE FUN.</h1>
+                <div class="heroContent">
+
+                    <div class="heroSmall">
+                        WELCOME TO GAMEHUB
+                    </div>
+
+                    <h1>
+                        PLAY.<br>
+                        CONNECT.<br>
+                        HAVE FUN.
+                    </h1>
 
                     <p>
-                        Your gaming hub for games, apps, movies,
-                        communication and everything else GameHub.
+                        Your gaming hub for games, apps,
+                        movies, communication and everything
+                        else GameHub.
                     </p>
 
-                    <button class="primaryBtn"
+                    <button
+                        class="primaryBtn"
                         onclick="showPageByName('games')">
                         PLAY GAMES
                     </button>
+
                 </div>
+
             </div>
+
 
             <div class="sectionTitle">
-                <h2>Featured Games</h2>
-                <span>PLAY NOW</span>
+
+                <h2>
+                    Featured Games
+                </h2>
+
+                <span>
+                    PLAY NOW
+                </span>
+
             </div>
 
-            <div id="homeGames" class="grid"></div>
+            <div
+                id="homeGames"
+                class="grid">
+            </div>
 
         </section>
+
 
         <!-- GAMES -->
 
-        <section id="games" class="page">
+        <section
+            id="games"
+            class="page">
 
             <div class="sectionTitle">
-                <h2>Games</h2>
-                <span id="gameCountText"></span>
+
+                <h2>
+                    Games
+                </h2>
+
+                <span id="gameCountText">
+                </span>
+
             </div>
 
-            <div id="gamesGrid" class="grid"></div>
+            <div
+                id="gamesGrid"
+                class="grid">
+            </div>
 
         </section>
+
 
         <!-- APPS -->
 
-        <section id="apps" class="page">
+        <section
+            id="apps"
+            class="page">
 
             <div class="sectionTitle">
-                <h2>Apps</h2>
-                <span>GAMEHUB APPLICATIONS</span>
+
+                <h2>
+                    Apps
+                </h2>
+
+                <span>
+                    GAMEHUB APPLICATIONS
+                </span>
+
             </div>
 
-            <div id="appsGrid" class="grid"></div>
+            <div
+                id="appsGrid"
+                class="grid">
+            </div>
 
         </section>
+
 
         <!-- MOVIES -->
 
-        <section id="movies" class="page">
+        <section
+            id="movies"
+            class="page">
 
             <div class="cineHero">
+
                 <div>
-                    <div class="heroSmall">GAMEHUB MOVIES</div>
-                    <h1>CINEJOY</h1>
+
+                    <div class="heroSmall">
+                        GAMEHUB MOVIES
+                    </div>
+
+                    <h1>
+                        CINEJOY
+                    </h1>
 
                     <p>
-                        Browse movies and shows through Cinejoy
-                        directly inside GameHub.
+                        Browse movies and shows through
+                        Cinejoy directly inside GameHub.
                     </p>
 
-                    <button class="primaryBtn"
+                    <button
+                        class="primaryBtn"
                         onclick="openCinejoy()">
                         OPEN CINEJOY
                     </button>
+
                 </div>
+
             </div>
 
         </section>
+
 
         <!-- NEWS -->
 
-        <section id="news" class="page">
+        <section
+            id="news"
+            class="page">
 
             <div class="sectionTitle">
-                <h2>GameHub News</h2>
-                <span>LATEST</span>
+
+                <h2>
+                    GameHub News
+                </h2>
+
+                <span>
+                    LATEST
+                </span>
+
             </div>
 
-            <div class="newsBox">
-                <div class="newsTag">GAMEHUB</div>
-                <h3>GameHub is now online!</h3>
-                <p>
-                    The GameHub website is now running as a real
-                    online service.
-                </p>
-            </div>
 
             <div class="newsBox">
-                <div class="newsTag">ONLINE</div>
-                <h3>Live player counter</h3>
+
+                <div class="newsTag">
+                    GAMEHUB
+                </div>
+
+                <h3>
+                    GameHub is now online!
+                </h3>
+
                 <p>
-                    The online counter shows how many GameHub
-                    users are currently connected.
+                    The GameHub website is now running
+                    as a real online service.
                 </p>
+
             </div>
 
+
             <div class="newsBox">
-                <div class="newsTag">PHONE</div>
-                <h3>GameHub Phone</h3>
+
+                <div class="newsTag">
+                    ONLINE
+                </div>
+
+                <h3>
+                    Live player counter
+                </h3>
+
                 <p>
-                    Use GameHub Phone to find users, send messages
-                    and make calls.
+                    The online counter shows how many
+                    GameHub users are currently connected.
                 </p>
+
+            </div>
+
+
+            <div class="newsBox">
+
+                <div class="newsTag">
+                    PHONE
+                </div>
+
+                <h3>
+                    GameHub Phone
+                </h3>
+
+                <p>
+                    Find users, send messages and
+                    make calls.
+                </p>
+
             </div>
 
         </section>
 
+
         <!-- PHONE -->
 
-        <section id="phone" class="page">
+        <section
+            id="phone"
+            class="page">
 
             <div class="phoneLayout">
 
@@ -1143,64 +1403,77 @@ button{
 
                     <div class="phoneHeader">
 
-                        <h2>PHONE</h2>
+                        <h2>
+                            PHONE
+                        </h2>
 
                         <div class="usernameBox">
+
                             <input
                                 id="usernameInput"
                                 placeholder="Username"
-                                maxlength="20"
-                            >
+                                maxlength="20">
 
                             <button
                                 class="smallBtn"
                                 onclick="setUsername()">
                                 SET
                             </button>
+
                         </div>
 
-                        <div style="height:8px"></div>
+                        <div
+                            style="height:8px">
+                        </div>
 
                         <input
                             class="userSearch"
                             id="userSearch"
                             placeholder="Find users..."
-                            oninput="searchUsers()"
-                        >
+                            oninput="searchUsers()">
 
                     </div>
 
-                    <div id="contacts" class="contacts"></div>
+                    <div
+                        id="contacts"
+                        class="contacts">
+                    </div>
 
                 </aside>
+
 
                 <div class="phoneMain">
 
                     <div class="chatHeader">
 
                         <div>
+
                             <h3 id="chatName">
                                 Select a user
                             </h3>
 
-                            <div id="chatStatus"
-                                 class="status">
+                            <div
+                                id="chatStatus"
+                                class="status">
                                 No conversation selected
                             </div>
+
                         </div>
 
                         <button
                             class="smallBtn"
                             onclick="startCall()">
-                            📞 CALL
+                            CALL
                         </button>
 
                     </div>
+
 
                     <div
                         id="chatMessages"
                         class="chatMessages">
                     </div>
+
 
                     <div class="chatInput">
 
@@ -1208,8 +1481,7 @@ button{
                             id="messageInput"
                             placeholder="Type a message..."
                             maxlength="2000"
-                            onkeydown="messageKey(event)"
-                        >
+                            onkeydown="messageKey(event)">
 
                         <button
                             class="smallBtn"
@@ -1229,18 +1501,22 @@ button{
 
 </div>
 
-<!-- =========================
-     GAME WINDOW
-========================= -->
 
-<div id="gameOverlay" class="overlay">
+<!-- =====================================================
+     GAME WINDOW
+===================================================== -->
+
+<div
+    id="gameOverlay"
+    class="overlay">
 
     <div class="gameWindow">
 
         <div class="windowBar">
 
-            <div id="gameWindowTitle"
-                 class="windowTitle">
+            <div
+                id="gameWindowTitle"
+                class="windowTitle">
                 Game
             </div>
 
@@ -1264,6 +1540,18 @@ button{
 
         </div>
 
+
+        <div id="gameLoading">
+
+            <div class="loadingSpinner"></div>
+
+            <div id="gameLoadingText">
+                Loading...
+            </div>
+
+        </div>
+
+
         <iframe
             id="gameFrame"
             class="windowFrame"
@@ -1275,11 +1563,14 @@ button{
 
 </div>
 
-<!-- =========================
-     MOVIE WINDOW
-========================= -->
 
-<div id="movieOverlay" class="overlay">
+<!-- =====================================================
+     MOVIE WINDOW
+===================================================== -->
+
+<div
+    id="movieOverlay"
+    class="overlay">
 
     <div class="movieWindow">
 
@@ -1303,6 +1594,7 @@ button{
 
         </div>
 
+
         <iframe
             id="movieVideo"
             class="windowFrame"
@@ -1320,16 +1612,20 @@ button{
 
 </div>
 
-<!-- =========================
-     INCOMING CALL
-========================= -->
 
-<div id="incomingCallOverlay" class="overlay">
+<!-- =====================================================
+     INCOMING CALL
+===================================================== -->
+
+<div
+    id="incomingCallOverlay"
+    class="overlay">
 
     <div class="callModal">
 
-        <div id="callerAvatar"
-             class="callAvatar">
+        <div
+            id="callerAvatar"
+            class="callAvatar">
             ?
         </div>
 
@@ -1337,7 +1633,9 @@ button{
             Incoming Call
         </h2>
 
-        <p>is calling you...</p>
+        <p>
+            is calling you...
+        </p>
 
         <div class="callButtons">
 
@@ -1359,11 +1657,14 @@ button{
 
 </div>
 
-<!-- =========================
-     VIDEO CALL
-========================= -->
 
-<div id="videoCallOverlay" class="overlay">
+<!-- =====================================================
+     VIDEO CALL
+===================================================== -->
+
+<div
+    id="videoCallOverlay"
+    class="overlay">
 
     <div class="videoCall">
 
@@ -1392,15 +1693,20 @@ button{
 
 </div>
 
-<!-- =========================
-     AD
-========================= -->
 
-<div id="adOverlay" class="adOverlay">
+<!-- =====================================================
+     AD
+===================================================== -->
+
+<div
+    id="adOverlay"
+    class="adOverlay">
 
     <div class="adBox">
 
-        <h2>GAMEHUB AD</h2>
+        <h2>
+            GAMEHUB AD
+        </h2>
 
         <p>
             Thanks for supporting GameHub.
@@ -1416,20 +1722,18 @@ button{
 
 </div>
 
+
 <div id="toast"></div>
 
-<!-- SOCKET.IO -->
+
+<!-- =====================================================
+     SOCKET.IO
+===================================================== -->
 
 <script src="/socket.io/socket.io.js"></script>
 
+
 <script>
-
-/* =====================================================
-   SERVER
-===================================================== */
-
-const SERVER = window.location.origin;
-
 
 /* =====================================================
    GAME DATA
@@ -1551,7 +1855,8 @@ const games = [
 
     {
         name:"Dublix",
-        url:"https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",
+        url:
+            "https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",
         description:"Online 3D multiplayer.",
         type:"ONLINE"
     }
@@ -1582,12 +1887,60 @@ const apps = [
    STARTUP
 ===================================================== */
 
-setTimeout(() => {
+function startGameHub(){
 
-    document.getElementById("bootScreen").style.display = "none";
-    document.getElementById("app").style.display = "flex";
+    const boot =
+        document.getElementById("bootScreen");
 
-},4000);
+    const app =
+        document.getElementById("app");
+
+    if(!boot || !app){
+        return;
+    }
+
+    app.style.display = "flex";
+
+    requestAnimationFrame(() => {
+
+        boot.style.opacity = "0";
+
+        setTimeout(() => {
+
+            boot.style.display = "none";
+
+        },350);
+
+    });
+
+}
+
+
+/*
+   Do NOT wait for window.load.
+
+   The old version waited for the complete page load,
+   which could be delayed by external resources.
+
+   DOMContentLoaded is enough because all GameHub
+   elements already exist before this script.
+*/
+
+if(document.readyState === "loading"){
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        startGameHub,
+        {
+            once:true
+        }
+    );
+
+}else{
+
+    startGameHub();
+
+}
 
 
 /* =====================================================
@@ -1596,37 +1949,67 @@ setTimeout(() => {
 
 function showPage(name,button){
 
-    document.querySelectorAll(".page")
-        .forEach(page => page.classList.remove("active"));
+    document
+        .querySelectorAll(".page")
+        .forEach(page => {
 
-    const page = document.getElementById(name);
+            page.classList.remove("active");
+
+        });
+
+
+    const page =
+        document.getElementById(name);
 
     if(page){
+
         page.classList.add("active");
+
     }
 
-    document.querySelectorAll(".nav button")
-        .forEach(btn => btn.classList.remove("active"));
+
+    document
+        .querySelectorAll(".nav button")
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
 
     if(button){
+
         button.classList.add("active");
+
     }
+
 }
 
 
 function showPageByName(name){
 
-    const buttons = document.querySelectorAll(".nav button");
+    const buttons =
+        document.querySelectorAll(
+            ".nav button"
+        );
 
-    let index = 0;
+    const indexes = {
+        home:0,
+        games:1,
+        apps:2,
+        movies:3,
+        news:4,
+        phone:5
+    };
 
-    if(name === "games") index = 1;
-    if(name === "apps") index = 2;
-    if(name === "movies") index = 3;
-    if(name === "news") index = 4;
-    if(name === "phone") index = 5;
+    const index =
+        indexes[name] ?? 0;
 
-    showPage(name,buttons[index]);
+    showPage(
+        name,
+        buttons[index]
+    );
+
 }
 
 
@@ -1636,15 +2019,26 @@ function showPageByName(name){
 
 function createGameCard(game){
 
-    const card = document.createElement("div");
+    const card =
+        document.createElement("div");
 
     card.className = "card";
 
     card.dataset.search =
-        `${game.name} ${game.description} ${game.type}`
-        .toLowerCase();
+        (
+            game.name +
+            " " +
+            game.description +
+            " " +
+            game.type
+        ).toLowerCase();
 
-    card.onclick = () => launchGame(game);
+    card.onclick = () => {
+
+        launchGame(game);
+
+    };
+
 
     card.innerHTML = `
 
@@ -1674,19 +2068,31 @@ function createGameCard(game){
     `;
 
     return card;
+
 }
 
 
 function renderGames(){
 
     const grid =
-        document.getElementById("gamesGrid");
+        document.getElementById(
+            "gamesGrid"
+        );
 
     const homeGrid =
-        document.getElementById("homeGames");
+        document.getElementById(
+            "homeGames"
+        );
+
+
+    if(!grid || !homeGrid){
+        return;
+    }
+
 
     grid.innerHTML = "";
     homeGrid.innerHTML = "";
+
 
     games.forEach(game => {
 
@@ -1696,17 +2102,30 @@ function renderGames(){
 
     });
 
-    games.slice(0,6).forEach(game => {
 
-        homeGrid.appendChild(
-            createGameCard(game)
+    games
+        .slice(0,6)
+        .forEach(game => {
+
+            homeGrid.appendChild(
+                createGameCard(game)
+            );
+
+        });
+
+
+    const count =
+        document.getElementById(
+            "gameCountText"
         );
 
-    });
+    if(count){
 
-    document.getElementById("gameCountText")
-        .textContent =
-        `${games.length} GAMES`;
+        count.textContent =
+            `${games.length} GAMES`;
+
+    }
+
 }
 
 
@@ -1717,28 +2136,54 @@ function renderGames(){
 function renderApps(){
 
     const grid =
-        document.getElementById("appsGrid");
+        document.getElementById(
+            "appsGrid"
+        );
+
+    if(!grid){
+        return;
+    }
 
     grid.innerHTML = "";
 
+
     apps.forEach(app => {
 
-        const card = document.createElement("div");
+        const card =
+            document.createElement("div");
 
-        card.className = "card appCard";
+        card.className =
+            "card appCard";
 
         card.dataset.search =
-            `${app.name} ${app.description}`
-            .toLowerCase();
+            (
+                app.name +
+                " " +
+                app.description +
+                " " +
+                app.type
+            ).toLowerCase();
 
-        card.onclick = () => openApp(app);
+
+        card.onclick = () => {
+
+            openApp(app);
+
+        };
+
 
         card.innerHTML = `
 
             <div class="cardArt">
 
                 <div class="appIcon">
-                    ${app.name === "AI" ? "AI" : "H"}
+
+                    ${
+                        app.name === "AI"
+                            ? "AI"
+                            : "H"
+                    }
+
                 </div>
 
                 <div class="cardType">
@@ -1760,90 +2205,248 @@ function renderApps(){
             </div>
         `;
 
+
         grid.appendChild(card);
 
     });
+
 }
 
 
 /* =====================================================
-   LAUNCH GAMES
+   GAME LAUNCHER
 ===================================================== */
 
 let gamesPlayedSinceAd = 0;
+
 let currentGameURL = "";
+
+let loadingTimer = null;
 
 
 function launchGame(game){
 
+    /*
+       Count actual game launches.
+
+       Game 1
+       Game 2
+       AD
+       Game 3
+       Game 4
+       AD
+    */
+
     gamesPlayedSinceAd++;
+
 
     if(gamesPlayedSinceAd > 2){
 
         gamesPlayedSinceAd = 1;
 
         showAd(() => {
+
             actuallyLaunchGame(game);
+
         });
 
         return;
+
     }
 
+
     actuallyLaunchGame(game);
+
 }
 
 
 function actuallyLaunchGame(game){
 
     const overlay =
-        document.getElementById("gameOverlay");
+        document.getElementById(
+            "gameOverlay"
+        );
 
     const frame =
-        document.getElementById("gameFrame");
+        document.getElementById(
+            "gameFrame"
+        );
 
     const title =
-        document.getElementById("gameWindowTitle");
+        document.getElementById(
+            "gameWindowTitle"
+        );
+
+    const loading =
+        document.getElementById(
+            "gameLoading"
+        );
+
+    const loadingText =
+        document.getElementById(
+            "gameLoadingText"
+        );
+
+
+    if(!overlay || !frame){
+        return;
+    }
+
 
     currentGameURL =
         game.url || game.file;
 
-    title.textContent = game.name;
 
-    frame.src = currentGameURL;
+    title.textContent =
+        game.name;
 
-    overlay.style.display = "flex";
 
-    showToast("Launching " + game.name);
+    loading.style.display =
+        "flex";
+
+    loadingText.textContent =
+        "Loading " + game.name + "...";
+
+
+    frame.src =
+        "about:blank";
+
+
+    overlay.style.display =
+        "flex";
+
+
+    clearTimeout(loadingTimer);
+
+
+    loadingTimer =
+        setTimeout(() => {
+
+            if(loading){
+
+                loading.style.display =
+                    "none";
+
+            }
+
+        },5000);
+
+
+    frame.onload = () => {
+
+        clearTimeout(loadingTimer);
+
+        if(loading){
+
+            loading.style.display =
+                "none";
+
+        }
+
+    };
+
+
+    /*
+       Small delay prevents the browser from trying
+       to replace the iframe before the overlay is visible.
+    */
+
+    requestAnimationFrame(() => {
+
+        frame.src =
+            currentGameURL;
+
+    });
+
+
+    showToast(
+        "Launching " +
+        game.name
+    );
+
 }
 
 
 function closeGame(){
 
+    clearTimeout(loadingTimer);
+
     const frame =
-        document.getElementById("gameFrame");
+        document.getElementById(
+            "gameFrame"
+        );
 
-    frame.src = "about:blank";
+    if(frame){
 
-    document.getElementById("gameOverlay")
-        .style.display = "none";
+        frame.src =
+            "about:blank";
+
+    }
+
+
+    const overlay =
+        document.getElementById(
+            "gameOverlay"
+        );
+
+    if(overlay){
+
+        overlay.style.display =
+            "none";
+
+    }
+
 }
 
 
 function reloadGame(){
 
-    const frame =
-        document.getElementById("gameFrame");
+    if(!currentGameURL){
+        return;
+    }
 
-    frame.src = currentGameURL;
+
+    const frame =
+        document.getElementById(
+            "gameFrame"
+        );
+
+    const loading =
+        document.getElementById(
+            "gameLoading"
+        );
+
+
+    if(loading){
+
+        loading.style.display =
+            "flex";
+
+    }
+
+
+    frame.src =
+        "about:blank";
+
+
+    setTimeout(() => {
+
+        frame.src =
+            currentGameURL;
+
+    },50);
+
 }
 
 
 function fullscreenGame(){
 
     const frame =
-        document.getElementById("gameFrame");
+        document.getElementById(
+            "gameFrame"
+        );
 
-    if(frame.requestFullscreen){
+    if(frame?.requestFullscreen){
 
         frame.requestFullscreen();
 
@@ -1859,21 +2462,59 @@ function fullscreenGame(){
 function openApp(app){
 
     const overlay =
-        document.getElementById("gameOverlay");
+        document.getElementById(
+            "gameOverlay"
+        );
 
     const frame =
-        document.getElementById("gameFrame");
+        document.getElementById(
+            "gameFrame"
+        );
 
     const title =
-        document.getElementById("gameWindowTitle");
+        document.getElementById(
+            "gameWindowTitle"
+        );
 
-    title.textContent = app.name;
+    const loading =
+        document.getElementById(
+            "gameLoading"
+        );
 
-    currentGameURL = app.file;
 
-    frame.src = app.file;
+    title.textContent =
+        app.name;
 
-    overlay.style.display = "flex";
+    currentGameURL =
+        app.file;
+
+
+    loading.style.display =
+        "flex";
+
+
+    frame.src =
+        "about:blank";
+
+
+    overlay.style.display =
+        "flex";
+
+
+    setTimeout(() => {
+
+        frame.src =
+            app.file;
+
+    },50);
+
+
+    frame.onload = () => {
+
+        loading.style.display =
+            "none";
+
+    };
 
 }
 
@@ -1889,16 +2530,28 @@ const CINEJOY_URL =
 function openCinejoy(){
 
     const overlay =
-        document.getElementById("movieOverlay");
+        document.getElementById(
+            "movieOverlay"
+        );
 
     const frame =
-        document.getElementById("movieVideo");
+        document.getElementById(
+            "movieVideo"
+        );
 
-    frame.src = CINEJOY_URL;
 
-    overlay.style.display = "flex";
+    frame.src =
+        CINEJOY_URL;
 
-    showToast("Loading Cinejoy...");
+
+    overlay.style.display =
+        "flex";
+
+
+    showToast(
+        "Loading Cinejoy..."
+    );
+
 }
 
 
@@ -1906,7 +2559,8 @@ function openCinejoyExternal(){
 
     window.open(
         CINEJOY_URL,
-        "_blank"
+        "_blank",
+        "noopener,noreferrer"
     );
 
 }
@@ -1914,11 +2568,24 @@ function openCinejoyExternal(){
 
 function closeMovie(){
 
-    document.getElementById("movieVideo")
-        .src = "about:blank";
+    const frame =
+        document.getElementById(
+            "movieVideo"
+        );
 
-    document.getElementById("movieOverlay")
-        .style.display = "none";
+    if(frame){
+
+        frame.src =
+            "about:blank";
+
+    }
+
+
+    document.getElementById(
+        "movieOverlay"
+    ).style.display =
+        "none";
+
 }
 
 
@@ -1931,23 +2598,35 @@ let adCallback = null;
 
 function showAd(callback){
 
-    adCallback = callback;
+    adCallback =
+        typeof callback === "function"
+            ? callback
+            : null;
 
-    document.getElementById("adOverlay")
-        .style.display = "flex";
+
+    document.getElementById(
+        "adOverlay"
+    ).style.display =
+        "flex";
+
 }
 
 
 function closeAd(){
 
-    document.getElementById("adOverlay")
-        .style.display = "none";
+    document.getElementById(
+        "adOverlay"
+    ).style.display =
+        "none";
+
 
     if(adCallback){
 
-        const callback = adCallback;
+        const callback =
+            adCallback;
 
-        adCallback = null;
+        adCallback =
+            null;
 
         callback();
 
@@ -1962,36 +2641,104 @@ function closeAd(){
 
 function searchEverything(){
 
-    const query =
-        document.getElementById("searchInput")
-        .value
-        .toLowerCase()
-        .trim();
+    const input =
+        document.getElementById(
+            "searchInput"
+        );
 
-    if(!query){
-
-        document.querySelectorAll(".card")
-            .forEach(card => {
-                card.style.display = "";
-            });
-
+    if(!input){
         return;
     }
 
-    showPageByName("games");
 
-    document.querySelectorAll(".card")
-        .forEach(card => {
+    const query =
+        input.value
+            .toLowerCase()
+            .trim();
 
-            const text =
-                card.dataset.search || "";
 
-            card.style.display =
-                text.includes(query)
-                    ? ""
-                    : "none";
+    const allCards =
+        document.querySelectorAll(
+            ".card"
+        );
+
+
+    if(!query){
+
+        allCards.forEach(card => {
+
+            card.style.display = "";
 
         });
+
+        return;
+
+    }
+
+
+    /*
+       Search games and apps.
+       The page is switched based on where
+       the result exists.
+    */
+
+    const matchingGames =
+        games.filter(game => {
+
+            const text =
+                (
+                    game.name +
+                    " " +
+                    game.description +
+                    " " +
+                    game.type
+                ).toLowerCase();
+
+            return text.includes(query);
+
+        });
+
+
+    const matchingApps =
+        apps.filter(app => {
+
+            const text =
+                (
+                    app.name +
+                    " " +
+                    app.description +
+                    " " +
+                    app.type
+                ).toLowerCase();
+
+            return text.includes(query);
+
+        });
+
+
+    if(matchingApps.length > 0 &&
+       matchingGames.length === 0){
+
+        showPageByName("apps");
+
+    }else{
+
+        showPageByName("games");
+
+    }
+
+
+    allCards.forEach(card => {
+
+        const text =
+            card.dataset.search || "";
+
+        card.style.display =
+            text.includes(query)
+                ? ""
+                : "none";
+
+    });
 
 }
 
@@ -2000,76 +2747,200 @@ function searchEverything(){
    SOCKET.IO
 ===================================================== */
 
-const socket = io(SERVER);
+let socket = null;
+
+let socketConnected = false;
 
 
-/* LIVE PLAYER COUNT */
+function connectSocket(){
 
-socket.on("player-count",(count) => {
+    if(
+        typeof io !== "function"
+    ){
 
-    const counter =
-        document.getElementById("onlineCount");
+        console.warn(
+            "Socket.IO is not available."
+        );
 
-    if(counter){
-
-        counter.textContent =
-            Number(count) || 0;
+        return;
 
     }
 
-});
+
+    try{
+
+        socket =
+            io(
+                window.location.origin,
+                {
+                    transports:[
+                        "websocket",
+                        "polling"
+                    ],
+                    reconnection:true,
+                    reconnectionAttempts:10,
+                    timeout:5000
+                }
+            );
 
 
-/* ONLINE USER LIST */
+        socket.on(
+            "connect",
+            () => {
 
-let onlineUsers = [];
+                socketConnected =
+                    true;
 
-
-socket.on("online-users",(users) => {
-
-    onlineUsers = Array.isArray(users)
-        ? users
-        : [];
-
-    updateContactStatuses();
-
-});
+                console.log(
+                    "GameHub connected."
+                );
 
 
-socket.on("user-online",(data) => {
+                if(myUsername){
 
-    if(data?.username){
+                    socket.emit(
+                        "login",
+                        myUsername
+                    );
 
-        showToast(
-            data.username + " came online"
+                }
+
+            }
+        );
+
+
+        socket.on(
+            "disconnect",
+            () => {
+
+                socketConnected =
+                    false;
+
+                console.log(
+                    "GameHub disconnected."
+                );
+
+            }
+        );
+
+
+        socket.on(
+            "connect_error",
+            error => {
+
+                socketConnected =
+                    false;
+
+                console.warn(
+                    "Socket connection error:",
+                    error.message
+                );
+
+            }
+        );
+
+
+        socket.on(
+            "player-count",
+            count => {
+
+                const counter =
+                    document.getElementById(
+                        "onlineCount"
+                    );
+
+                if(counter){
+
+                    counter.textContent =
+                        Number(count) || 0;
+
+                }
+
+            }
+        );
+
+
+        socket.on(
+            "online-users",
+            users => {
+
+                onlineUsers =
+                    Array.isArray(users)
+                        ? users
+                        : [];
+
+                updateContactStatuses();
+
+            }
+        );
+
+
+        socket.on(
+            "user-online",
+            data => {
+
+                if(data?.username){
+
+                    showToast(
+                        data.username +
+                        " came online"
+                    );
+
+                    updateContactStatuses();
+
+                }
+
+            }
+        );
+
+
+        socket.on(
+            "user-offline",
+            data => {
+
+                if(data?.username){
+
+                    showToast(
+                        data.username +
+                        " went offline"
+                    );
+
+                }
+
+                updateContactStatuses();
+
+            }
+        );
+
+
+        setupMessageEvents();
+        setupCallEvents();
+
+    }catch(error){
+
+        console.error(
+            "Socket startup error:",
+            error
         );
 
     }
 
-});
+}
 
 
-socket.on("user-offline",(data) => {
-
-    if(data?.username){
-
-        showToast(
-            data.username + " went offline"
-        );
-
-    }
-
-    updateContactStatuses();
-
-});
+connectSocket();
 
 
 /* =====================================================
-   PHONE
+   PHONE STATE
 ===================================================== */
 
+let onlineUsers = [];
+
 let myUsername =
-    localStorage.getItem("gamehub_username") || "";
+    localStorage.getItem(
+        "gamehub_username"
+    ) || "";
 
 let selectedUser = "";
 
@@ -2084,34 +2955,37 @@ let peerConnection = null;
 let pendingIceCandidates = [];
 
 
-/* Restore username */
-
-if(myUsername){
-
-    setTimeout(() => {
-
-        document.getElementById("usernameInput")
-            .value = myUsername;
-
-        connectUsername();
-
-    },100);
-
-}
-
+/* =====================================================
+   USERNAME
+===================================================== */
 
 function setUsername(){
 
     const input =
-        document.getElementById("usernameInput");
+        document.getElementById(
+            "usernameInput"
+        );
+
+    if(!input){
+        return;
+    }
+
 
     let username =
         input.value.trim();
 
-    username =
-        username.replace(/\s+/g,"_");
 
-    if(!/^[a-zA-Z0-9_]{3,20}$/.test(username)){
+    username =
+        username.replace(
+            /\s+/g,
+            "_"
+        );
+
+
+    if(
+        !/^[a-zA-Z0-9_]{3,20}$/
+            .test(username)
+    ){
 
         showToast(
             "Username must be 3-20 letters, numbers or _"
@@ -2121,12 +2995,16 @@ function setUsername(){
 
     }
 
-    myUsername = username;
+
+    myUsername =
+        username;
+
 
     localStorage.setItem(
         "gamehub_username",
         myUsername
     );
+
 
     connectUsername();
 
@@ -2134,6 +3012,11 @@ function setUsername(){
 
 
 async function connectUsername(){
+
+    if(!myUsername){
+        return;
+    }
+
 
     try{
 
@@ -2147,13 +3030,26 @@ async function connectUsername(){
                             "application/json"
                     },
                     body:JSON.stringify({
-                        username:myUsername
+                        username:
+                            myUsername
                     })
                 }
             );
 
+
+        if(!response.ok){
+
+            throw new Error(
+                "Server returned " +
+                response.status
+            );
+
+        }
+
+
         const data =
             await response.json();
+
 
         if(!data.success){
 
@@ -2166,14 +3062,25 @@ async function connectUsername(){
 
         }
 
-        socket.emit(
-            "login",
+
+        if(
+            socket &&
+            socket.connected
+        ){
+
+            socket.emit(
+                "login",
+                myUsername
+            );
+
+        }
+
+
+        showToast(
+            "Logged in as " +
             myUsername
         );
 
-        showToast(
-            "Logged in as " + myUsername
-        );
 
         searchUsers();
 
@@ -2182,10 +3089,48 @@ async function connectUsername(){
         console.error(error);
 
         showToast(
-            "Could not connect to GameHub."
+            "Phone server unavailable."
         );
 
     }
+
+}
+
+
+/* =====================================================
+   RESTORE USERNAME
+===================================================== */
+
+function restoreUsername(){
+
+    if(!myUsername){
+        return;
+    }
+
+
+    const input =
+        document.getElementById(
+            "usernameInput"
+        );
+
+
+    if(input){
+
+        input.value =
+            myUsername;
+
+    }
+
+
+    /*
+       Don't block GameHub startup waiting
+       for the phone server.
+    */
+
+    setTimeout(
+        connectUsername,
+        500
+    );
 
 }
 
@@ -2199,20 +3144,36 @@ let searchTimer = null;
 
 function searchUsers(){
 
-    clearTimeout(searchTimer);
+    clearTimeout(
+        searchTimer
+    );
+
 
     searchTimer =
-        setTimeout(loadUsers,250);
+        setTimeout(
+            loadUsers,
+            250
+        );
 
 }
 
 
 async function loadUsers(){
 
+    const input =
+        document.getElementById(
+            "userSearch"
+        );
+
+
+    if(!input){
+        return;
+    }
+
+
     const search =
-        document.getElementById("userSearch")
-        .value
-        .trim();
+        input.value.trim();
+
 
     try{
 
@@ -2222,14 +3183,24 @@ async function loadUsers(){
                 encodeURIComponent(search)
             );
 
+
+        if(!response.ok){
+            return;
+        }
+
+
         const users =
             await response.json();
+
 
         renderContacts(users);
 
     }catch(error){
 
-        console.error(error);
+        console.warn(
+            "User search unavailable.",
+            error
+        );
 
     }
 
@@ -2239,53 +3210,100 @@ async function loadUsers(){
 function renderContacts(users){
 
     const container =
-        document.getElementById("contacts");
+        document.getElementById(
+            "contacts"
+        );
+
+
+    if(!container){
+        return;
+    }
+
 
     container.innerHTML = "";
 
+
+    if(!Array.isArray(users)){
+        return;
+    }
+
+
     users.forEach(user => {
 
-        if(user.username === myUsername){
+        if(
+            !user ||
+            user.username === myUsername
+        ){
+
             return;
+
         }
 
+
         const contact =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         contact.className =
             "contact";
 
-        if(user.username === selectedUser){
-            contact.classList.add("selected");
+
+        if(
+            user.username ===
+            selectedUser
+        ){
+
+            contact.classList.add(
+                "selected"
+            );
+
         }
+
 
         const online =
             onlineUsers.includes(
                 user.username
             );
 
+
         contact.innerHTML = `
 
             <div class="contactName">
-                ${escapeHTML(user.username)}
+                ${escapeHTML(
+                    user.username
+                )}
             </div>
 
             <div class="status ${
-                online ? "online" : ""
+                online
+                    ? "online"
+                    : ""
             }">
 
-                ${online ? "● ONLINE" : "OFFLINE"}
+                ${
+                    online
+                        ? "● ONLINE"
+                        : "OFFLINE"
+                }
 
             </div>
         `;
 
+
         contact.onclick = () => {
 
-            selectUser(user.username);
+            selectUser(
+                user.username
+            );
 
         };
 
-        container.appendChild(contact);
+
+        container.appendChild(
+            contact
+        );
 
     });
 
@@ -2296,6 +3314,8 @@ function updateContactStatuses(){
 
     loadUsers();
 
+    updateChatStatus();
+
 }
 
 
@@ -2305,18 +3325,34 @@ function updateContactStatuses(){
 
 async function selectUser(username){
 
-    selectedUser = username;
+    selectedUser =
+        username;
 
-    document.getElementById("chatName")
-        .textContent = username;
+
+    const chatName =
+        document.getElementById(
+            "chatName"
+        );
+
+
+    if(chatName){
+
+        chatName.textContent =
+            username;
+
+    }
+
 
     updateChatStatus();
 
     await loadMessages();
 
-    renderContacts(
-        await fetchUsersForCurrentSearch()
-    );
+
+    const users =
+        await fetchUsersForCurrentSearch();
+
+
+    renderContacts(users);
 
 }
 
@@ -2324,17 +3360,47 @@ async function selectUser(username){
 function updateChatStatus(){
 
     const status =
-        document.getElementById("chatStatus");
+        document.getElementById(
+            "chatStatus"
+        );
 
-    if(onlineUsers.includes(selectedUser)){
 
-        status.textContent = "● ONLINE";
-        status.classList.add("online");
+    if(!status){
+        return;
+    }
+
+
+    if(
+        selectedUser &&
+        onlineUsers.includes(
+            selectedUser
+        )
+    ){
+
+        status.textContent =
+            "● ONLINE";
+
+        status.classList.add(
+            "online"
+        );
+
+    }else if(selectedUser){
+
+        status.textContent =
+            "OFFLINE";
+
+        status.classList.remove(
+            "online"
+        );
 
     }else{
 
-        status.textContent = "OFFLINE";
-        status.classList.remove("online");
+        status.textContent =
+            "No conversation selected";
+
+        status.classList.remove(
+            "online"
+        );
 
     }
 
@@ -2345,16 +3411,29 @@ async function fetchUsersForCurrentSearch(){
 
     try{
 
+        const input =
+            document.getElementById(
+                "userSearch"
+            );
+
+
         const search =
-            document.getElementById("userSearch")
-            .value
-            .trim();
+            input
+                ? input.value.trim()
+                : "";
+
 
         const response =
             await fetch(
                 "/api/users?search=" +
                 encodeURIComponent(search)
             );
+
+
+        if(!response.ok){
+            return [];
+        }
+
 
         return await response.json();
 
@@ -2369,9 +3448,15 @@ async function fetchUsersForCurrentSearch(){
 
 async function loadMessages(){
 
-    if(!myUsername || !selectedUser){
+    if(
+        !myUsername ||
+        !selectedUser
+    ){
+
         return;
+
     }
+
 
     try{
 
@@ -2379,29 +3464,57 @@ async function loadMessages(){
             await fetch(
                 "/api/messages?" +
                 "user1=" +
-                encodeURIComponent(myUsername) +
+                encodeURIComponent(
+                    myUsername
+                ) +
                 "&user2=" +
-                encodeURIComponent(selectedUser)
+                encodeURIComponent(
+                    selectedUser
+                )
             );
+
+
+        if(!response.ok){
+            return;
+        }
+
 
         const messages =
             await response.json();
+
 
         const box =
             document.getElementById(
                 "chatMessages"
             );
 
+
+        if(!box){
+            return;
+        }
+
+
         box.innerHTML = "";
 
-        messages.forEach(addMessage);
+
+        if(Array.isArray(messages)){
+
+            messages.forEach(
+                addMessage
+            );
+
+        }
+
 
         box.scrollTop =
             box.scrollHeight;
 
     }catch(error){
 
-        console.error(error);
+        console.warn(
+            "Messages unavailable.",
+            error
+        );
 
     }
 
@@ -2410,24 +3523,41 @@ async function loadMessages(){
 
 function addMessage(message){
 
+    if(!message){
+        return;
+    }
+
+
     const box =
         document.getElementById(
             "chatMessages"
         );
 
+
+    if(!box){
+        return;
+    }
+
+
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     div.className =
         "message" +
         (
-            message.sender === myUsername
+            message.sender ===
+            myUsername
                 ? " mine"
                 : ""
         );
 
+
     div.textContent =
-        message.message;
+        message.message || "";
+
 
     box.appendChild(div);
 
@@ -2446,6 +3576,7 @@ function sendMessage(){
 
     }
 
+
     if(!selectedUser){
 
         showToast(
@@ -2456,25 +3587,45 @@ function sendMessage(){
 
     }
 
+
+    if(
+        !socket ||
+        !socket.connected
+    ){
+
+        showToast(
+            "Phone server is offline."
+        );
+
+        return;
+
+    }
+
+
     const input =
         document.getElementById(
             "messageInput"
         );
 
+
     const message =
         input.value.trim();
+
 
     if(!message){
         return;
     }
 
+
     socket.emit(
         "send-message",
         {
-            receiver:selectedUser,
+            receiver:
+                selectedUser,
             message
         }
     );
+
 
     input.value = "";
 
@@ -2483,7 +3634,10 @@ function sendMessage(){
 
 function messageKey(event){
 
-    if(event.key === "Enter"){
+    if(
+        event.key ===
+        "Enter"
+    ){
 
         event.preventDefault();
 
@@ -2494,33 +3648,55 @@ function messageKey(event){
 }
 
 
-socket.on("new-message",(message) => {
+function setupMessageEvents(){
 
-    if(
-        message.sender === selectedUser ||
-        message.receiver === selectedUser
-    ){
-
-        addMessage(message);
-
-        const box =
-            document.getElementById(
-                "chatMessages"
-            );
-
-        box.scrollTop =
-            box.scrollHeight;
-
-    }else{
-
-        showToast(
-            "New message from " +
-            message.sender
-        );
-
+    if(!socket){
+        return;
     }
 
-});
+
+    socket.on(
+        "new-message",
+        message => {
+
+            if(
+                message.sender ===
+                    selectedUser ||
+                message.receiver ===
+                    selectedUser
+            ){
+
+                addMessage(
+                    message
+                );
+
+
+                const box =
+                    document.getElementById(
+                        "chatMessages"
+                    );
+
+
+                if(box){
+
+                    box.scrollTop =
+                        box.scrollHeight;
+
+                }
+
+            }else{
+
+                showToast(
+                    "New message from " +
+                    message.sender
+                );
+
+            }
+
+        }
+    );
+
+}
 
 
 /* =====================================================
@@ -2539,6 +3715,7 @@ function startCall(){
 
     }
 
+
     if(!selectedUser){
 
         showToast(
@@ -2549,7 +3726,12 @@ function startCall(){
 
     }
 
-    if(!onlineUsers.includes(selectedUser)){
+
+    if(
+        !onlineUsers.includes(
+            selectedUser
+        )
+    ){
 
         showToast(
             "That user is offline."
@@ -2559,62 +3741,167 @@ function startCall(){
 
     }
 
+
+    if(
+        !socket ||
+        !socket.connected
+    ){
+
+        showToast(
+            "Phone server is offline."
+        );
+
+        return;
+
+    }
+
+
     currentCallUser =
         selectedUser;
+
 
     socket.emit(
         "call-user",
         {
-            receiver:selectedUser
+            receiver:
+                selectedUser
         }
     );
 
+
     showToast(
-        "Calling " + selectedUser + "..."
+        "Calling " +
+        selectedUser +
+        "..."
     );
 
 }
 
 
-socket.on("incoming-call",(data) => {
+function setupCallEvents(){
 
-    pendingCaller =
-        data.caller;
+    if(!socket){
+        return;
+    }
 
-    document.getElementById(
-        "callerName"
-    ).textContent =
-        data.caller + " is calling";
 
-    document.getElementById(
-        "callerAvatar"
-    ).textContent =
-        data.caller
-            .charAt(0)
-            .toUpperCase();
+    socket.on(
+        "incoming-call",
+        data => {
 
-    document.getElementById(
-        "incomingCallOverlay"
-    ).style.display = "flex";
+            pendingCaller =
+                data.caller;
 
-});
 
+            document.getElementById(
+                "callerName"
+            ).textContent =
+                data.caller +
+                " is calling";
+
+
+            document.getElementById(
+                "callerAvatar"
+            ).textContent =
+                data.caller
+                    .charAt(0)
+                    .toUpperCase();
+
+
+            document.getElementById(
+                "incomingCallOverlay"
+            ).style.display =
+                "flex";
+
+        }
+    );
+
+
+    socket.on(
+        "call-accepted",
+        data => {
+
+            currentCallUser =
+                data.username;
+
+            startWebRTC(false);
+
+        }
+    );
+
+
+    socket.on(
+        "call-declined",
+        data => {
+
+            showToast(
+                data.username +
+                " declined the call."
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "webrtc-offer",
+        handleWebRTCOffer
+    );
+
+
+    socket.on(
+        "webrtc-answer",
+        handleWebRTCAnswer
+    );
+
+
+    socket.on(
+        "webrtc-ice",
+        handleWebRTCIce
+    );
+
+
+    socket.on(
+        "call-ended",
+        data => {
+
+            showToast(
+                data.username +
+                " ended the call."
+            );
+
+            closeCall();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ACCEPT / DECLINE
+===================================================== */
 
 function acceptCall(){
 
     document.getElementById(
         "incomingCallOverlay"
-    ).style.display = "none";
+    ).style.display =
+        "none";
+
 
     currentCallUser =
         pendingCaller;
 
+
     socket.emit(
         "call-accepted",
         {
-            caller:pendingCaller
+            caller:
+                pendingCaller
         }
     );
+
 
     startWebRTC(true);
 
@@ -2625,38 +3912,26 @@ function declineCall(){
 
     document.getElementById(
         "incomingCallOverlay"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
-    socket.emit(
-        "call-declined",
-        {
-            caller:pendingCaller
-        }
-    );
+
+    if(socket){
+
+        socket.emit(
+            "call-declined",
+            {
+                caller:
+                    pendingCaller
+            }
+        );
+
+    }
+
 
     pendingCaller = "";
 
 }
-
-
-socket.on("call-accepted",(data) => {
-
-    currentCallUser =
-        data.username;
-
-    startWebRTC(false);
-
-});
-
-
-socket.on("call-declined",(data) => {
-
-    showToast(
-        data.username +
-        " declined the call."
-    );
-
-});
 
 
 /* =====================================================
@@ -2671,22 +3946,29 @@ function createPeerConnection(){
             iceServers:[
                 {
                     urls:
-                    "stun:stun.l.google.com:19302"
+                        "stun:stun.l.google.com:19302"
                 }
             ]
 
         });
 
+
     peerConnection.onicecandidate =
         event => {
 
-            if(event.candidate){
+            if(
+                event.candidate &&
+                currentCallUser &&
+                socket
+            ){
 
                 socket.emit(
                     "webrtc-ice",
                     {
-                        target:currentCallUser,
-                        candidate:event.candidate
+                        target:
+                            currentCallUser,
+                        candidate:
+                            event.candidate
                     }
                 );
 
@@ -2703,8 +3985,13 @@ function createPeerConnection(){
                     "remoteVideo"
                 );
 
-            remote.srcObject =
-                event.streams[0];
+
+            if(remote){
+
+                remote.srcObject =
+                    event.streams[0];
+
+            }
 
         };
 
@@ -2713,13 +4000,19 @@ function createPeerConnection(){
         () => {
 
             if(
-                peerConnection &&
-                (
-                    peerConnection.connectionState ===
+                !peerConnection
+            ){
+
+                return;
+
+            }
+
+
+            if(
+                peerConnection.connectionState ===
                     "failed" ||
-                    peerConnection.connectionState ===
+                peerConnection.connectionState ===
                     "disconnected"
-                )
             ){
 
                 showToast(
@@ -2733,9 +4026,23 @@ function createPeerConnection(){
 }
 
 
-async function startWebRTC(isReceiver){
+async function startWebRTC(
+    isReceiver
+){
 
     try{
+
+        if(
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ){
+
+            throw new Error(
+                "Camera/microphone unavailable."
+            );
+
+        }
+
 
         localStream =
             await navigator.mediaDevices
@@ -2744,17 +4051,29 @@ async function startWebRTC(isReceiver){
                     audio:true
                 });
 
-        document.getElementById(
-            "localVideo"
-        ).srcObject =
-            localStream;
+
+        const localVideo =
+            document.getElementById(
+                "localVideo"
+            );
+
+
+        if(localVideo){
+
+            localVideo.srcObject =
+                localStream;
+
+        }
+
 
         document.getElementById(
             "videoCallOverlay"
         ).style.display =
             "flex";
 
+
         createPeerConnection();
+
 
         localStream
             .getTracks()
@@ -2767,21 +4086,25 @@ async function startWebRTC(isReceiver){
 
             });
 
+
         if(!isReceiver){
 
             const offer =
                 await peerConnection
                     .createOffer();
 
+
             await peerConnection
                 .setLocalDescription(
                     offer
                 );
 
+
             socket.emit(
                 "webrtc-offer",
                 {
-                    target:currentCallUser,
+                    target:
+                        currentCallUser,
                     offer
                 }
             );
@@ -2790,11 +4113,16 @@ async function startWebRTC(isReceiver){
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "WebRTC error:",
+            error
+        );
+
 
         showToast(
             "Camera/microphone permission was denied."
         );
+
 
         closeCall();
 
@@ -2803,10 +4131,13 @@ async function startWebRTC(isReceiver){
 }
 
 
-socket.on("webrtc-offer",async(data) => {
+async function handleWebRTCOffer(
+    data
+){
 
     currentCallUser =
         data.from;
+
 
     try{
 
@@ -2816,6 +4147,7 @@ socket.on("webrtc-offer",async(data) => {
 
         }
 
+
         await peerConnection
             .setRemoteDescription(
                 new RTCSessionDescription(
@@ -2823,8 +4155,10 @@ socket.on("webrtc-offer",async(data) => {
                 )
             );
 
+
         for(
-            const candidate of pendingIceCandidates
+            const candidate
+            of pendingIceCandidates
         ){
 
             try{
@@ -2838,39 +4172,50 @@ socket.on("webrtc-offer",async(data) => {
 
         }
 
+
         pendingIceCandidates = [];
+
 
         const answer =
             await peerConnection
                 .createAnswer();
+
 
         await peerConnection
             .setLocalDescription(
                 answer
             );
 
+
         socket.emit(
             "webrtc-answer",
             {
-                target:data.from,
+                target:
+                    data.from,
                 answer
             }
         );
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Offer error:",
+            error
+        );
 
     }
 
-});
+}
 
 
-socket.on("webrtc-answer",async(data) => {
+async function handleWebRTCAnswer(
+    data
+){
 
     if(!peerConnection){
         return;
     }
+
 
     try{
 
@@ -2881,8 +4226,10 @@ socket.on("webrtc-answer",async(data) => {
                 )
             );
 
+
         for(
-            const candidate of pendingIceCandidates
+            const candidate
+            of pendingIceCandidates
         ){
 
             try{
@@ -2896,18 +4243,24 @@ socket.on("webrtc-answer",async(data) => {
 
         }
 
+
         pendingIceCandidates = [];
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Answer error:",
+            error
+        );
 
     }
 
-});
+}
 
 
-socket.on("webrtc-ice",async(data) => {
+async function handleWebRTCIce(
+    data
+){
 
     if(!peerConnection){
 
@@ -2915,10 +4268,12 @@ socket.on("webrtc-ice",async(data) => {
 
     }
 
+
     const candidate =
         new RTCIceCandidate(
             data.candidate
         );
+
 
     if(
         peerConnection.remoteDescription &&
@@ -2934,7 +4289,10 @@ socket.on("webrtc-ice",async(data) => {
 
         }catch(error){
 
-            console.error(error);
+            console.error(
+                "ICE error:",
+                error
+            );
 
         }
 
@@ -2946,37 +4304,30 @@ socket.on("webrtc-ice",async(data) => {
 
     }
 
-});
+}
 
 
 function endCall(){
 
-    if(currentCallUser){
+    if(
+        currentCallUser &&
+        socket
+    ){
 
         socket.emit(
             "end-call",
             {
-                target:currentCallUser
+                target:
+                    currentCallUser
             }
         );
 
     }
 
+
     closeCall();
 
 }
-
-
-socket.on("call-ended",(data) => {
-
-    showToast(
-        data.username +
-        " ended the call."
-    );
-
-    closeCall();
-
-});
 
 
 function closeCall(){
@@ -2985,37 +4336,75 @@ function closeCall(){
 
         localStream
             .getTracks()
-            .forEach(track =>
-                track.stop()
-            );
+            .forEach(track => {
 
-        localStream = null;
+                track.stop();
+
+            });
+
+
+        localStream =
+            null;
 
     }
+
 
     if(peerConnection){
 
         peerConnection.close();
 
-        peerConnection = null;
+        peerConnection =
+            null;
 
     }
 
-    document.getElementById(
-        "localVideo"
-    ).srcObject = null;
 
-    document.getElementById(
-        "remoteVideo"
-    ).srcObject = null;
+    const local =
+        document.getElementById(
+            "localVideo"
+        );
 
-    document.getElementById(
-        "videoCallOverlay"
-    ).style.display = "none";
+    const remote =
+        document.getElementById(
+            "remoteVideo"
+        );
 
-    currentCallUser = "";
 
-    pendingIceCandidates = [];
+    if(local){
+
+        local.srcObject =
+            null;
+
+    }
+
+
+    if(remote){
+
+        remote.srcObject =
+            null;
+
+    }
+
+
+    const overlay =
+        document.getElementById(
+            "videoCallOverlay"
+        );
+
+
+    if(overlay){
+
+        overlay.style.display =
+            "none";
+
+    }
+
+
+    currentCallUser =
+        "";
+
+    pendingIceCandidates =
+        [];
 
 }
 
@@ -3030,19 +4419,36 @@ let toastTimer = null;
 function showToast(message){
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
+
+
+    if(!toast){
+        return;
+    }
+
 
     toast.textContent =
         message;
 
-    toast.classList.add("show");
 
-    clearTimeout(toastTimer);
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
 
     toastTimer =
         setTimeout(() => {
 
-            toast.classList.remove("show");
+            toast.classList.remove(
+                "show"
+            );
 
         },3000);
 
@@ -3057,21 +4463,31 @@ document.addEventListener(
     "keydown",
     event => {
 
-        if(event.key !== "Escape"){
+        if(
+            event.key !==
+            "Escape"
+        ){
+
             return;
+
         }
+
 
         closeGame();
         closeMovie();
         closeCall();
 
+
         document.getElementById(
             "incomingCallOverlay"
-        ).style.display = "none";
+        ).style.display =
+            "none";
+
 
         document.getElementById(
             "adOverlay"
-        ).style.display = "none";
+        ).style.display =
+            "none";
 
     }
 );
@@ -3084,33 +4500,85 @@ document.addEventListener(
 function escapeHTML(value){
 
     return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
 /* =====================================================
-   START
+   INITIALIZE
 ===================================================== */
 
 renderGames();
+
 renderApps();
 
-<script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js")
-            .then(() => {
-                console.log("GameHub PWA installed!");
-            })
-            .catch(error => {
-                console.error("GameHub PWA error:", error);
-            });
-    });
+restoreUsername();
+
+
+/* =====================================================
+   PWA
+===================================================== */
+
+/*
+   This is intentionally a separate script section
+   in the original HTML structure.
+
+   Registering /sw.js is correct when GameHub is
+   served from the root of the HTTPS domain.
+*/
+
+if(
+    "serviceWorker" in navigator
+){
+
+    navigator.serviceWorker
+        .register(
+            "/sw.js",
+            {
+                scope:"/"
+            }
+        )
+        .then(
+            registration => {
+
+                console.log(
+                    "GameHub PWA ready:",
+                    registration.scope
+                );
+
+            }
+        )
+        .catch(
+            error => {
+
+                console.warn(
+                    "GameHub PWA unavailable:",
+                    error
+                );
+
+            }
+        );
+
 }
 
 </script>
