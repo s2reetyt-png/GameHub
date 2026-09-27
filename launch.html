@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>GameHub</title>
 
     <style>
@@ -9,7 +11,8 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             margin: 0;
             width: 100%;
             height: 100%;
@@ -32,38 +35,44 @@
         .logo {
             font-size: 64px;
             font-weight: 900;
-            letter-spacing: 6px;
+            letter-spacing: 7px;
             margin-bottom: 10px;
         }
 
-        .sub {
-            color: #888;
-            font-size: 15px;
-            letter-spacing: 3px;
+        .subtitle {
+            color: #777;
+            font-size: 14px;
+            letter-spacing: 4px;
             margin-bottom: 40px;
         }
 
         button {
-            border: 0;
-            padding: 18px 50px;
+            border: none;
             border-radius: 12px;
+            padding: 18px 55px;
+
             background: white;
             color: black;
+
             font-size: 18px;
             font-weight: 800;
+
             cursor: pointer;
-            transition: .2s;
+
+            transition:
+                transform .2s,
+                box-shadow .2s;
         }
 
         button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 35px rgba(255,255,255,.25);
+            transform: scale(1.06);
+            box-shadow: 0 0 40px rgba(255,255,255,.3);
         }
 
-        .loading {
+        .error {
             display: none;
-            color: #aaa;
             margin-top: 25px;
+            color: #ff5555;
         }
     </style>
 </head>
@@ -76,54 +85,121 @@
         GAMEHUB
     </div>
 
-    <div class="sub">
+    <div class="subtitle">
         GAMING ENVIRONMENT
     </div>
 
-    <button onclick="launchGameHub()">
+    <button id="launchButton">
         LAUNCH GAMEHUB
     </button>
 
-    <div class="loading" id="loading">
-        Starting GameHub...
+    <div class="error" id="error">
+        Popup blocked. Please allow popups for GameHub.
     </div>
 
 </div>
 
 <script>
 
-function launchGameHub() {
+const launchButton =
+    document.getElementById("launchButton");
 
-    const loading = document.getElementById("loading");
+const error =
+    document.getElementById("error");
 
-    loading.style.display = "block";
+
+launchButton.addEventListener("click", async () => {
+
+    error.style.display = "none";
 
     /*
-        Open a real blank browsing context.
+        IMPORTANT:
+
+        This MUST happen directly inside
+        the click event.
+
+        The browser initially creates
+        an actual about:blank window.
     */
-    const gameWindow = window.open("", "GAMEHUB_WINDOW");
+
+    const gameWindow = window.open(
+        "",
+        "GAMEHUB_ABOUT_BLANK"
+    );
 
     if (!gameWindow) {
-        loading.textContent =
-            "Popup blocked. Allow popups for GameHub and try again.";
+
+        error.style.display = "block";
+
         return;
     }
 
     /*
-        Tell the blank window to load GameHub.
+        Get the actual GameHub HTML.
     */
-    gameWindow.location.href = "/Schoolgames.html";
 
-    /*
-        Move the user into the GameHub window.
-    */
-    setTimeout(() => {
-        try {
-            gameWindow.focus();
-        } catch (e) {}
-    }, 300);
+    try {
 
-}
+        const response =
+            await fetch("/Schoolgames.html");
+
+        if (!response.ok) {
+            throw new Error(
+                "Could not load GameHub."
+            );
+        }
+
+        const html =
+            await response.text();
+
+        /*
+            Write the GameHub page directly
+            into the about:blank document.
+
+            We DO NOT navigate the window.
+
+            Therefore its address remains:
+
+            about:blank
+        */
+
+        gameWindow.document.open();
+
+        gameWindow.document.write(html);
+
+        gameWindow.document.close();
+
+        /*
+            Focus the GameHub window.
+        */
+
+        gameWindow.focus();
+
+    } catch (err) {
+
+        console.error(err);
+
+        gameWindow.document.body.innerHTML = `
+            <div style="
+                background:#050509;
+                color:white;
+                font-family:Arial;
+                height:100vh;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+            ">
+                <div>
+                    <h1>GAMEHUB ERROR</h1>
+                    <p>Could not load GameHub.</p>
+                </div>
+            </div>
+        `;
+
+    }
+
+});
 
 </script>
 
