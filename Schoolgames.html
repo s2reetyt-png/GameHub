@@ -2,16 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>GameHub</title>
 
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#080b12">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GameHub">
 
 <style>
 *{
@@ -20,20 +16,13 @@
 
 html,body{
     margin:0;
-    padding:0;
-    width:100%;
     min-height:100%;
     background:#080b12;
-    color:#fff;
+    color:white;
     font-family:Arial,Helvetica,sans-serif;
 }
 
-body{
-    overflow-x:hidden;
-}
-
-button,
-input{
+button,input{
     font:inherit;
 }
 
@@ -42,24 +31,26 @@ button{
 }
 
 .header{
+    height:72px;
     position:sticky;
     top:0;
     z-index:1000;
-    height:72px;
+
     display:flex;
     align-items:center;
-    gap:24px;
-    padding:0 28px;
-    background:rgba(8,11,18,.92);
+    gap:18px;
+
+    padding:0 25px;
+
+    background:rgba(8,11,18,.94);
     backdrop-filter:blur(18px);
+
     border-bottom:1px solid rgba(255,255,255,.08);
 }
 
 .logo{
     font-size:23px;
     font-weight:900;
-    letter-spacing:-1px;
-    white-space:nowrap;
 }
 
 .logo span{
@@ -68,8 +59,7 @@ button{
 
 .nav{
     display:flex;
-    gap:7px;
-    align-items:center;
+    gap:5px;
 }
 
 .nav button{
@@ -78,63 +68,53 @@ button{
     color:#8d95a7;
     padding:10px 13px;
     border-radius:9px;
-    font-weight:700;
+    font-weight:bold;
 }
 
 .nav button:hover,
 .nav button.active{
     background:#171c29;
-    color:#fff;
+    color:white;
 }
 
 .search{
     margin-left:auto;
-    width:240px;
-    position:relative;
+    width:220px;
 }
 
 .search input{
     width:100%;
-    padding:11px 14px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,.09);
     background:#111621;
-    color:#fff;
+    color:white;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:9px;
+    padding:11px 13px;
     outline:none;
 }
 
-.search input:focus{
-    border-color:#6d7cff;
-}
-
-.install-btn{
+.install{
     display:none;
-    border:1px solid rgba(109,124,255,.45);
+    border:0;
     background:#6675ff;
     color:white;
     padding:10px 14px;
-    border-radius:10px;
-    font-weight:800;
-    box-shadow:0 5px 20px rgba(102,117,255,.2);
+    border-radius:9px;
+    font-weight:900;
 }
 
-.install-btn:hover{
-    background:#7b88ff;
-}
-
-.account{
-    border:1px solid rgba(255,255,255,.09);
+.login{
+    border:1px solid rgba(255,255,255,.1);
     background:#111621;
     color:white;
-    border-radius:10px;
     padding:10px 14px;
-    font-weight:700;
+    border-radius:9px;
+    font-weight:bold;
 }
 
 main{
     max-width:1500px;
     margin:auto;
-    padding:30px;
+    padding:28px;
 }
 
 .page{
@@ -149,104 +129,108 @@ main{
     min-height:410px;
     border-radius:22px;
     overflow:hidden;
-    position:relative;
+
     display:flex;
     align-items:flex-end;
+
     padding:45px;
+
     background:
-        linear-gradient(90deg,rgba(5,7,12,.95),rgba(5,7,12,.48),rgba(5,7,12,.15)),
+        linear-gradient(
+            90deg,
+            rgba(5,7,12,.95),
+            rgba(5,7,12,.55),
+            rgba(5,7,12,.15)
+        ),
         url("https://cdn.cloudflare.steamstatic.com/steam/apps/945360/header.jpg")
         center/cover;
-    box-shadow:0 25px 80px rgba(0,0,0,.35);
 }
 
 .hero-content{
     max-width:650px;
 }
 
-.hero-tag{
+.tag{
     display:inline-block;
     background:#6675ff;
-    border-radius:7px;
     padding:7px 10px;
+    border-radius:7px;
     font-size:11px;
     font-weight:900;
-    margin-bottom:14px;
 }
 
 .hero h1{
-    margin:0 0 10px;
-    font-size:50px;
-    line-height:1;
+    font-size:52px;
+    margin:13px 0 8px;
 }
 
 .hero p{
-    color:#c4c9d4;
-    font-size:16px;
+    color:#c3c8d3;
     line-height:1.6;
 }
 
-.hero-actions{
+.actions{
     display:flex;
     gap:10px;
-    flex-wrap:wrap;
-    margin-top:22px;
+    margin-top:20px;
 }
 
 .primary{
     border:0;
     background:#6675ff;
-    color:#fff;
-    padding:13px 19px;
-    border-radius:10px;
+    color:white;
+    padding:12px 18px;
+    border-radius:9px;
     font-weight:900;
 }
 
 .secondary{
-    border:1px solid rgba(255,255,255,.13);
-    background:rgba(15,18,27,.8);
-    color:#fff;
-    padding:13px 19px;
-    border-radius:10px;
-    font-weight:800;
+    border:1px solid rgba(255,255,255,.12);
+    background:#111621;
+    color:white;
+    padding:12px 18px;
+    border-radius:9px;
+    font-weight:900;
 }
 
-.section-title{
+.section{
+    margin-top:38px;
+}
+
+.section-head{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin:38px 0 18px;
+    margin-bottom:18px;
 }
 
-.section-title h2{
+.section-head h2{
     margin:0;
-    font-size:25px;
 }
 
-.game-grid{
+.grid{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
     gap:18px;
 }
 
 .card{
+    overflow:hidden;
+    border-radius:15px;
     background:#10151f;
     border:1px solid rgba(255,255,255,.07);
-    border-radius:15px;
-    overflow:hidden;
-    transition:.2s;
 }
 
 .card:hover{
-    transform:translateY(-4px);
-    border-color:rgba(109,124,255,.4);
+    border-color:rgba(109,124,255,.5);
+    transform:translateY(-3px);
 }
 
-.card-image{
+.card img{
+    display:block;
     width:100%;
     height:135px;
     object-fit:cover;
-    display:block;
     background:#181d28;
 }
 
@@ -254,68 +238,63 @@ main{
     padding:15px;
 }
 
-.card h3{
-    margin:0 0 7px;
-    font-size:17px;
-}
-
-.card p{
-    color:#8f97a8;
-    font-size:13px;
-    line-height:1.45;
-    min-height:38px;
-}
-
-.card-type{
+.type{
     color:#7f8cff;
     font-size:10px;
     font-weight:900;
     letter-spacing:1px;
 }
 
-.card-actions{
-    display:flex;
-    gap:8px;
-    margin-top:14px;
+.card h3{
+    margin:7px 0;
 }
 
-.play-btn,
-.download-btn{
+.card p{
+    color:#929aaa;
+    font-size:13px;
+    min-height:38px;
+}
+
+.card-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.play,
+.download{
     flex:1;
     border:0;
     padding:10px;
     border-radius:8px;
-    font-size:12px;
     font-weight:900;
+    font-size:12px;
+    text-align:center;
+    text-decoration:none;
 }
 
-.play-btn{
+.play{
     background:#6675ff;
     color:white;
 }
 
-.download-btn{
-    background:#1b2230;
-    color:#dce0e9;
-}
-
-.download-btn:hover{
-    background:#252e40;
+.download{
+    background:#1c2331;
+    color:white;
 }
 
 .filters{
     display:flex;
-    gap:8px;
     flex-wrap:wrap;
+    gap:8px;
     margin-bottom:20px;
 }
 
 .filter{
+    border:1px solid rgba(255,255,255,.08);
     background:#111621;
-    color:#929aab;
-    border:1px solid rgba(255,255,255,.07);
-    border-radius:8px;
+    color:#929aaa;
     padding:9px 13px;
+    border-radius:8px;
 }
 
 .filter.active{
@@ -323,17 +302,22 @@ main{
     color:white;
 }
 
-.app-card{
-    padding:20px;
+.app{
     background:#10151f;
     border:1px solid rgba(255,255,255,.07);
     border-radius:14px;
+    padding:20px;
 }
 
-.empty{
-    padding:50px;
-    text-align:center;
-    color:#8d95a7;
+.app p{
+    color:#929aaa;
+}
+
+.movie{
+    background:#10151f;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:14px;
+    padding:25px;
 }
 
 .chat{
@@ -341,9 +325,9 @@ main{
     grid-template-columns:230px 1fr;
     min-height:600px;
     background:#10151f;
-    border:1px solid rgba(255,255,255,.07);
-    border-radius:16px;
+    border-radius:15px;
     overflow:hidden;
+    border:1px solid rgba(255,255,255,.07);
 }
 
 .users{
@@ -352,13 +336,8 @@ main{
 }
 
 .user{
-    padding:11px;
-    border-radius:8px;
-    color:#9aa2b2;
-}
-
-.user.online{
-    color:#fff;
+    padding:10px;
+    color:#929aaa;
 }
 
 .messages{
@@ -374,22 +353,20 @@ main{
 
 .message{
     margin-bottom:12px;
-    max-width:70%;
 }
 
-.message.me{
-    margin-left:auto;
+.bubble{
+    display:inline-block;
+    padding:10px 13px;
+    background:#1b2230;
+    border-radius:10px;
+}
+
+.me{
     text-align:right;
 }
 
-.message-bubble{
-    display:inline-block;
-    padding:10px 13px;
-    border-radius:11px;
-    background:#1b2230;
-}
-
-.message.me .message-bubble{
+.me .bubble{
     background:#6675ff;
 }
 
@@ -402,9 +379,9 @@ main{
 
 .chat-input input{
     flex:1;
-    background:#0b0f17;
-    border:1px solid rgba(255,255,255,.08);
+    background:#090d15;
     color:white;
+    border:1px solid rgba(255,255,255,.1);
     border-radius:9px;
     padding:12px;
     outline:none;
@@ -413,23 +390,23 @@ main{
 .overlay{
     position:fixed;
     inset:0;
-    z-index:3000;
+    z-index:5000;
+
     display:none;
     align-items:center;
     justify-content:center;
-    background:rgba(0,0,0,.82);
-    backdrop-filter:blur(10px);
+
+    background:rgba(0,0,0,.84);
 }
 
-.overlay.active{
+.overlay.show{
     display:flex;
 }
 
-.game-window{
-    width:min(1200px,94vw);
-    height:min(800px,90vh);
+.window{
+    width:94vw;
+    height:90vh;
     background:#090c13;
-    border:1px solid rgba(255,255,255,.1);
     border-radius:14px;
     overflow:hidden;
     display:flex;
@@ -438,29 +415,28 @@ main{
 
 .window-bar{
     height:48px;
+    background:#111621;
     display:flex;
     align-items:center;
-    padding:0 15px;
-    background:#111621;
-    gap:10px;
+    padding:0 14px;
 }
 
 .window-title{
-    font-weight:800;
     flex:1;
+    font-weight:bold;
 }
 
 .close{
     border:0;
     background:#272e3c;
-    color:#fff;
+    color:white;
     border-radius:7px;
     padding:7px 11px;
 }
 
-.game-frame{
+iframe{
+    flex:1;
     width:100%;
-    height:100%;
     border:0;
     background:white;
 }
@@ -473,10 +449,6 @@ main{
     padding:25px;
 }
 
-.modal h2{
-    margin-top:0;
-}
-
 .modal input{
     width:100%;
     padding:12px;
@@ -485,27 +457,16 @@ main{
     border:1px solid rgba(255,255,255,.1);
     border-radius:8px;
     margin:10px 0;
-    outline:none;
-}
-
-.status{
-    margin-top:10px;
-    color:#8e97a9;
-    font-size:13px;
 }
 
 @media(max-width:900px){
-    .header{
-        padding:0 15px;
-        gap:10px;
-    }
 
     .nav{
         display:none;
     }
 
     .search{
-        width:150px;
+        width:160px;
     }
 
     main{
@@ -513,49 +474,25 @@ main{
     }
 
     .hero{
-        min-height:380px;
         padding:25px;
+    }
+
+}
+
+@media(max-width:600px){
+
+    .search{
+        display:none;
     }
 
     .hero h1{
         font-size:38px;
     }
 
-    .chat{
-        grid-template-columns:1fr;
-    }
-
-    .users{
-        display:none;
-    }
-}
-
-@media(max-width:600px){
-    .logo{
-        font-size:18px;
-    }
-
-    .search{
-        display:none;
-    }
-
-    .install-btn{
-        padding:8px 10px;
-        font-size:11px;
-    }
-
-    .account{
-        padding:8px 10px;
-        font-size:11px;
-    }
-
-    .game-grid{
+    .grid{
         grid-template-columns:1fr 1fr;
     }
 
-    .card-image{
-        height:105px;
-    }
 }
 </style>
 </head>
@@ -564,29 +501,31 @@ main{
 
 <header class="header">
 
-    <div class="logo">
-        GAME<span>HUB</span>
-    </div>
+<div class="logo">
+GAME<span>HUB</span>
+</div>
 
-    <nav class="nav">
-        <button class="active" data-page="home">Home</button>
-        <button data-page="games">Games</button>
-        <button data-page="apps">Apps</button>
-        <button data-page="movies">Movies</button>
-        <button data-page="chat">Chat</button>
-    </nav>
+<nav class="nav">
 
-    <div class="search">
-        <input id="searchInput" type="text" placeholder="Search games...">
-    </div>
+<button class="active" data-page="home">Home</button>
+<button data-page="games">Games</button>
+<button data-page="apps">Apps</button>
+<button data-page="movies">Movies</button>
+<button data-page="chat">Chat</button>
 
-    <button id="installBtn" class="install-btn">
-        ⬇ Install
-    </button>
+</nav>
 
-    <button id="accountBtn" class="account">
-        Login
-    </button>
+<div class="search">
+<input id="search" placeholder="Search games...">
+</div>
+
+<button id="installButton" class="install">
+⬇ Install GameHub
+</button>
+
+<button id="loginButton" class="login">
+Sign In
+</button>
 
 </header>
 
@@ -594,146 +533,189 @@ main{
 
 <section id="home" class="page active">
 
-    <div class="hero">
+<div class="hero">
 
-        <div class="hero-content">
+<div class="hero-content">
 
-            <div class="hero-tag">FEATURED GAME</div>
+<div class="tag">
+FEATURED GAME
+</div>
 
-            <h1>Among Us</h1>
+<h1>Among Us</h1>
 
-            <p>
-                Find the impostor, complete tasks and survive.
-                Your GameHub library is ready to play.
-            </p>
+<p>
+Play games, launch apps, chat with friends,
+and use everything inside your GameHub.
+</p>
 
-            <div class="hero-actions">
+<div class="actions">
 
-                <button class="primary"
-                    onclick="openGame('Among Us','Among-Us.html')">
-                    ▶ Play Now
-                </button>
+<button class="primary"
+onclick="playGame('Among Us','Among-Us.html')">
+▶ Play Now
+</button>
 
-                <button class="secondary"
-                    onclick="showPage('games')">
-                    Browse Games
-                </button>
+<button class="secondary"
+onclick="showPage('games')">
+Browse Games
+</button>
 
-            </div>
+</div>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
-    <div class="section-title">
-        <h2>Popular Games</h2>
-    </div>
+<div class="section">
 
-    <div id="homeGames" class="game-grid"></div>
+<div class="section-head">
+<h2>Popular Games</h2>
+</div>
+
+<div id="homeGames" class="grid"></div>
+
+</div>
 
 </section>
 
 
 <section id="games" class="page">
 
-    <div class="section-title">
-        <h2>Games</h2>
-        <span id="gameCount"></span>
-    </div>
+<div class="section-head">
 
-    <div class="filters">
-        <button class="filter active" data-filter="ALL">All</button>
-        <button class="filter" data-filter="ACTION">Action</button>
-        <button class="filter" data-filter="HORROR">Horror</button>
-        <button class="filter" data-filter="ARCADE">Arcade</button>
-        <button class="filter" data-filter="SANDBOX">Sandbox</button>
-        <button class="filter" data-filter="3D">3D</button>
-        <button class="filter" data-filter="FIGHTING">Fighting</button>
-    </div>
+<h2>Game Library</h2>
 
-    <div id="gameGrid" class="game-grid"></div>
+<span id="count"></span>
+
+</div>
+
+<div class="filters">
+
+<button class="filter active" data-filter="ALL">
+All
+</button>
+
+<button class="filter" data-filter="HORROR">
+Horror
+</button>
+
+<button class="filter" data-filter="ACTION">
+Action
+</button>
+
+<button class="filter" data-filter="ARCADE">
+Arcade
+</button>
+
+<button class="filter" data-filter="3D">
+3D
+</button>
+
+<button class="filter" data-filter="SANDBOX">
+Sandbox
+</button>
+
+<button class="filter" data-filter="STRATEGY">
+Strategy
+</button>
+
+<button class="filter" data-filter="FIGHTING">
+Fighting
+</button>
+
+<button class="filter" data-filter="RUNNER">
+Runner
+</button>
+
+<button class="filter" data-filter="PLATFORMER">
+Platformer
+</button>
+
+</div>
+
+<div id="games" class="grid"></div>
 
 </section>
 
 
 <section id="apps" class="page">
 
-    <div class="section-title">
-        <h2>Apps</h2>
-    </div>
+<div class="section-head">
+<h2>Applications</h2>
+</div>
 
-    <div id="appGrid" class="game-grid"></div>
+<div id="appsGrid" class="grid"></div>
 
 </section>
 
 
 <section id="movies" class="page">
 
-    <div class="section-title">
-        <h2>Movies</h2>
-    </div>
+<div class="section-head">
+<h2>Streaming</h2>
+</div>
 
-    <div class="app-card">
+<div class="movie">
 
-        <h2>Cinejoy</h2>
+<h2>Movie Center</h2>
 
-        <p>
-            Open the movie section of GameHub.
-        </p>
+<p>
+Browse movies and shows through Cinejoy.
+GameHub will remain open.
+</p>
 
-        <button class="primary" id="cinejoyBtn">
-            🎬 Open Movies
-        </button>
+<button id="cinejoy" class="primary">
+🎬 Open Cinejoy
+</button>
 
-    </div>
+</div>
 
 </section>
 
 
 <section id="chat" class="page">
 
-    <div class="section-title">
-        <h2>GameHub Chat</h2>
-    </div>
+<div class="section-head">
+<h2>GameHub Chat</h2>
+</div>
 
-    <div class="chat">
+<div class="chat">
 
-        <div class="users">
-            <div style="font-weight:900;margin-bottom:12px;">
-                Online Users
-            </div>
+<div class="users">
 
-            <div id="userList">
-                <div class="user">
-                    No users online
-                </div>
-            </div>
-        </div>
+<strong>Online Users</strong>
 
-        <div class="messages">
+<div id="userList">
+<div class="user">
+Connecting...
+</div>
+</div>
 
-            <div id="messageList" class="message-list">
-                <div class="empty">
-                    Login to start chatting.
-                </div>
-            </div>
+</div>
 
-            <div class="chat-input">
+<div class="messages">
 
-                <input
-                    id="messageInput"
-                    placeholder="Type a message..."
-                >
+<div id="messageList" class="message-list">
 
-                <button class="primary" id="sendBtn">
-                    Send
-                </button>
+<div style="color:#929aaa">
+Sign in and select someone to start chatting.
+</div>
 
-            </div>
+</div>
 
-        </div>
+<div class="chat-input">
 
-    </div>
+<input id="message" placeholder="Message...">
+
+<button id="send" class="primary">
+Send
+</button>
+
+</div>
+
+</div>
+
+</div>
 
 </section>
 
@@ -742,54 +724,57 @@ main{
 
 <div id="gameOverlay" class="overlay">
 
-    <div class="game-window">
+<div class="window">
 
-        <div class="window-bar">
+<div class="window-bar">
 
-            <div id="gameTitle" class="window-title">
-                Game
-            </div>
+<div id="gameName" class="window-title">
+Game
+</div>
 
-            <button id="closeGame" class="close">
-                ✕
-            </button>
+<button id="closeGame" class="close">
+✕
+</button>
 
-        </div>
+</div>
 
-        <iframe
-            id="gameFrame"
-            class="game-frame"
-            allow="fullscreen; autoplay"
-        ></iframe>
+<iframe id="gameFrame"
+allow="fullscreen; autoplay">
+</iframe>
 
-    </div>
+</div>
 
 </div>
 
 
 <div id="loginOverlay" class="overlay">
 
-    <div class="modal">
+<div class="modal">
 
-        <h2>GameHub Login</h2>
+<h2>GameHub Account</h2>
 
-        <p style="color:#929aab;">
-            Enter a username for GameHub chat.
-        </p>
+<p style="color:#929aaa">
+Choose a username for GameHub chat.
+</p>
 
-        <input
-            id="usernameInput"
-            placeholder="Username"
-            maxlength="24"
-        >
+<input id="username"
+placeholder="Username"
+maxlength="24">
 
-        <button id="loginBtn" class="primary" style="width:100%;">
-            Login
-        </button>
+<button id="login" class="primary">
+Continue
+</button>
 
-        <div id="loginStatus" class="status"></div>
+<button
+id="cancelLogin"
+class="secondary"
+style="margin-left:6px">
+Cancel
+</button>
 
-    </div>
+<p id="loginStatus"></p>
+
+</div>
 
 </div>
 
@@ -798,811 +783,688 @@ main{
 
 <script>
 
-const RENDER_SERVER =
-    "https://gamehub-t22r.onrender.com";
+const SERVER =
+"https://gamehub-t22r.onrender.com";
 
 
-const games = [
+const gamesList = [
 
 {
-    name:"Among Us",
-    file:"Among-Us.html",
-    description:"Find the impostor.",
-    type:"ACTION",
-    category:"ACTION",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/945360/header.jpg"
+name:"Among Us",
+file:"Among-Us.html",
+description:"Find the impostor.",
+category:"ACTION",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/945360/header.jpg"
 },
 
 {
-    name:"FNAF 1",
-    file:"FNAF-1.html",
-    description:"Survive the night.",
-    type:"HORROR",
-    category:"HORROR",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/319510/header.jpg"
+name:"FNAF 1",
+file:"FNAF-1.html",
+description:"Survive the night.",
+category:"HORROR",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/319510/header.jpg"
 },
 
 {
-    name:"FNAF 2",
-    file:"FNAF-2.html",
-    description:"The nightmare continues.",
-    type:"HORROR",
-    category:"HORROR",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/332800/header.jpg"
+name:"FNAF 2",
+file:"FNAF-2.html",
+description:"The nightmare continues.",
+category:"HORROR",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/332800/header.jpg"
 },
 
 {
-    name:"FNAF 3",
-    file:"FNAF-3.html",
-    description:"Something is waiting.",
-    type:"HORROR",
-    category:"HORROR",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/354140/header.jpg"
+name:"FNAF 3",
+file:"FNAF-3.html",
+description:"Something is waiting.",
+category:"HORROR",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/354140/header.jpg"
 },
 
 {
-    name:"FNAF 4",
-    file:"FNAF-4.html",
-    description:"Don't fall asleep.",
-    type:"HORROR",
-    category:"HORROR",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/388090/header.jpg"
+name:"FNAF 4",
+file:"FNAF-4.html",
+description:"Don't fall asleep.",
+category:"HORROR",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/388090/header.jpg"
 },
 
 {
-    name:"Geomorty Dash",
-    file:"Geomorty-Dash.html",
-    description:"Jump through the chaos.",
-    type:"ARCADE",
-    category:"ARCADE",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/322170/header.jpg"
+name:"Geomorty Dash",
+file:"Geomorty-Dash.html",
+description:"Jump through the chaos.",
+category:"ARCADE",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/322170/header.jpg"
 },
 
 {
-    name:"GTA Clone",
-    file:"GTA-Clone.html",
-    description:"Open-world chaos.",
-    type:"ACTION",
-    category:"ACTION",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg"
+name:"GTA Clone",
+file:"GTA-Clone.html",
+description:"Open-world chaos.",
+category:"ACTION",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg"
 },
 
 {
-    name:"Happy Wheels",
-    file:"Happy-Wheels.html",
-    description:"Physics-based madness.",
-    type:"ACTION",
-    category:"ACTION",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/598990/header.jpg"
+name:"Happy Wheels",
+file:"Happy-Wheels.html",
+description:"Physics-based madness.",
+category:"ACTION",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/598990/header.jpg"
 },
 
 {
-    name:"Mortal Kombat",
-    file:"Mortal-Kombat.html",
-    description:"Enter the fight.",
-    type:"FIGHTING",
-    category:"FIGHTING",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg"
+name:"Mortal Kombat",
+file:"Mortal-Kombat.html",
+description:"Enter the fight.",
+category:"FIGHTING",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg"
 },
 
 {
-    name:"PVZ Clone",
-    file:"PVZ-Clone.html",
-    description:"Defend your lawn.",
-    type:"STRATEGY",
-    category:"STRATEGY",
-    image:"https://cdn.cloudflare.steamstatic.com/steam/apps/3590/header.jpg"
+name:"PVZ Clone",
+file:"PVZ-Clone.html",
+description:"Defend your lawn.",
+category:"STRATEGY",
+image:"https://cdn.cloudflare.steamstatic.com/steam/apps/3590/header.jpg"
 },
 
 {
-    name:"Crazy Cattle 3D",
-    file:"Crazy-Cattle3d.html",
-    description:"Absolutely normal cattle.",
-    type:"3D",
-    category:"3D",
-    image:"https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1000&q=85"
+name:"Crazy Cattle 3D",
+file:"Crazy-Cattle3d.html",
+description:"Absolutely normal cattle.",
+category:"3D",
+image:"https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1000&q=85"
 },
 
 {
-    name:"Subway Surfer",
-    file:"Subway-Surfer.html",
-    description:"Run forever.",
-    type:"RUNNER",
-    category:"RUNNER",
-    image:"https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1000&q=85"
+name:"Subway Surfer",
+file:"Subway-Surfer.html",
+description:"Run forever.",
+category:"RUNNER",
+image:"https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1000&q=85"
 },
 
 {
-    name:"Minecraft",
-    file:"Minecraft.html",
-    description:"Build your world.",
-    type:"SANDBOX",
-    category:"SANDBOX",
-    image:"https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=1000&q=85"
+name:"Minecraft",
+file:"Minecraft.html",
+description:"Build your world.",
+category:"SANDBOX",
+image:"https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=1000&q=85"
 },
 
 {
-    name:"Melon Playground",
-    file:"Melon-Playground.html",
-    description:"Create chaos.",
-    type:"SANDBOX",
-    category:"SANDBOX",
-    image:"https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1000&q=85"
+name:"Melon Playground",
+file:"Melon-Playground.html",
+description:"Create chaos.",
+category:"SANDBOX",
+image:"https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1000&q=85"
 },
 
 {
-    name:"Level Devil",
-    file:"Level-Devil.html",
-    description:"The level hates you.",
-    type:"PLATFORMER",
-    category:"PLATFORMER",
-    image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85"
+name:"Level Devil",
+file:"Level-Devil.html",
+description:"The level hates you.",
+category:"PLATFORMER",
+image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85"
 },
 
 {
-    name:"Doblox",
-    file:"Doblox.html",
-    description:"Blocky adventures.",
-    type:"3D",
-    category:"3D",
-    image:"https://images.unsplash.com/photo-1605899435973-ca2b1d58c5b7?auto=format&fit=crop&w=1000&q=85"
-},
-
-{
-    name:"Dublix",
-    url:"https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",
-    description:"Online 3D multiplayer.",
-    type:"ONLINE",
-    category:"3D",
-    image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85"
+name:"Doblox",
+file:"Doblox.html",
+description:"Blocky adventures.",
+category:"3D",
+image:"https://images.unsplash.com/photo-1605899435973-ca2b1d58c5b7?auto=format&fit=crop&w=1000&q=85"
 }
 
 ];
 
 
-const apps = [
+const appsList = [
 
 {
-    name:"AI",
-    file:"AI.html",
-    description:"GameHub AI"
+name:"AI",
+file:"AI.html",
+description:"GameHub AI"
 },
 
 {
-    name:"Helios Offline",
-    file:"Helios-Offline.html",
-    description:"Offline AI"
+name:"Helios Offline",
+file:"Helios-Offline.html",
+description:"Offline AI"
 }
 
 ];
 
 
-let currentFilter = "ALL";
-let deferredInstallPrompt = null;
-let currentUser = null;
+let filter = "ALL";
+let installPrompt = null;
 let socket = null;
-
-
-function escapeHTML(text){
-
-    return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-
-}
+let username = null;
 
 
 function showPage(page){
 
-    document.querySelectorAll(".page")
-        .forEach(p => p.classList.remove("active"));
+document.querySelectorAll(".page")
+.forEach(x=>x.classList.remove("active"));
 
-    const target =
-        document.getElementById(page);
+document.getElementById(page)
+.classList.add("active");
 
-    if(target){
-        target.classList.add("active");
-    }
-
-    document.querySelectorAll(".nav button")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.page === page
-            );
-
-        });
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
+document.querySelectorAll(".nav button")
+.forEach(x=>{
+x.classList.toggle(
+"active",
+x.dataset.page===page
+);
+});
 
 }
 
 
 document.querySelectorAll(".nav button")
-.forEach(button => {
+.forEach(button=>{
 
-    button.addEventListener("click",() => {
-
-        showPage(button.dataset.page);
-
-    });
+button.onclick=()=>{
+showPage(button.dataset.page);
+};
 
 });
 
 
-function createGameCard(game){
+function card(game){
 
-    const playable =
-        game.file || game.url;
+return `
 
-    const playAction =
-        game.url
-        ? `window.open('${game.url}','_blank')`
-        : `openGame('${game.name}','${game.file}')`;
+<div class="card">
 
-    const download =
-        game.file
-        ? `
-            <a
-                class="download-btn"
-                href="${game.file}"
-                download
-            >
-                Download
-            </a>
-        `
-        : "";
+<img
+src="${game.image}"
+alt="${game.name}"
+loading="lazy">
 
-    return `
+<div class="card-body">
 
-        <div class="card">
+<div class="type">
+${game.category}
+</div>
 
-            <img
-                class="card-image"
-                src="${game.image}"
-                alt="${escapeHTML(game.name)}"
-                loading="lazy"
-            >
+<h3>
+${game.name}
+</h3>
 
-            <div class="card-body">
+<p>
+${game.description}
+</p>
 
-                <div class="card-type">
-                    ${escapeHTML(game.type)}
-                </div>
+<div class="card-buttons">
 
-                <h3>
-                    ${escapeHTML(game.name)}
-                </h3>
+<button
+class="play"
+onclick="playGame('${game.name}','${game.file}')">
+▶ Play
+</button>
 
-                <p>
-                    ${escapeHTML(game.description)}
-                </p>
+<a
+class="download"
+href="${game.file}"
+download="${game.name}.html">
+Download
+</a>
 
-                <div class="card-actions">
+</div>
 
-                    <button
-                        class="play-btn"
-                        onclick="${playAction}"
-                    >
-                        ▶ Play
-                    </button>
+</div>
 
-                    ${download}
+</div>
 
-                </div>
-
-            </div>
-
-        </div>
-
-    `;
+`;
 
 }
 
 
-function renderGames(){
+function render(){
 
-    const search =
-        document.getElementById("searchInput")
-        .value
-        .toLowerCase()
-        .trim();
+const search =
+document.getElementById("search")
+.value
+.toLowerCase();
 
-    const filtered =
-        games.filter(game => {
+const list =
+gamesList.filter(game=>{
 
-            const filterMatch =
-                currentFilter === "ALL" ||
-                game.category === currentFilter;
+const category =
+filter==="ALL" ||
+game.category===filter;
 
-            const searchMatch =
-                !search ||
-                game.name.toLowerCase().includes(search) ||
-                game.description.toLowerCase().includes(search);
+const matches =
+game.name.toLowerCase().includes(search) ||
+game.description.toLowerCase().includes(search);
 
-            return filterMatch && searchMatch;
+return category && matches;
 
-        });
+});
 
-    document.getElementById("gameGrid").innerHTML =
-        filtered.length
-        ? filtered.map(createGameCard).join("")
-        : `<div class="empty">No games found.</div>`;
+document.getElementById("games")
+.innerHTML =
+list.length
+? list.map(card).join("")
+: "<div>No games found.</div>";
 
-    document.getElementById("gameCount").textContent =
-        `${filtered.length} games`;
+document.getElementById("count")
+.textContent =
+list.length+" games";
 
-}
-
-
-function renderHome(){
-
-    document.getElementById("homeGames").innerHTML =
-        games
-            .slice(0,8)
-            .map(createGameCard)
-            .join("");
+document.getElementById("homeGames")
+.innerHTML =
+gamesList.slice(0,8)
+.map(card)
+.join("");
 
 }
 
 
-function renderApps(){
-
-    document.getElementById("appGrid").innerHTML =
-        apps.map(app => `
-
-            <div class="app-card">
-
-                <h2>
-                    ${escapeHTML(app.name)}
-                </h2>
-
-                <p>
-                    ${escapeHTML(app.description)}
-                </p>
-
-                <button
-                    class="primary"
-                    onclick="openGame('${escapeHTML(app.name)}','${app.file}')"
-                >
-                    Open App
-                </button>
-
-            </div>
-
-        `).join("");
-
-}
+document.getElementById("search")
+.addEventListener(
+"input",
+render
+);
 
 
 document.querySelectorAll(".filter")
-.forEach(button => {
+.forEach(button=>{
 
-    button.addEventListener("click",() => {
+button.onclick=()=>{
 
-        document.querySelectorAll(".filter")
-            .forEach(b => b.classList.remove("active"));
+document.querySelectorAll(".filter")
+.forEach(x=>x.classList.remove("active"));
 
-        button.classList.add("active");
+button.classList.add("active");
 
-        currentFilter =
-            button.dataset.filter;
+filter=button.dataset.filter;
 
-        renderGames();
+render();
 
-    });
+};
 
 });
 
 
-document.getElementById("searchInput")
-.addEventListener("input",renderGames);
+function playGame(name,file){
 
+document.getElementById("gameName")
+.textContent=name;
 
-function openGame(name,file){
+document.getElementById("gameFrame")
+.src=file;
 
-    document.getElementById("gameTitle")
-        .textContent = name;
-
-    document.getElementById("gameFrame")
-        .src = file;
-
-    document.getElementById("gameOverlay")
-        .classList.add("active");
+document.getElementById("gameOverlay")
+.classList.add("show");
 
 }
 
 
 document.getElementById("closeGame")
-.addEventListener("click",() => {
+.onclick=()=>{
 
-    document.getElementById("gameOverlay")
-        .classList.remove("active");
+document.getElementById("gameOverlay")
+.classList.remove("show");
 
-    document.getElementById("gameFrame")
-        .src = "about:blank";
+document.getElementById("gameFrame")
+.src="about:blank";
 
-});
-
-
-document.getElementById("cinejoyBtn")
-.addEventListener("click",() => {
-
-    const okay =
-        confirm(
-            "You are about to open Cinejoy. Continue?"
-        );
-
-    if(okay){
-        window.open(
-            "https://cinejoy.pk/",
-            "_blank"
-        );
-    }
-
-});
+};
 
 
-/* =========================
-   CHROME PWA INSTALL
-========================= */
+document.getElementById("appsGrid")
+.innerHTML =
+appsList.map(app=>`
 
-window.addEventListener(
-    "beforeinstallprompt",
-    event => {
+<div class="app">
 
-        event.preventDefault();
+<h2>${app.name}</h2>
 
-        deferredInstallPrompt = event;
+<p>${app.description}</p>
 
-        const installButton =
-            document.getElementById("installBtn");
+<button
+class="primary"
+onclick="playGame('${app.name}','${app.file}')">
+Open App
+</button>
 
-        installButton.style.display =
-            "block";
+</div>
 
-    }
+`).join("");
+
+
+document.getElementById("cinejoy")
+.onclick=()=>{
+
+if(confirm(
+"You are about to open Cinejoy. Continue?"
+)){
+
+window.open(
+"https://cinejoy.pk/",
+"_blank"
 );
 
+}
 
-document.getElementById("installBtn")
-.addEventListener("click",async() => {
+};
 
-    if(!deferredInstallPrompt){
-        return;
-    }
 
-    deferredInstallPrompt.prompt();
+/* LOGIN */
 
-    const result =
-        await deferredInstallPrompt.userChoice;
+document.getElementById("loginButton")
+.onclick=()=>{
 
-    if(result.outcome === "accepted"){
+document.getElementById("loginOverlay")
+.classList.add("show");
 
-        document.getElementById("installBtn")
-            .style.display = "none";
+};
 
-    }
 
-    deferredInstallPrompt = null;
+document.getElementById("cancelLogin")
+.onclick=()=>{
+
+document.getElementById("loginOverlay")
+.classList.remove("show");
+
+};
+
+
+/* PWA INSTALL */
+
+window.addEventListener(
+"beforeinstallprompt",
+event=>{
+
+event.preventDefault();
+
+installPrompt=event;
+
+document.getElementById(
+"installButton"
+).style.display="block";
 
 });
 
 
+document.getElementById(
+"installButton"
+).onclick=async()=>{
+
+if(!installPrompt){
+return;
+}
+
+installPrompt.prompt();
+
+const result =
+await installPrompt.userChoice;
+
+if(result.outcome==="accepted"){
+
+document.getElementById(
+"installButton"
+).style.display="none";
+
+}
+
+installPrompt=null;
+
+};
+
+
 window.addEventListener(
-    "appinstalled",
-    () => {
+"appinstalled",
+()=>{
 
-        document.getElementById("installBtn")
-            .style.display = "none";
+document.getElementById(
+"installButton"
+).style.display="none";
 
-        deferredInstallPrompt = null;
-
-    }
-);
+});
 
 
-/* =========================
-   SERVICE WORKER
-========================= */
+/* SERVICE WORKER */
 
 if("serviceWorker" in navigator){
 
-    window.addEventListener("load",() => {
-
-        navigator.serviceWorker
-            .register("./sw.js")
-            .then(() => {
-
-                console.log(
-                    "GameHub service worker ready."
-                );
-
-            })
-            .catch(error => {
-
-                console.error(
-                    "Service worker failed:",
-                    error
-                );
-
-            });
-
-    });
+navigator.serviceWorker.register(
+"/sw.js"
+)
+.then(()=>{
+console.log(
+"GameHub service worker installed"
+);
+})
+.catch(error=>{
+console.error(
+"Service worker error:",
+error
+);
+});
 
 }
 
 
-/* =========================
-   LOGIN
-========================= */
+/* LOGIN */
 
-document.getElementById("accountBtn")
-.addEventListener("click",() => {
+document.getElementById("login")
+.onclick=async()=>{
 
-    document.getElementById("loginOverlay")
-        .classList.add("active");
+const value =
+document.getElementById("username")
+.value.trim();
 
-});
+if(!value){
 
+document.getElementById(
+"loginStatus"
+).textContent=
+"Enter a username.";
 
-document.getElementById("loginOverlay")
-.addEventListener("click",event => {
+return;
 
-    if(event.target.id === "loginOverlay"){
+}
 
-        event.currentTarget
-            .classList.remove("active");
+try{
 
-    }
+const response =
+await fetch(
+SERVER+"/api/register",
+{
+method:"POST",
+headers:{
+"Content-Type":
+"application/json"
+},
+body:JSON.stringify({
+username:value
+})
+}
+);
 
-});
+if(!response.ok){
+throw new Error();
+}
 
+username=value;
 
-document.getElementById("loginBtn")
-.addEventListener("click",async() => {
+document.getElementById(
+"loginButton"
+).textContent=value;
 
-    const username =
-        document.getElementById("usernameInput")
-        .value
-        .trim();
+document.getElementById(
+"loginOverlay"
+).classList.remove("show");
 
-    if(!username){
+connectChat();
 
-        document.getElementById("loginStatus")
-            .textContent =
-            "Enter a username.";
+}catch{
 
-        return;
+document.getElementById(
+"loginStatus"
+).textContent=
+"Could not connect to GameHub.";
 
-    }
+}
 
-    try{
-
-        const response =
-            await fetch(
-                RENDER_SERVER + "/api/register",
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        username
-                    })
-                }
-            );
-
-        if(!response.ok){
-            throw new Error("Login failed");
-        }
-
-        currentUser = username;
-
-        document.getElementById("accountBtn")
-            .textContent =
-            username;
-
-        document.getElementById("loginOverlay")
-            .classList.remove("active");
-
-        connectChat();
-
-    }catch(error){
-
-        document.getElementById("loginStatus")
-            .textContent =
-            "Could not connect to GameHub.";
-
-    }
-
-});
+};
 
 
-/* =========================
-   CHAT
-========================= */
+/* CHAT */
 
 function connectChat(){
 
-    if(socket){
-        socket.disconnect();
-    }
+socket =
+io(
+SERVER,
+{
+transports:[
+"websocket",
+"polling"
+]
+}
+);
 
-    socket =
-        io(
-            RENDER_SERVER,
-            {
-                transports:[
-                    "websocket",
-                    "polling"
-                ],
-                reconnection:true
-            }
-        );
+socket.on(
+"connect",
+()=>{
 
-    socket.on("connect",() => {
+socket.emit(
+"login",
+{
+username
+}
+);
 
-        socket.emit(
-            "login",
-            {
-                username:currentUser
-            }
-        );
-
-    });
+});
 
 
-    socket.on("online-users",users => {
+socket.on(
+"online-users",
+users=>{
 
-        const list =
-            document.getElementById("userList");
+document.getElementById(
+"userList"
+).innerHTML =
+(users||[])
+.map(user=>{
 
-        if(!users || !users.length){
+const name =
+typeof user==="string"
+? user
+: user.username;
 
-            list.innerHTML =
-                `<div class="user">
-                    No users online
-                </div>`;
+return `
+<div class="user">
+● ${name}
+</div>
+`;
 
-            return;
+})
+.join("") ||
+"<div class='user'>No users online</div>";
 
-        }
-
-        list.innerHTML =
-            users
-                .map(user => `
-                    <div class="user online">
-                        ● ${escapeHTML(
-                            typeof user === "string"
-                            ? user
-                            : user.username
-                        )}
-                    </div>
-                `)
-                .join("");
-
-    });
+});
 
 
-    socket.on("receive-message",message => {
+socket.on(
+"receive-message",
+message=>{
 
-        addMessage(message);
+addMessage(message);
 
-    });
+});
 
 }
 
 
 function addMessage(message){
 
-    const list =
-        document.getElementById("messageList");
+const sender =
+message.sender ||
+message.username ||
+"User";
 
-    const username =
-        message.sender ||
-        message.username ||
-        "User";
+const text =
+message.message ||
+message.text ||
+"";
 
-    const text =
-        message.message ||
-        message.text ||
-        "";
+const list =
+document.getElementById(
+"messageList"
+);
 
-    const isMe =
-        username === currentUser;
+list.insertAdjacentHTML(
+"beforeend",
+`
+<div class="message ${
+sender===username ? "me" : ""
+}">
+<div class="bubble">
+${text}
+</div>
+</div>
+`
+);
 
-    if(list.querySelector(".empty")){
-        list.innerHTML = "";
-    }
-
-    list.insertAdjacentHTML(
-        "beforeend",
-        `
-            <div class="message ${isMe ? "me" : ""}">
-
-                <div
-                    style="
-                        font-size:11px;
-                        color:#8992a4;
-                        margin-bottom:4px;
-                    "
-                >
-                    ${escapeHTML(username)}
-                </div>
-
-                <div class="message-bubble">
-                    ${escapeHTML(text)}
-                </div>
-
-            </div>
-        `
-    );
-
-    list.scrollTop =
-        list.scrollHeight;
+list.scrollTop=list.scrollHeight;
 
 }
 
 
-document.getElementById("sendBtn")
-.addEventListener("click",sendMessage);
+document.getElementById("send")
+.onclick=()=>{
+
+if(!socket || !username){
+return;
+}
+
+const input =
+document.getElementById("message");
+
+const text =
+input.value.trim();
+
+if(!text){
+return;
+}
+
+socket.emit(
+"send-message",
+{
+sender:username,
+message:text
+}
+);
+
+input.value="";
+
+};
 
 
-document.getElementById("messageInput")
-.addEventListener("keydown",event => {
+document.getElementById("message")
+.addEventListener(
+"keydown",
+event=>{
 
-    if(event.key === "Enter"){
-        sendMessage();
-    }
+if(event.key==="Enter"){
+
+document.getElementById(
+"send"
+).click();
+
+}
 
 });
 
 
-function sendMessage(){
-
-    if(!socket || !currentUser){
-        return;
-    }
-
-    const input =
-        document.getElementById("messageInput");
-
-    const message =
-        input.value.trim();
-
-    if(!message){
-        return;
-    }
-
-    socket.emit(
-        "send-message",
-        {
-            sender:currentUser,
-            message
-        }
-    );
-
-    input.value = "";
-
-}
-
-
-/* =========================
-   START
-========================= */
-
-renderGames();
-renderHome();
-renderApps();
+render();
 
 </script>
 
