@@ -2,678 +2,146 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>GameHub</title>
 
 <style>
 *{box-sizing:border-box}
-
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#07080d;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif
-}
-
-button,input{
-    font:inherit
-}
-
-button{
-    cursor:pointer
-}
-
-/* BACKGROUND */
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07080d;color:#fff;font-family:Arial,Helvetica,sans-serif}
+button,input{font:inherit}button{cursor:pointer}
 
 body{
-    background:
-    radial-gradient(circle at 20% 0%,rgba(91,75,190,.2),transparent 35%),
-    radial-gradient(circle at 100% 100%,rgba(174,54,130,.12),transparent 35%),
-    #07080d
+background:
+radial-gradient(circle at 20% 0%,rgba(91,75,190,.2),transparent 35%),
+radial-gradient(circle at 100% 100%,rgba(174,54,130,.12),transparent 35%),#07080d
 }
-
-/* HEADER */
 
 header{
-    height:70px;
-    display:flex;
-    align-items:center;
-    gap:24px;
-    padding:0 25px;
-    background:rgba(7,8,13,.95);
-    border-bottom:1px solid #20232c;
-    position:relative;
-    z-index:20
+height:70px;display:flex;align-items:center;gap:24px;padding:0 25px;
+background:rgba(7,8,13,.96);border-bottom:1px solid #20232c;position:relative;z-index:20
 }
+.logo{font-size:25px;font-weight:900;letter-spacing:-1px}
+.logo span{color:#7768ff}
+nav{display:flex;gap:4px}
+nav button{border:0;background:transparent;color:#858a99;padding:11px 15px;border-radius:9px}
+nav button:hover,nav button.active{color:#fff;background:#181a23}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:9px}
+#search{width:230px;height:40px;border:1px solid #292c36;border-radius:9px;outline:none;background:#11131a;color:#fff;padding:0 13px}
+#search:focus{border-color:#7568ff}
+#account{height:40px;border:1px solid #292c36;border-radius:9px;background:#15171f;color:#fff;padding:0 15px}
 
-.logo{
-    font-size:25px;
-    font-weight:900;
-    letter-spacing:-1px
-}
-
-.logo span{
-    color:#7768ff
-}
-
-nav{
-    display:flex;
-    align-items:center;
-    gap:4px
-}
-
-nav button{
-    border:0;
-    background:transparent;
-    color:#858a99;
-    padding:11px 15px;
-    border-radius:9px
-}
-
-nav button:hover,
-nav button.active{
-    color:#fff;
-    background:#181a23
-}
-
-.header-right{
-    margin-left:auto;
-    display:flex;
-    align-items:center;
-    gap:9px
-}
-
-#search{
-    width:230px;
-    height:40px;
-    border:1px solid #292c36;
-    border-radius:9px;
-    outline:none;
-    background:#11131a;
-    color:#fff;
-    padding:0 13px
-}
-
-#search:focus{
-    border-color:#7568ff
-}
-
-#account{
-    height:40px;
-    border:1px solid #292c36;
-    border-radius:9px;
-    background:#15171f;
-    color:#fff;
-    padding:0 15px
-}
-
-/* MAIN */
-
-main{
-    height:calc(100vh - 70px);
-    overflow-y:auto;
-    overflow-x:hidden
-}
-
-.page{
-    display:none;
-    max-width:1500px;
-    margin:auto;
-    padding:30px
-}
-
-.page.active{
-    display:block
-}
-
-/* HERO */
+main{height:calc(100vh - 70px);overflow-y:auto}
+.page{display:none;max-width:1500px;margin:auto;padding:30px}
+.page.active{display:block}
 
 .hero{
-    height:400px;
-    border-radius:20px;
-    overflow:hidden;
-    border:1px solid #292c36;
-    position:relative;
-    background-image:
-    linear-gradient(90deg,#07080d 0%,rgba(7,8,13,.9) 25%,rgba(7,8,13,.4) 65%,rgba(7,8,13,.05)),
-    linear-gradient(0deg,rgba(7,8,13,.8),transparent 60%),
-    url("https://cdn.cloudflare.steamstatic.com/steam/apps/945360/header.jpg");
-    background-size:cover;
-    background-position:center;
-    box-shadow:0 25px 70px rgba(0,0,0,.5)
+height:400px;border-radius:20px;overflow:hidden;border:1px solid #292c36;
+background:
+linear-gradient(90deg,#07080d 0%,rgba(7,8,13,.9) 25%,rgba(7,8,13,.4) 65%,rgba(7,8,13,.05)),
+linear-gradient(0deg,rgba(7,8,13,.8),transparent 60%),
+url("https://cdn.cloudflare.steamstatic.com/steam/apps/945360/header.jpg");
+background-size:cover;background-position:center;box-shadow:0 25px 70px rgba(0,0,0,.5)
 }
+.hero-content{height:100%;width:600px;padding:50px;display:flex;justify-content:center;flex-direction:column}
+.hero-label{color:#9186ff;font-size:11px;font-weight:900;letter-spacing:2px;margin-bottom:14px}
+.hero h1{margin:0 0 14px;font-size:58px;line-height:1;letter-spacing:-3px}
+.hero p{max-width:500px;color:#b9bdc8;line-height:1.6;margin:0 0 24px}
+.hero-buttons{display:flex;gap:9px}
 
-.hero-content{
-    height:100%;
-    width:600px;
-    padding:50px;
-    display:flex;
-    justify-content:center;
-    flex-direction:column
-}
+.primary{border:0;border-radius:9px;background:#fff;color:#08090d;padding:13px 20px;font-weight:900}
+.secondary{border:1px solid #3a3d48;border-radius:9px;background:rgba(255,255,255,.08);color:#fff;padding:12px 18px}
 
-.hero-label{
-    color:#9186ff;
-    font-size:11px;
-    font-weight:900;
-    letter-spacing:2px;
-    margin-bottom:14px
-}
+.section{margin-top:34px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.section-head h2{margin:0;font-size:24px}
+.section-head span{color:#777d8b;font-size:13px}
 
-.hero h1{
-    margin:0 0 14px;
-    font-size:58px;
-    line-height:1;
-    letter-spacing:-3px
-}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;margin-bottom:18px}
+.filters button{flex-shrink:0;border:1px solid #282b35;background:#11131a;color:#818694;border-radius:8px;padding:9px 14px}
+.filters button:hover,.filters button.selected{color:#fff;background:#282348;border-color:#665bb0}
 
-.hero p{
-    max-width:500px;
-    color:#b9bdc8;
-    line-height:1.6;
-    margin:0 0 24px
-}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+.game-card{overflow:hidden;background:#101219;border:1px solid #242731;border-radius:15px;cursor:pointer;transition:.2s}
+.game-card:hover{transform:translateY(-6px);border-color:#6257b1;box-shadow:0 20px 45px rgba(0,0,0,.45)}
+.game-image{height:245px;background-size:cover;background-position:center;position:relative}
+.game-image:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,6,10,.85),transparent 65%)}
+.game-tag{position:absolute;top:10px;left:10px;z-index:2;padding:6px 8px;border-radius:6px;background:rgba(0,0,0,.7);font-size:9px;font-weight:900;letter-spacing:1px}
+.game-play{position:absolute;z-index:3;bottom:12px;left:12px;width:42px;height:42px;border-radius:50%;background:#fff;color:#08090d;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.8);transition:.2s}
+.game-card:hover .game-play{opacity:1;transform:scale(1)}
+.game-info{padding:13px}
+.game-info h3{margin:0 0 5px;font-size:15px}
+.game-info p{margin:0;color:#777d8b;font-size:12px}
 
-.hero-buttons{
-    display:flex;
-    gap:9px
-}
-
-.primary{
-    border:0;
-    border-radius:9px;
-    background:#fff;
-    color:#08090d;
-    padding:13px 20px;
-    font-weight:900
-}
-
-.secondary{
-    border:1px solid #3a3d48;
-    border-radius:9px;
-    background:rgba(255,255,255,.08);
-    color:#fff;
-    padding:12px 18px
-}
-
-/* SECTION */
-
-.section{
-    margin-top:34px
-}
-
-.section-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:16px
-}
-
-.section-head h2{
-    margin:0;
-    font-size:24px
-}
-
-.section-head span{
-    color:#777d8b;
-    font-size:13px
-}
-
-/* FILTERS */
-
-.filters{
-    display:flex;
-    gap:8px;
-    overflow-x:auto;
-    padding-bottom:5px;
-    margin-bottom:18px
-}
-
-.filters button{
-    flex-shrink:0;
-    border:1px solid #282b35;
-    background:#11131a;
-    color:#818694;
-    border-radius:8px;
-    padding:9px 14px
-}
-
-.filters button:hover,
-.filters button.selected{
-    color:#fff;
-    background:#282348;
-    border-color:#665bb0
-}
-
-/* GAME GRID */
-
-.game-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-    gap:18px
-}
-
-.game-card{
-    overflow:hidden;
-    background:#101219;
-    border:1px solid #242731;
-    border-radius:15px;
-    cursor:pointer;
-    transition:.2s
-}
-
-.game-card:hover{
-    transform:translateY(-6px);
-    border-color:#6257b1;
-    box-shadow:0 20px 45px rgba(0,0,0,.45)
-}
-
-.game-image{
-    height:245px;
-    background-size:cover;
-    background-position:center;
-    position:relative
-}
-
-.game-image:after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(0deg,rgba(5,6,10,.85),transparent 65%)
-}
-
-.game-tag{
-    position:absolute;
-    top:10px;
-    left:10px;
-    z-index:2;
-    padding:6px 8px;
-    border-radius:6px;
-    background:rgba(0,0,0,.7);
-    font-size:9px;
-    font-weight:900;
-    letter-spacing:1px
-}
-
-.game-play{
-    position:absolute;
-    z-index:3;
-    bottom:12px;
-    left:12px;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background:#fff;
-    color:#08090d;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity:0;
-    transform:scale(.8);
-    transition:.2s
-}
-
-.game-card:hover .game-play{
-    opacity:1;
-    transform:scale(1)
-}
-
-.game-info{
-    padding:13px
-}
-
-.game-info h3{
-    margin:0 0 5px;
-    font-size:15px
-}
-
-.game-info p{
-    margin:0;
-    color:#777d8b;
-    font-size:12px
-}
-
-/* APPS */
-
-.app-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-    gap:15px
-}
-
-.app-card{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    min-height:120px;
-    padding:18px;
-    border:1px solid #252832;
-    border-radius:15px;
-    background:#101219;
-    cursor:pointer;
-    transition:.2s
-}
-
-.app-card:hover{
-    transform:translateY(-3px);
-    border-color:#6257b1
-}
-
-.app-icon{
-    width:80px;
-    height:80px;
-    flex-shrink:0;
-    border-radius:15px;
-    background:linear-gradient(135deg,#7468ff,#272047);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:23px;
-    font-weight:900
-}
-
-.app-card h3{
-    margin:0 0 6px
-}
-
-.app-card p{
-    margin:0;
-    color:#777d8b;
-    font-size:13px
-}
-
-/* MOVIES */
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px}
+.app-card{display:flex;align-items:center;gap:16px;min-height:120px;padding:18px;border:1px solid #252832;border-radius:15px;background:#101219;cursor:pointer;transition:.2s}
+.app-card:hover{transform:translateY(-3px);border-color:#6257b1}
+.app-icon{width:80px;height:80px;flex-shrink:0;border-radius:15px;background:linear-gradient(135deg,#7468ff,#272047);display:flex;justify-content:center;align-items:center;font-size:23px;font-weight:900}
+.app-card h3{margin:0 0 6px}.app-card p{margin:0;color:#777d8b;font-size:13px}
 
 .movie-box{
-    height:500px;
-    border:1px solid #252832;
-    border-radius:18px;
-    background:
-    linear-gradient(135deg,rgba(115,103,255,.12),transparent),
-    #101219;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-align:center
+height:500px;border:1px solid #252832;border-radius:18px;
+background:linear-gradient(135deg,rgba(115,103,255,.12),transparent),#101219;
+display:flex;justify-content:center;align-items:center;text-align:center
 }
-
-.movie-box h1{
-    font-size:42px;
-    margin:0 0 12px
-}
-
-.movie-box p{
-    color:#818694;
-    max-width:520px;
-    line-height:1.6;
-    margin:0 auto 24px
-}
-
-/* CHAT */
+.movie-box h1{font-size:42px;margin:0 0 12px}
+.movie-box p{color:#818694;max-width:520px;line-height:1.6;margin:0 auto 24px}
 
 .chat-layout{
-    height:calc(100vh - 140px);
-    display:grid;
-    grid-template-columns:260px 1fr;
-    border:1px solid #252832;
-    border-radius:16px;
-    overflow:hidden;
-    background:#101219
+height:calc(100vh - 140px);display:grid;grid-template-columns:260px 1fr;
+border:1px solid #252832;border-radius:16px;overflow:hidden;background:#101219
 }
-
-.user-list{
-    border-right:1px solid #252832;
-    overflow:auto
+.user-list{border-right:1px solid #252832;overflow:auto}
+.user-title{padding:20px;font-weight:900}
+.connection{
+padding:0 20px 15px;color:#777d8b;font-size:12px
 }
+.connection.online{color:#69df8a}.connection.error{color:#ff7777}
+.user{padding:13px 18px;color:#858a98;cursor:pointer}
+.user:hover,.user.selected{color:#fff;background:#191c25}
+.empty-users{padding:18px;color:#666d7b;font-size:13px;line-height:1.5}
 
-.user-title{
-    padding:20px;
-    font-weight:900
-}
-
-.user{
-    padding:13px 18px;
-    color:#858a98;
-    cursor:pointer
-}
-
-.user:hover,
-.user.selected{
-    color:#fff;
-    background:#191c25
-}
-
-.chat{
-    display:flex;
-    flex-direction:column
-}
-
-.chat-header{
-    height:60px;
-    display:flex;
-    align-items:center;
-    padding:0 20px;
-    border-bottom:1px solid #252832
-}
-
-.messages{
-    flex:1;
-    overflow-y:auto;
-    padding:20px
-}
-
-.message{
-    width:max-content;
-    max-width:70%;
-    margin-bottom:10px;
-    padding:10px 13px;
-    border-radius:10px;
-    background:#191c25
-}
-
-.message.me{
-    margin-left:auto;
-    background:#302a58
-}
-
-.chat-input{
-    display:flex;
-    gap:8px;
-    padding:12px;
-    border-top:1px solid #252832
-}
-
-.chat-input input{
-    flex:1;
-    border:1px solid #292c36;
-    border-radius:9px;
-    background:#08090e;
-    color:#fff;
-    padding:12px;
-    outline:none
-}
-
-.chat-input button{
-    border:0;
-    border-radius:9px;
-    background:#fff;
-    color:#08090d;
-    padding:0 18px;
-    font-weight:900
-}
-
-/* GAME WINDOW */
+.chat{display:flex;flex-direction:column}
+.chat-header{height:60px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid #252832}
+.messages{flex:1;overflow-y:auto;padding:20px}
+.message{width:max-content;max-width:70%;margin-bottom:10px;padding:10px 13px;border-radius:10px;background:#191c25;word-break:break-word}
+.message.me{margin-left:auto;background:#302a58}
+.chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid #252832}
+.chat-input input{flex:1;border:1px solid #292c36;border-radius:9px;background:#08090e;color:#fff;padding:12px;outline:none}
+.chat-input button{border:0;border-radius:9px;background:#fff;color:#08090d;padding:0 18px;font-weight:900}
+.chat-input button:disabled,.chat-input input:disabled{opacity:.45;cursor:not-allowed}
 
 #game-window{
-    position:fixed;
-    inset:0;
-    z-index:100;
-    display:none;
-    flex-direction:column;
-    background:#000
+position:fixed;inset:0;z-index:100;display:none;flex-direction:column;background:#000
 }
-
-#game-window.open{
-    display:flex
-}
-
-.game-bar{
-    height:58px;
-    flex-shrink:0;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:0 14px;
-    background:#0c0e14;
-    border-bottom:1px solid #292c36
-}
-
-.game-bar-title{
-    font-weight:900
-}
-
-.game-bar button{
-    border:0;
-    border-radius:8px;
-    background:#181b23;
-    color:#fff;
-    padding:8px 13px
-}
-
-.game-bar .right{
-    margin-left:auto;
-    display:flex;
-    gap:7px
-}
-
-#game-frame{
-    flex:1;
-    width:100%;
-    border:0;
-    background:#000
-}
-
-/* LOGIN */
+#game-window.open{display:flex}
+.game-bar{height:58px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0c0e14;border-bottom:1px solid #292c36}
+.game-bar-title{font-weight:900}
+.game-bar button{border:0;border-radius:8px;background:#181b23;color:#fff;padding:8px 13px}
+.game-bar .right{margin-left:auto;display:flex;gap:7px}
+#game-frame{flex:1;width:100%;border:0;background:#000}
 
 .modal{
-    position:fixed;
-    inset:0;
-    z-index:200;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.75);
-    backdrop-filter:blur(10px)
+position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+background:rgba(0,0,0,.75);backdrop-filter:blur(10px)
 }
-
-.modal.open{
-    display:flex
-}
-
-.modal-box{
-    width:min(420px,90%);
-    padding:25px;
-    border:1px solid #292c36;
-    border-radius:17px;
-    background:#11131a;
-    box-shadow:0 30px 100px rgba(0,0,0,.7)
-}
-
-.modal-box h2{
-    margin-top:0
-}
-
-.modal-box p{
-    color:#7d8290
-}
-
-.modal-box input{
-    width:100%;
-    height:45px;
-    border:1px solid #292c36;
-    border-radius:9px;
-    background:#08090e;
-    color:#fff;
-    padding:0 12px;
-    outline:none;
-    margin:8px 0 14px
-}
-
-/* TOAST */
+.modal.open{display:flex}
+.modal-box{width:min(420px,90%);padding:25px;border:1px solid #292c36;border-radius:17px;background:#11131a;box-shadow:0 30px 100px rgba(0,0,0,.7)}
+.modal-box h2{margin-top:0}
+.modal-box p{color:#7d8290}
+.modal-box input{width:100%;height:45px;border:1px solid #292c36;border-radius:9px;background:#08090e;color:#fff;padding:0 12px;outline:none;margin:8px 0 14px}
 
 #toast{
-    position:fixed;
-    z-index:500;
-    left:50%;
-    bottom:25px;
-    transform:translate(-50%,20px);
-    padding:12px 18px;
-    border:1px solid #292c36;
-    border-radius:10px;
-    background:#171a22;
-    opacity:0;
-    pointer-events:none;
-    transition:.25s
+position:fixed;z-index:500;left:50%;bottom:25px;transform:translate(-50%,20px);
+padding:12px 18px;border:1px solid #292c36;border-radius:10px;background:#171a22;
+opacity:0;pointer-events:none;transition:.25s
 }
-
-#toast.show{
-    opacity:1;
-    transform:translate(-50%,0)
-}
-
-/* MOBILE */
+#toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media(max-width:800px){
-
-    header{
-        padding:0 13px;
-        gap:10px
-    }
-
-    nav{
-        display:none
-    }
-
-    #search{
-        width:150px
-    }
-
-    .page{
-        padding:18px
-    }
-
-    .hero{
-        height:350px
-    }
-
-    .hero-content{
-        width:100%;
-        padding:28px
-    }
-
-    .hero h1{
-        font-size:42px
-    }
-
-    .game-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-        gap:10px
-    }
-
-    .game-image{
-        height:190px
-    }
-
-    .chat-layout{
-        grid-template-columns:1fr
-    }
-
-    .user-list{
-        display:none
-    }
+header{padding:0 13px;gap:10px}nav{display:none}#search{width:150px}
+.page{padding:18px}.hero{height:350px}.hero-content{width:100%;padding:28px}.hero h1{font-size:42px}
+.game-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.game-image{height:190px}
+.chat-layout{grid-template-columns:1fr}.user-list{display:none}
 }
 </style>
 </head>
@@ -681,425 +149,129 @@ main{
 <body>
 
 <header>
-
-<div class="logo">
-Game<span>Hub</span>
-</div>
+<div class="logo">Game<span>Hub</span></div>
 
 <nav>
-
-<button class="active" data-page="home">
-Home
-</button>
-
-<button data-page="games">
-Games
-</button>
-
-<button data-page="apps">
-Apps
-</button>
-
-<button data-page="movies">
-Movies
-</button>
-
-<button data-page="chat">
-Chat
-</button>
-
+<button class="active" data-page="home">Home</button>
+<button data-page="games">Games</button>
+<button data-page="apps">Apps</button>
+<button data-page="movies">Movies</button>
+<button data-page="chat">Chat</button>
 </nav>
 
 <div class="header-right">
-
-<input
-id="search"
-type="text"
-placeholder="Search games..."
->
-
-<button id="account">
-Sign In
-</button>
-
+<input id="search" type="text" placeholder="Search games...">
+<button id="account">Sign In</button>
 </div>
-
 </header>
 
 <main>
 
-<!-- HOME -->
-
-<section
-id="home"
-class="page active"
->
-
+<section id="home" class="page active">
 <div class="hero">
-
 <div class="hero-content">
-
-<div class="hero-label">
-FEATURED GAME
-</div>
-
-<h1>
-Among Us
-</h1>
-
-<p>
-Play games, launch apps, chat with friends,
-and use everything inside your GameHub.
-</p>
-
+<div class="hero-label">FEATURED GAME</div>
+<h1>Among Us</h1>
+<p>Play games, launch apps, chat with friends, and use everything inside your GameHub.</p>
 <div class="hero-buttons">
-
-<button
-class="primary"
-onclick="launchGame('Among Us')"
->
-▶ Play Now
-</button>
-
-<button
-class="secondary"
-onclick="openPage('games')"
->
-Browse Games
-</button>
-
+<button class="primary" onclick="launchGame('Among Us')">▶ Play Now</button>
+<button class="secondary" onclick="openPage('games')">Browse Games</button>
 </div>
-
 </div>
-
 </div>
 
 <div class="section">
-
-<div class="section-head">
-
-<h2>
-Popular Games
-</h2>
-
-<span>
-GameHub Library
-</span>
-
+<div class="section-head"><h2>Popular Games</h2><span>GameHub Library</span></div>
+<div id="home-grid" class="game-grid"></div>
 </div>
-
-<div
-id="home-grid"
-class="game-grid"
-></div>
-
-</div>
-
 </section>
 
-<!-- GAMES -->
-
-<section
-id="games"
-class="page"
->
-
-<div class="section-head">
-
-<h2>
-Games
-</h2>
-
-<span id="game-count">
-0 games
-</span>
-
-</div>
+<section id="games" class="page">
+<div class="section-head"><h2>Games</h2><span id="game-count">0 games</span></div>
 
 <div class="filters">
-
-<button
-class="selected"
-onclick="filterGames('ALL',this)"
->
-All
-</button>
-
-<button
-onclick="filterGames('HORROR',this)"
->
-Horror
-</button>
-
-<button
-onclick="filterGames('ACTION',this)"
->
-Action
-</button>
-
-<button
-onclick="filterGames('ARCADE',this)"
->
-Arcade
-</button>
-
-<button
-onclick="filterGames('3D',this)"
->
-3D
-</button>
-
-<button
-onclick="filterGames('SANDBOX',this)"
->
-Sandbox
-</button>
-
-<button
-onclick="filterGames('STRATEGY',this)"
->
-Strategy
-</button>
-
-<button
-onclick="filterGames('FIGHTING',this)"
->
-Fighting
-</button>
-
-<button
-onclick="filterGames('RUNNER',this)"
->
-Runner
-</button>
-
-<button
-onclick="filterGames('PLATFORMER',this)"
->
-Platformer
-</button>
-
+<button class="selected" onclick="filterGames('ALL',this)">All</button>
+<button onclick="filterGames('HORROR',this)">Horror</button>
+<button onclick="filterGames('ACTION',this)">Action</button>
+<button onclick="filterGames('ARCADE',this)">Arcade</button>
+<button onclick="filterGames('3D',this)">3D</button>
+<button onclick="filterGames('SANDBOX',this)">Sandbox</button>
+<button onclick="filterGames('STRATEGY',this)">Strategy</button>
+<button onclick="filterGames('FIGHTING',this)">Fighting</button>
+<button onclick="filterGames('RUNNER',this)">Runner</button>
+<button onclick="filterGames('PLATFORMER',this)">Platformer</button>
 </div>
 
-<div
-id="games-grid"
-class="game-grid"
-></div>
-
+<div id="games-grid" class="game-grid"></div>
 </section>
 
-<!-- APPS -->
-
-<section
-id="apps"
-class="page"
->
-
-<div class="section-head">
-
-<h2>
-Apps
-</h2>
-
-<span>
-GameHub Applications
-</span>
-
-</div>
-
-<div
-id="apps-grid"
-class="app-grid"
-></div>
-
+<section id="apps" class="page">
+<div class="section-head"><h2>Apps</h2><span>GameHub Applications</span></div>
+<div id="apps-grid" class="app-grid"></div>
 </section>
 
-<!-- MOVIES -->
-
-<section
-id="movies"
-class="page"
->
-
-<div class="section-head">
-
-<h2>
-Movies
-</h2>
-
-<span>
-Streaming
-</span>
-
-</div>
-
+<section id="movies" class="page">
+<div class="section-head"><h2>Movies</h2><span>Streaming</span></div>
 <div class="movie-box">
-
 <div>
-
-<h1>
-Movie Center
-</h1>
-
-<p>
-Browse movies and shows through Cinejoy.
-GameHub will remain open.
-</p>
-
-<button
-class="primary"
-onclick="openMovies()"
->
-Open Cinejoy
-</button>
-
+<h1>Movie Center</h1>
+<p>Browse movies and shows through Cinejoy. GameHub will remain open.</p>
+<button class="primary" onclick="openMovies()">Open Cinejoy</button>
 </div>
-
 </div>
-
 </section>
 
-<!-- CHAT -->
-
-<section
-id="chat"
-class="page"
->
-
+<section id="chat" class="page">
 <div class="chat-layout">
 
 <div class="user-list">
-
-<div class="user-title">
-Online Users
-</div>
-
+<div class="user-title">Online Users</div>
+<div id="connection" class="connection">Connecting...</div>
 <div id="users"></div>
-
 </div>
 
 <div class="chat">
-
 <div class="chat-header">
-
-<strong id="chat-name">
-Select a user
-</strong>
-
+<strong id="chat-name">Select a user</strong>
 </div>
 
-<div
-id="messages"
-class="messages"
-></div>
+<div id="messages" class="messages">
+<div style="color:#666d7b">Sign in and select someone to start chatting.</div>
+</div>
 
 <div class="chat-input">
-
-<input
-id="message"
-placeholder="Message..."
-disabled
->
-
-<button
-id="send"
-disabled
->
-Send
-</button>
-
+<input id="message" placeholder="Message..." disabled>
+<button id="send" disabled>Send</button>
+</div>
 </div>
 
 </div>
-
-</div>
-
 </section>
 
 </main>
 
-<!-- GAME WINDOW -->
-
 <div id="game-window">
-
 <div class="game-bar">
-
-<button onclick="closeGame()">
-← Back
-</button>
-
-<div
-id="game-title"
-class="game-bar-title"
->
-Game
-</div>
-
+<button onclick="closeGame()">← Back</button>
+<div id="game-title" class="game-bar-title">Game</div>
 <div class="right">
-
-<button onclick="fullscreenGame()">
-Fullscreen
-</button>
-
-<button onclick="closeGame()">
-✕
-</button>
-
+<button onclick="fullscreenGame()">Fullscreen</button>
+<button onclick="closeGame()">✕</button>
+</div>
+</div>
+<iframe id="game-frame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
 </div>
 
-</div>
-
-<iframe
-id="game-frame"
-allow="fullscreen; autoplay; gamepad"
-allowfullscreen
-></iframe>
-
-</div>
-
-<!-- LOGIN -->
-
-<div
-id="login-modal"
-class="modal"
->
-
+<div id="login-modal" class="modal">
 <div class="modal-box">
-
-<h2>
-GameHub Account
-</h2>
-
-<p>
-Choose a username for GameHub chat.
-</p>
-
-<input
-id="username"
-maxlength="20"
-placeholder="Username"
->
-
+<h2>GameHub Account</h2>
+<p>Choose a username for GameHub chat.</p>
+<input id="username" maxlength="20" placeholder="Username">
 <div style="display:flex;gap:8px">
-
-<button
-class="primary"
-onclick="login()"
->
-Continue
-</button>
-
-<button
-class="secondary"
-onclick="closeLogin()"
->
-Cancel
-</button>
-
+<button class="primary" onclick="login()">Continue</button>
+<button class="secondary" onclick="closeLogin()">Cancel</button>
 </div>
-
 </div>
-
 </div>
 
 <div id="toast"></div>
@@ -1107,724 +279,408 @@ Cancel
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <script>
+const RENDER_SERVER="https://gamehub-t22r.onrender.com";
 
-/* GAME DATA */
-
-const games = [
-
-{
-name:"Among Us",
-file:"Among-Us.html",
-description:"Find the impostor.",
-type:"ACTION",
-category:"ACTION",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/945360/header.jpg"
-},
-
-{
-name:"FNAF 1",
-file:"FNAF-1.html",
-description:"Survive the night.",
-type:"HORROR",
-category:"HORROR",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/319510/header.jpg"
-},
-
-{
-name:"FNAF 2",
-file:"FNAF-2.html",
-description:"The nightmare continues.",
-type:"HORROR",
-category:"HORROR",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/332800/header.jpg"
-},
-
-{
-name:"FNAF 3",
-file:"FNAF-3.html",
-description:"Something is waiting.",
-type:"HORROR",
-category:"HORROR",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/354140/header.jpg"
-},
-
-{
-name:"FNAF 4",
-file:"FNAF-4.html",
-description:"Don't fall asleep.",
-type:"HORROR",
-category:"HORROR",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/388090/header.jpg"
-},
-
-{
-name:"Geomorty Dash",
-file:"Geomorty-Dash.html",
-description:"Jump through the chaos.",
-type:"ARCADE",
-category:"ARCADE",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/322170/header.jpg"
-},
-
-{
-name:"GTA Clone",
-file:"GTA-Clone.html",
-description:"Open-world chaos.",
-type:"ACTION",
-category:"ACTION",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg"
-},
-
-{
-name:"Happy Wheels",
-file:"Happy-Wheels.html",
-description:"Physics-based madness.",
-type:"ACTION",
-category:"ACTION",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/598990/header.jpg"
-},
-
-{
-name:"Mortal Kombat",
-file:"Mortal-Kombat.html",
-description:"Enter the fight.",
-type:"FIGHTING",
-category:"FIGHTING",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg"
-},
-
-{
-name:"PVZ Clone",
-file:"PVZ-Clone.html",
-description:"Defend your lawn.",
-type:"STRATEGY",
-category:"STRATEGY",
-image:"https://cdn.cloudflare.steamstatic.com/steam/apps/3590/header.jpg"
-},
-
-{
-name:"Crazy Cattle 3D",
-file:"Crazy-Cattle3d.html",
-description:"Absolutely normal cattle.",
-type:"3D",
-category:"3D",
-image:"https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1000&q=85"
-},
-
-{
-name:"Subway Surfer",
-file:"Subway-Surfer.html",
-description:"Run forever.",
-type:"RUNNER",
-category:"RUNNER",
-image:"https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1000&q=85"
-},
-
-{
-name:"Minecraft",
-file:"Minecraft.html",
-description:"Build your world.",
-type:"SANDBOX",
-category:"SANDBOX",
-image:"https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=1000&q=85"
-},
-
-{
-name:"Melon Playground",
-file:"Melon-Playground.html",
-description:"Create chaos.",
-type:"SANDBOX",
-category:"SANDBOX",
-image:"https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1000&q=85"
-},
-
-{
-name:"Level Devil",
-file:"Level-Devil.html",
-description:"The level hates you.",
-type:"PLATFORMER",
-category:"PLATFORMER",
-image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85"
-},
-
-{
-name:"Doblox",
-file:"Doblox.html",
-description:"Blocky adventures.",
-type:"3D",
-category:"3D",
-image:"https://images.unsplash.com/photo-1605899435973-ca2b1d58c5b7?auto=format&fit=crop&w=1000&q=85"
-},
-
-{
-name:"Dublix",
-url:"https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",
-description:"Online 3D multiplayer.",
-type:"ONLINE",
-category:"3D",
-image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85"
-}
-
+const games=[
+{name:"Among Us",file:"Among-Us.html",description:"Find the impostor.",type:"ACTION",category:"ACTION",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/945360/header.jpg"},
+{name:"FNAF 1",file:"FNAF-1.html",description:"Survive the night.",type:"HORROR",category:"HORROR",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/319510/header.jpg"},
+{name:"FNAF 2",file:"FNAF-2.html",description:"The nightmare continues.",type:"HORROR",category:"HORROR",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/332800/header.jpg"},
+{name:"FNAF 3",file:"FNAF-3.html",description:"Something is waiting.",type:"HORROR",category:"HORROR",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/354140/header.jpg"},
+{name:"FNAF 4",file:"FNAF-4.html",description:"Don't fall asleep.",type:"HORROR",category:"HORROR",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/388090/header.jpg"},
+{name:"Geomorty Dash",file:"Geomorty-Dash.html",description:"Jump through the chaos.",type:"ARCADE",category:"ARCADE",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/322170/header.jpg"},
+{name:"GTA Clone",file:"GTA-Clone.html",description:"Open-world chaos.",type:"ACTION",category:"ACTION",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg"},
+{name:"Happy Wheels",file:"Happy-Wheels.html",description:"Physics-based madness.",type:"ACTION",category:"ACTION",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/598990/header.jpg"},
+{name:"Mortal Kombat",file:"Mortal-Kombat.html",description:"Enter the fight.",type:"FIGHTING",category:"FIGHTING",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg"},
+{name:"PVZ Clone",file:"PVZ-Clone.html",description:"Defend your lawn.",type:"STRATEGY",category:"STRATEGY",image:"https://cdn.cloudflare.steamstatic.com/steam/apps/3590/header.jpg"},
+{name:"Crazy Cattle 3D",file:"Crazy-Cattle3d.html",description:"Absolutely normal cattle.",type:"3D",category:"3D",image:"https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1000&q=85"},
+{name:"Subway Surfer",file:"Subway-Surfer.html",description:"Run forever.",type:"RUNNER",category:"RUNNER",image:"https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1000&q=85"},
+{name:"Minecraft",file:"Minecraft.html",description:"Build your world.",type:"SANDBOX",category:"SANDBOX",image:"https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=1000&q=85"},
+{name:"Melon Playground",file:"Melon-Playground.html",description:"Create chaos.",type:"SANDBOX",category:"SANDBOX",image:"https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1000&q=85"},
+{name:"Level Devil",file:"Level-Devil.html",description:"The level hates you.",type:"PLATFORMER",category:"PLATFORMER",image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85"},
+{name:"Doblox",file:"Doblox.html",description:"Blocky adventures.",type:"3D",category:"3D",image:"https://images.unsplash.com/photo-1605899435973-ca2b1d58c5b7?auto=format&fit=crop&w=1000&q=85"},
+{name:"Dublix",url:"https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",description:"Online 3D multiplayer.",type:"ONLINE",category:"3D",image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=85"}
 ];
 
-const apps = [
-
-{
-name:"AI",
-file:"AI.html",
-description:"GameHub AI"
-},
-
-{
-name:"Helios Offline",
-file:"Helios-Offline.html",
-description:"Offline AI"
-}
-
+const apps=[
+{name:"AI",file:"AI.html",description:"GameHub AI"},
+{name:"Helios Offline",file:"Helios-Offline.html",description:"Offline AI"}
 ];
 
 let currentCategory="ALL";
+let username=localStorage.getItem("gamehub_username")||"";
+let socket=null;
+let selectedUser="";
+let toastTimer=null;
 
-/* RENDER */
+function escapeHTML(value){
+return String(value).replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+}[c]));
+}
 
 function render(){
+const search=document.getElementById("search").value.toLowerCase().trim();
 
-    const search=
-    document.getElementById("search").value
-    .toLowerCase()
-    .trim();
+const filtered=games.filter(g=>{
+const categoryOk=currentCategory==="ALL"||g.category===currentCategory;
+const searchOk=!search||g.name.toLowerCase().includes(search)||g.description.toLowerCase().includes(search);
+return categoryOk&&searchOk;
+});
 
-    const filtered=games.filter(game=>{
+document.getElementById("game-count").textContent=filtered.length+" games";
+document.getElementById("games-grid").innerHTML=filtered.map(createGameCard).join("");
+document.getElementById("home-grid").innerHTML=games.slice(0,8).map(createGameCard).join("");
 
-        const categoryOk=
-        currentCategory==="ALL" ||
-        game.category===currentCategory;
-
-        const searchOk=
-        !search ||
-        game.name.toLowerCase().includes(search) ||
-        game.description.toLowerCase().includes(search);
-
-        return categoryOk && searchOk;
-
-    });
-
-    document.getElementById("game-count").textContent=
-    filtered.length+" games";
-
-    document.getElementById("games-grid").innerHTML=
-    filtered.map(createGameCard).join("");
-
-    document.getElementById("home-grid").innerHTML=
-    games.slice(0,8).map(createGameCard).join("");
-
-    document.getElementById("apps-grid").innerHTML=
-    apps.map(app=>`
-
-        <div
-        class="app-card"
-        onclick="launchApp('${app.name}')"
-        >
-
-        <div class="app-icon">
-        ${app.name==="AI"?"AI":"H"}
-        </div>
-
-        <div>
-
-        <h3>
-        ${app.name}
-        </h3>
-
-        <p>
-        ${app.description}
-        </p>
-
-        </div>
-
-        </div>
-
-    `).join("");
-
+document.getElementById("apps-grid").innerHTML=apps.map(app=>`
+<div class="app-card" onclick="launchApp('${escapeHTML(app.name)}')">
+<div class="app-icon">${app.name==="AI"?"AI":"H"}</div>
+<div><h3>${escapeHTML(app.name)}</h3><p>${escapeHTML(app.description)}</p></div>
+</div>
+`).join("");
 }
 
 function createGameCard(game){
-
-    const image=
-    game.image ||
-    "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1000&q=85";
-
-    return `
-
-    <div
-    class="game-card"
-    onclick="launchGame('${game.name.replace(/'/g,"\\'")}')"
-    >
-
-        <div
-        class="game-image"
-        style="background-image:url('${image}')"
-        >
-
-            <div class="game-tag">
-            ${game.type}
-            </div>
-
-            <div class="game-play">
-            ▶
-            </div>
-
-        </div>
-
-        <div class="game-info">
-
-            <h3>
-            ${game.name}
-            </h3>
-
-            <p>
-            ${game.description}
-            </p>
-
-        </div>
-
-    </div>
-
-    `;
-
+return `
+<div class="game-card" onclick="launchGame('${escapeHTML(game.name)}')">
+<div class="game-image" style="background-image:url('${game.image}')">
+<div class="game-tag">${escapeHTML(game.type)}</div>
+<div class="game-play">▶</div>
+</div>
+<div class="game-info">
+<h3>${escapeHTML(game.name)}</h3>
+<p>${escapeHTML(game.description)}</p>
+</div>
+</div>`;
 }
-
-/* NAVIGATION */
 
 function openPage(page){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+const target=document.getElementById(page);
+if(target)target.classList.add("active");
 
-    document.querySelectorAll(".page")
-    .forEach(p=>p.classList.remove("active"));
-
-    document.getElementById(page)
-    .classList.add("active");
-
-    document.querySelectorAll("nav button")
-    .forEach(button=>{
-
-        button.classList.toggle(
-            "active",
-            button.dataset.page===page
-        );
-
-    });
-
+document.querySelectorAll("nav button").forEach(b=>{
+b.classList.toggle("active",b.dataset.page===page);
+});
 }
 
-document.querySelectorAll("nav button")
-.forEach(button=>{
-
-    button.addEventListener("click",()=>{
-
-        openPage(button.dataset.page);
-
-    });
-
+document.querySelectorAll("nav button").forEach(button=>{
+button.addEventListener("click",()=>openPage(button.dataset.page));
 });
 
-/* SEARCH */
-
-document.getElementById("search")
-.addEventListener("input",render);
-
-/* FILTER */
+document.getElementById("search").addEventListener("input",render);
 
 function filterGames(category,button){
-
-    currentCategory=category;
-
-    document.querySelectorAll(".filters button")
-    .forEach(b=>b.classList.remove("selected"));
-
-    button.classList.add("selected");
-
-    render();
-
+currentCategory=category;
+document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("selected"));
+button.classList.add("selected");
+render();
 }
 
-/* GAME LAUNCH */
-
 function launchGame(name){
+const game=games.find(g=>g.name===name);
+if(!game)return;
 
-    const game=
-    games.find(g=>g.name===name);
-
-    if(!game){
-        return;
-    }
-
-    document.getElementById("game-title")
-    .textContent=game.name;
-
-    document.getElementById("game-frame")
-    .src=game.file || game.url;
-
-    document.getElementById("game-window")
-    .classList.add("open");
-
+document.getElementById("game-title").textContent=game.name;
+document.getElementById("game-frame").src=game.file||game.url;
+document.getElementById("game-window").classList.add("open");
 }
 
 function launchApp(name){
+const app=apps.find(a=>a.name===name);
+if(!app)return;
 
-    const app=
-    apps.find(a=>a.name===name);
-
-    if(!app){
-        return;
-    }
-
-    document.getElementById("game-title")
-    .textContent=app.name;
-
-    document.getElementById("game-frame")
-    .src=app.file;
-
-    document.getElementById("game-window")
-    .classList.add("open");
-
+document.getElementById("game-title").textContent=app.name;
+document.getElementById("game-frame").src=app.file;
+document.getElementById("game-window").classList.add("open");
 }
 
 function closeGame(){
-
-    document.getElementById("game-window")
-    .classList.remove("open");
-
-    document.getElementById("game-frame")
-    .src="about:blank";
-
+document.getElementById("game-window").classList.remove("open");
+document.getElementById("game-frame").src="about:blank";
 }
 
 function fullscreenGame(){
-
-    const frame=
-    document.getElementById("game-frame");
-
-    if(frame.requestFullscreen){
-        frame.requestFullscreen();
-    }
-
+const frame=document.getElementById("game-frame");
+if(frame.requestFullscreen)frame.requestFullscreen();
 }
-
-/* MOVIES */
 
 function openMovies(){
-
-    if(
-    confirm(
-    "Open Cinejoy in a new tab?"
-    )
-    ){
-
-        window.open(
-        "https://cinejoy.pk/",
-        "_blank"
-        );
-
-    }
-
+if(confirm("Open Cinejoy in a new tab?")){
+window.open("https://cinejoy.pk/","_blank","noopener");
+}
 }
 
-/* LOGIN */
-
-let username=
-localStorage.getItem("gamehub_username") || "";
-
-document.getElementById("account")
-.addEventListener("click",()=>{
-
-    if(username){
-
-        showToast(
-        "Signed in as "+username
-        );
-
-    }else{
-
-        document.getElementById("login-modal")
-        .classList.add("open");
-
-    }
-
+document.getElementById("account").addEventListener("click",()=>{
+if(username){
+showToast("Signed in as "+username);
+}else{
+document.getElementById("login-modal").classList.add("open");
+}
 });
 
-function login(){
+async function login(){
+const input=document.getElementById("username");
+const name=input.value.trim();
 
-    const name=
-    document.getElementById("username")
-    .value
-    .trim();
+if(!name){
+showToast("Enter a username.");
+return;
+}
 
-    if(!name){
-        showToast("Enter a username.");
-        return;
-    }
+username=name;
+localStorage.setItem("gamehub_username",username);
+document.getElementById("account").textContent=username;
+closeLogin();
 
-    username=name;
+try{
+await fetch(RENDER_SERVER+"/api/register",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username})
+});
+}catch(e){}
 
-    localStorage.setItem(
-    "gamehub_username",
-    username
-    );
-
-    document.getElementById("account")
-    .textContent=username;
-
-    closeLogin();
-
-    if(socket){
-        socket.emit("login",username);
-    }
-
-    showToast(
-    "Welcome, "+username+"!"
-    );
-
+connectChat();
+showToast("Welcome, "+username+"!");
 }
 
 function closeLogin(){
-
-    document.getElementById("login-modal")
-    .classList.remove("open");
-
+document.getElementById("login-modal").classList.remove("open");
 }
 
-/* TOAST */
-
-let toastTimer;
-
 function showToast(message){
-
-    const toast=
-    document.getElementById("toast");
-
-    toast.textContent=message;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer=setTimeout(()=>{
-
-        toast.classList.remove("show");
-
-    },2500);
-
+const toast=document.getElementById("toast");
+toast.textContent=message;
+toast.classList.add("show");
+clearTimeout(toastTimer);
+toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
 }
 
 /* CHAT */
 
-const RENDER_SERVER=
-"https://gamehub-t22r.onrender.com";
+function setConnection(text,state=""){
+const el=document.getElementById("connection");
+el.textContent=text;
+el.className="connection "+state;
+}
 
-let socket=null;
-let selectedUser="";
+function connectChat(){
 
-if(typeof io==="function"){
+if(typeof io!=="function"){
+setConnection("Socket.IO failed to load","error");
+return;
+}
 
-    socket=io(
-    RENDER_SERVER,
-    {
-        transports:["websocket","polling"],
-        reconnection:true
-    }
-    );
+if(socket){
+try{socket.disconnect()}catch(e){}
+}
 
-    socket.on("connect",()=>{
+setConnection("Connecting...");
 
-        if(username){
-            socket.emit("login",username);
-        }
+socket=io(RENDER_SERVER,{
+transports:["polling","websocket"],
+reconnection:true,
+reconnectionAttempts:Infinity,
+reconnectionDelay:1000,
+timeout:15000
+});
 
-    });
+socket.on("connect",()=>{
+setConnection("● Connected","online");
 
-    socket.on("online-users",users=>{
+if(username){
+socket.emit("login",username);
+}
 
-        renderUsers(users);
+});
 
-    });
+socket.on("connect_error",error=>{
+setConnection("Connection failed","error");
+console.error("GameHub chat connection error:",error);
+});
 
-    socket.on("receive-message",message=>{
+socket.on("disconnect",()=>{
+setConnection("Disconnected","error");
+});
 
-        if(
-        message.sender===selectedUser ||
-        message.receiver===selectedUser
-        ){
+socket.on("reconnect",()=>{
+setConnection("● Reconnected","online");
+if(username)socket.emit("login",username);
+});
 
-            addMessage(
-            message.message,
-            message.sender===username
-            );
+socket.on("online-users",users=>{
+renderUsers(Array.isArray(users)?users:[]);
+});
 
-        }
+socket.on("receive-message",message=>{
+if(!message)return;
 
-    });
+if(
+message.sender===selectedUser ||
+message.receiver===selectedUser
+){
+addMessage(
+message.message,
+message.sender===username
+);
+}
+});
 
-    socket.on("message-sent",message=>{
+socket.on("message-sent",message=>{
+if(!message)return;
 
-        if(message.receiver===selectedUser){
+if(message.receiver===selectedUser){
+addMessage(message.message,true);
+}
+});
 
-            addMessage(
-            message.message,
-            true
-            );
-
-        }
-
-    });
-
+socket.on("error",error=>{
+console.error("Socket error:",error);
+});
 }
 
 function renderUsers(users){
 
-    const container=
-    document.getElementById("users");
+const container=document.getElementById("users");
+container.innerHTML="";
 
-    container.innerHTML="";
+const otherUsers=users.filter(user=>user!==username);
 
-    users
-    .filter(user=>user!==username)
-    .forEach(user=>{
+if(!username){
+container.innerHTML='<div class="empty-users">Sign in to see people online.</div>';
+return;
+}
 
-        const element=
-        document.createElement("div");
+if(!otherUsers.length){
+container.innerHTML='<div class="empty-users">No other users are online yet.<br><br>Have a friend open GameHub and sign in.</div>';
+return;
+}
 
-        element.className="user";
-        element.textContent=user;
-
-        element.onclick=()=>selectUser(user);
-
-        container.appendChild(element);
-
-    });
-
+otherUsers.forEach(user=>{
+const element=document.createElement("div");
+element.className="user"+(user===selectedUser?" selected":"");
+element.textContent=user;
+element.onclick=()=>selectUser(user);
+container.appendChild(element);
+});
 }
 
 async function selectUser(user){
 
-    selectedUser=user;
+if(!username){
+showToast("Sign in first.");
+return;
+}
 
-    document.getElementById("chat-name")
-    .textContent=user;
+selectedUser=user;
 
-    document.getElementById("message")
-    .disabled=false;
+document.querySelectorAll(".user").forEach(el=>{
+el.classList.toggle("selected",el.textContent===user);
+});
 
-    document.getElementById("send")
-    .disabled=false;
+document.getElementById("chat-name").textContent=user;
 
-    document.getElementById("messages")
-    .innerHTML="";
+const input=document.getElementById("message");
+const send=document.getElementById("send");
 
-    try{
+input.disabled=false;
+send.disabled=false;
 
-        const response=
-        await fetch(
-        RENDER_SERVER+
-        "/api/messages?sender="+
-        encodeURIComponent(username)+
-        "&receiver="+
-        encodeURIComponent(user)
-        );
+document.getElementById("messages").innerHTML="";
 
-        const data=
-        await response.json();
+try{
 
-        data.forEach(message=>{
+const response=await fetch(
+RENDER_SERVER+"/api/messages?sender="+
+encodeURIComponent(username)+
+"&receiver="+
+encodeURIComponent(user)
+);
 
-            addMessage(
-            message.message,
-            message.sender===username
-            );
+if(!response.ok)throw new Error("HTTP "+response.status);
 
-        });
+const data=await response.json();
 
-    }catch(error){
+if(Array.isArray(data)){
+data.forEach(message=>{
+addMessage(message.message,message.sender===username);
+});
+}
 
-    }
+}catch(error){
 
+console.error("Message history error:",error);
+
+const box=document.getElementById("messages");
+box.innerHTML="";
+
+const warning=document.createElement("div");
+warning.style.color="#777d8b";
+warning.textContent="Couldn't load old messages. New messages can still be sent.";
+box.appendChild(warning);
+}
 }
 
 function addMessage(message,me){
 
-    const element=
-    document.createElement("div");
+const element=document.createElement("div");
+element.className="message"+(me?" me":"");
+element.textContent=message;
 
-    element.className=
-    "message"+(me?" me":"");
-
-    element.textContent=message;
-
-    const messages=
-    document.getElementById("messages");
-
-    messages.appendChild(element);
-
-    messages.scrollTop=
-    messages.scrollHeight;
-
+const messages=document.getElementById("messages");
+messages.appendChild(element);
+messages.scrollTop=messages.scrollHeight;
 }
 
 function sendMessage(){
 
-    const input=
-    document.getElementById("message");
+const input=document.getElementById("message");
+const message=input.value.trim();
 
-    const message=
-    input.value.trim();
+if(!message)return;
 
-    if(
-    !message ||
-    !selectedUser ||
-    !socket
-    ){
-        return;
-    }
-
-    socket.emit(
-    "send-message",
-    {
-        sender:username,
-        receiver:selectedUser,
-        message:message
-    }
-    );
-
-    input.value="";
-
+if(!username){
+showToast("Sign in first.");
+return;
 }
 
-document.getElementById("send")
-.addEventListener(
-"click",
-sendMessage
-);
+if(!selectedUser){
+showToast("Select a user first.");
+return;
+}
 
-document.getElementById("message")
-.addEventListener(
-"keydown",
-event=>{
+if(!socket||!socket.connected){
+showToast("Chat is not connected yet.");
+return;
+}
 
-    if(event.key==="Enter"){
-        sendMessage();
-    }
+socket.emit("send-message",{
+sender:username,
+receiver:selectedUser,
+message:message
+});
 
+input.value="";
+input.focus();
+}
+
+document.getElementById("send").addEventListener("click",sendMessage);
+
+document.getElementById("message").addEventListener("keydown",event=>{
+if(event.key==="Enter"){
+event.preventDefault();
+sendMessage();
+}
 });
 
 /* START */
 
 if(username){
-
-    document.getElementById("account")
-    .textContent=username;
-
+document.getElementById("account").textContent=username;
 }
 
 render();
+connectChat();
 
 </script>
 
