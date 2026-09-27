@@ -105,25 +105,43 @@ function validUsername(username) {
 
 const onlineUsers = new Map();
 
+function sendOnlineCount() {
+
+    const count = onlineUsers.size;
+
+    console.log("ONLINE PLAYERS:", count);
+
+    io.emit("player-count", count);
+
+    io.emit(
+        "online-users",
+        Array.from(onlineUsers.keys())
+    );
+}
+
 // ==========================================
 // REGISTER
 // ==========================================
 
 app.post("/api/register", (req, res) => {
 
-    let username = cleanUsername(req.body.username);
+    const username = cleanUsername(req.body.username);
 
     if (!validUsername(username)) {
+
         return res.status(400).json({
             success: false,
             error: "Invalid username."
         });
+
     }
 
     try {
 
         const existing = db
-            .prepare("SELECT id FROM users WHERE username = ?")
+            .prepare(
+                "SELECT id FROM users WHERE username = ?"
+            )
             .get(username);
 
         if (!existing) {
@@ -148,7 +166,9 @@ app.post("/api/register", (req, res) => {
             success: false,
             error: "Could not create account."
         });
+
     }
+
 });
 
 // ==========================================
@@ -157,7 +177,9 @@ app.post("/api/register", (req, res) => {
 
 app.get("/api/users", (req, res) => {
 
-    const search = String(req.query.search || "").trim();
+    const search = String(
+        req.query.search || ""
+    ).trim();
 
     try {
 
@@ -178,7 +200,9 @@ app.get("/api/users", (req, res) => {
         res.status(500).json({
             error: "Could not load users."
         });
+
     }
+
 });
 
 // ==========================================
@@ -187,8 +211,13 @@ app.get("/api/users", (req, res) => {
 
 app.get("/api/messages", (req, res) => {
 
-    const user1 = String(req.query.user1 || "");
-    const user2 = String(req.query.user2 || "");
+    const user1 = String(
+        req.query.user1 || ""
+    );
+
+    const user2 = String(
+        req.query.user2 || ""
+    );
 
     if (!user1 || !user2) {
         return res.json([]);
@@ -225,7 +254,9 @@ app.get("/api/messages", (req, res) => {
         res.status(500).json({
             error: "Could not load messages."
         });
+
     }
+
 });
 
 // ==========================================
@@ -234,11 +265,25 @@ app.get("/api/messages", (req, res) => {
 
 io.on("connection", (socket) => {
 
-    console.log("User connected:", socket.id);
+    console.log(
+        "User connected:",
+        socket.id
+    );
 
-    // --------------------------------------
+    // Send current count immediately
+    socket.emit(
+        "player-count",
+        onlineUsers.size
+    );
+
+    socket.emit(
+        "online-users",
+        Array.from(onlineUsers.keys())
+    );
+
+    // ======================================
     // LOGIN
-    // --------------------------------------
+    // ======================================
 
     socket.on("login", (username) => {
 
@@ -248,26 +293,48 @@ io.on("connection", (socket) => {
             return;
         }
 
+        // If this username was already connected,
+        // remove the old socket from the online list.
+        const oldSocketId = onlineUsers.get(username);
+
+        if (oldSocketId && oldSocketId !== socket.id) {
+
+            const oldSocket = io.sockets.sockets.get(
+                oldSocketId
+            );
+
+            if (oldSocket) {
+                oldSocket.username = null;
+            }
+
+        }
+
         socket.username = username;
 
-onlineUsers.set(username, socket.id);
+        onlineUsers.set(
+            username,
+            socket.id
+        );
 
-socket.join(`user:${username}`);
+        socket.join(
+            `user:${username}`
+        );
 
-io.emit("user-online", {
-    username
-});
+        io.emit("user-online", {
+            username
+        });
 
-// Send live player count to everybody
-io.emit("player-count", onlineUsers.size);
+        sendOnlineCount();
 
-io.emit("online-users",
-    Array.from(onlineUsers.keys())
-);
+        console.log(
+            `${username} is ONLINE`
+        );
 
-    // --------------------------------------
+    });
+
+    // ======================================
     // SEND MESSAGE
-    // --------------------------------------
+    // ======================================
 
     socket.on("send-message", (data) => {
 
@@ -275,8 +342,13 @@ io.emit("online-users",
             return;
         }
 
-        const receiver = cleanUsername(data?.receiver);
-        const message = String(data?.message || "").trim();
+        const receiver = cleanUsername(
+            data?.receiver
+        );
+
+        const message = String(
+            data?.message || ""
+        ).trim();
 
         if (!receiver || !message) {
             return;
@@ -301,26 +373,42 @@ io.emit("online-users",
         } catch (error) {
 
             console.error(error);
+
             return;
         }
 
         const messageData = {
+
             sender: socket.username,
+
             receiver,
+
             message,
-            created_at: new Date().toISOString()
+
+            created_at:
+                new Date().toISOString()
+
         };
 
-        io.to(`user:${socket.username}`)
-            .emit("new-message", messageData);
+        io.to(
+            `user:${socket.username}`
+        ).emit(
+            "new-message",
+            messageData
+        );
 
-        io.to(`user:${receiver}`)
-            .emit("new-message", messageData);
+        io.to(
+            `user:${receiver}`
+        ).emit(
+            "new-message",
+            messageData
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // CALL USER
-    // --------------------------------------
+    // ======================================
 
     socket.on("call-user", (data) => {
 
@@ -328,61 +416,89 @@ io.emit("online-users",
             return;
         }
 
-        const receiver = cleanUsername(data?.receiver);
-        const targetSocket = onlineUsers.get(receiver);
+        const receiver = cleanUsername(
+            data?.receiver
+        );
+
+        const targetSocket =
+            onlineUsers.get(receiver);
 
         if (!targetSocket) {
-            socket.emit("call-failed", {
-                reason: "User is offline."
-            });
+
+            socket.emit(
+                "call-failed",
+                {
+                    reason: "User is offline."
+                }
+            );
 
             return;
         }
 
-        io.to(targetSocket).emit("incoming-call", {
-            caller: socket.username
-        });
+        io.to(targetSocket).emit(
+            "incoming-call",
+            {
+                caller: socket.username
+            }
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // ACCEPT CALL
-    // --------------------------------------
+    // ======================================
 
     socket.on("call-accepted", (data) => {
 
-        const caller = cleanUsername(data?.caller);
-        const targetSocket = onlineUsers.get(caller);
+        const caller = cleanUsername(
+            data?.caller
+        );
+
+        const targetSocket =
+            onlineUsers.get(caller);
 
         if (!targetSocket) {
             return;
         }
 
-        io.to(targetSocket).emit("call-accepted", {
-            username: socket.username
-        });
+        io.to(targetSocket).emit(
+            "call-accepted",
+            {
+                username: socket.username
+            }
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // DECLINE CALL
-    // --------------------------------------
+    // ======================================
 
     socket.on("call-declined", (data) => {
 
-        const caller = cleanUsername(data?.caller);
-        const targetSocket = onlineUsers.get(caller);
+        const caller = cleanUsername(
+            data?.caller
+        );
+
+        const targetSocket =
+            onlineUsers.get(caller);
 
         if (!targetSocket) {
             return;
         }
 
-        io.to(targetSocket).emit("call-declined", {
-            username: socket.username
-        });
+        io.to(targetSocket).emit(
+            "call-declined",
+            {
+                username: socket.username
+            }
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // WEBRTC OFFER
-    // --------------------------------------
+    // ======================================
 
     socket.on("webrtc-offer", (data) => {
 
@@ -394,15 +510,19 @@ io.emit("online-users",
             return;
         }
 
-        io.to(target).emit("webrtc-offer", {
-            from: socket.username,
-            offer: data.offer
-        });
+        io.to(target).emit(
+            "webrtc-offer",
+            {
+                from: socket.username,
+                offer: data.offer
+            }
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // WEBRTC ANSWER
-    // --------------------------------------
+    // ======================================
 
     socket.on("webrtc-answer", (data) => {
 
@@ -414,15 +534,19 @@ io.emit("online-users",
             return;
         }
 
-        io.to(target).emit("webrtc-answer", {
-            from: socket.username,
-            answer: data.answer
-        });
+        io.to(target).emit(
+            "webrtc-answer",
+            {
+                from: socket.username,
+                answer: data.answer
+            }
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // ICE CANDIDATES
-    // --------------------------------------
+    // ======================================
 
     socket.on("webrtc-ice", (data) => {
 
@@ -434,15 +558,19 @@ io.emit("online-users",
             return;
         }
 
-        io.to(target).emit("webrtc-ice", {
-            from: socket.username,
-            candidate: data.candidate
-        });
+        io.to(target).emit(
+            "webrtc-ice",
+            {
+                from: socket.username,
+                candidate: data.candidate
+            }
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // END CALL
-    // --------------------------------------
+    // ======================================
 
     socket.on("end-call", (data) => {
 
@@ -454,44 +582,75 @@ io.emit("online-users",
             return;
         }
 
-        io.to(target).emit("call-ended", {
-            username: socket.username
-        });
+        io.to(target).emit(
+            "call-ended",
+            {
+                username: socket.username
+            }
+        );
+
     });
 
-    // --------------------------------------
+    // ======================================
     // DISCONNECT
-    // --------------------------------------
+    // ======================================
 
     socket.on("disconnect", () => {
 
-        onlineUsers.delete(socket.username);
+        const username = socket.username;
 
-io.emit("user-offline", {
-    username: socket.username
-});
+        if (username) {
 
-// Update everybody's live player count
-io.emit("player-count", onlineUsers.size);
+            // Only remove this username if THIS
+            // socket is the current connection.
+            if (
+                onlineUsers.get(username)
+                === socket.id
+            ) {
 
-io.emit("online-users",
-    Array.from(onlineUsers.keys())
-);
-}
+                onlineUsers.delete(
+                    username
+                );
 
-        console.log("Disconnected:", socket.id);
+                io.emit(
+                    "user-offline",
+                    {
+                        username
+                    }
+                );
+
+                console.log(
+                    `${username} is OFFLINE`
+                );
+
+                sendOnlineCount();
+
+            }
+
+        }
+
+        console.log(
+            "Disconnected:",
+            socket.id
+        );
+
     });
+
 });
 
 // ==========================================
 // START SERVER
 // ==========================================
 
-const PORT = process.env.PORT || 3002;
+const PORT =
+    process.env.PORT || 3002;
 
-server.listen(PORT, "0.0.0.0", () => {
+server.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
 
-    console.log(`
+        console.log(`
 ========================================
              GAMEHUB
 ========================================
@@ -501,7 +660,12 @@ GameHub server is running!
 Local:
 http://localhost:${PORT}
 
+Homepage:
+launch.html
+
 Ready for players.
 ========================================
 `);
-});
+
+    }
+);
