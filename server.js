@@ -8,20 +8,30 @@ const Database = require("better-sqlite3");
 const app = express();
 const server = http.createServer(app);
 
+const ALLOWED_ORIGINS = [
+    "https://homeworkstudyh.netlify.app",
+    "https://gamehub-t22r.onrender.com"
+];
+
 const io = new Server(server, {
     cors: {
-        origin: true,
-        methods: ["GET", "POST"]
+        origin: ALLOWED_ORIGINS,
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
-app.use(cors());
+app.use(cors({
+    origin: ALLOWED_ORIGINS,
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ==========================================
-// DATABASE
-// ==========================================
+/* =========================
+   DATABASE
+========================= */
 
 const db = new Database("gamehub.db");
 
@@ -43,15 +53,11 @@ db.exec(`
     );
 `);
 
-// ==========================================
-// SERVE GAMEHUB FILES
-// ==========================================
+/* =========================
+   STATIC FILES
+========================= */
 
 app.use(express.static(__dirname));
-
-// ==========================================
-// GAMEHUB HOMEPAGE
-// ==========================================
 
 app.get("/", (req, res) => {
     res.sendFile(
@@ -59,634 +65,462 @@ app.get("/", (req, res) => {
     );
 });
 
-// ==========================================
-// PWA FILES
-// ==========================================
-
-// Manifest
 app.get("/manifest.webmanifest", (req, res) => {
     res.sendFile(
         path.join(__dirname, "manifest.webmanifest")
     );
 });
 
-// Service worker
 app.get("/sw.js", (req, res) => {
     res.sendFile(
         path.join(__dirname, "sw.js")
     );
 });
 
-// ==========================================
-// USERNAME FILTER
-// ==========================================
-
-const blockedWords = [
-    "fuck",
-    "shit",
-    "bitch",
-    "asshole",
-    "nigger",
-    "faggot"
-];
-
-function cleanUsername(username) {
-    return String(username || "")
-        .trim()
-        .replace(/\s+/g, "_");
-}
-
-function validUsername(username) {
-
-    if (!username) {
-        return false;
-    }
-
-    if (username.length < 3 || username.length > 20) {
-        return false;
-    }
-
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        return false;
-    }
-
-    const lower = username.toLowerCase();
-
-    for (const word of blockedWords) {
-        if (lower.includes(word)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-// ==========================================
-// ONLINE USERS
-// ==========================================
-
-const onlineUsers = new Map();
-
-function sendOnlineCount() {
-
-    const count = onlineUsers.size;
-
-    console.log("ONLINE PLAYERS:", count);
-
-    io.emit("player-count", count);
-
-    io.emit(
-        "online-users",
-        Array.from(onlineUsers.keys())
-    );
-}
-
-// ==========================================
-// REGISTER
-// ==========================================
+/* =========================
+   USER API
+========================= */
 
 app.post("/api/register", (req, res) => {
 
-    const username = cleanUsername(
-        req.body.username
-    );
-
-    if (!validUsername(username)) {
-
-        return res.status(400).json({
-            success: false,
-            error: "Invalid username."
-        });
-
-    }
-
     try {
 
+        const username = String(req.body.username || "").trim();
+
+        if (!username) {
+            return res.status(400).json({
+                error: "Username required"
+            });
+        }
+
+        if (username.length > 24) {
+            return res.status(400).json({
+                error: "Username is too long"
+            });
+        }
+
         const existing = db
-            .prepare(
-                "SELECT id FROM users WHERE username = ?"
-            )
+            .prepare("SELECT * FROM users WHERE username = ?")
             .get(username);
 
-        if (!existing) {
-
-            db.prepare(`
-                INSERT INTO users (username)
-                VALUES (?)
-            `).run(username);
-
+        if (existing) {
+            return res.json({
+                success: true,
+                user: existing
+            });
         }
+
+        const result = db
+            .prepare("INSERT INTO users (username) VALUES (?)")
+            .run(username);
+
+        const user = db
+            .prepare("SELECT * FROM users WHERE id = ?")
+            .get(result.lastInsertRowid);
 
         res.json({
             success: true,
-            username
+            user
         });
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Register error:", error);
 
         res.status(500).json({
-            success: false,
-            error: "Could not create account."
+            error: "Server error"
         });
-
     }
-
 });
 
-// ==========================================
-// SEARCH USERS
-// ==========================================
+/* =========================
+   GET USERS
+========================= */
 
 app.get("/api/users", (req, res) => {
 
-    const search = String(
-        req.query.search || ""
-    ).trim();
-
     try {
 
-        const users = db.prepare(`
-            SELECT username
-            FROM users
-            WHERE username LIKE ?
-            ORDER BY username
-            LIMIT 50
-        `).all(`%${search}%`);
+        const users = db
+            .prepare(`
+                SELECT id, username, created_at
+                FROM users
+                ORDER BY username COLLATE NOCASE
+            `)
+            .all();
 
         res.json(users);
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Users error:", error);
 
         res.status(500).json({
-            error: "Could not load users."
+            error: "Server error"
         });
-
     }
-
 });
 
-// ==========================================
-// MESSAGE HISTORY
-// ==========================================
+/* =========================
+   MESSAGES
+========================= */
 
 app.get("/api/messages", (req, res) => {
 
-    const user1 = String(
-        req.query.user1 || ""
-    );
-
-    const user2 = String(
-        req.query.user2 || ""
-    );
-
-    if (!user1 || !user2) {
-        return res.json([]);
-    }
-
     try {
 
-        const messages = db.prepare(`
-            SELECT
+        const sender = String(req.query.sender || "");
+        const receiver = String(req.query.receiver || "");
+
+        if (!sender || !receiver) {
+            return res.json([]);
+        }
+
+        const messages = db
+            .prepare(`
+                SELECT
+                    id,
+                    sender,
+                    receiver,
+                    message,
+                    created_at
+                FROM messages
+                WHERE
+                    (sender = ? AND receiver = ?)
+                    OR
+                    (sender = ? AND receiver = ?)
+                ORDER BY id ASC
+            `)
+            .all(
                 sender,
                 receiver,
-                message,
-                created_at
-            FROM messages
-            WHERE
-                (sender = ? AND receiver = ?)
-                OR
-                (sender = ? AND receiver = ?)
-            ORDER BY id ASC
-            LIMIT 500
-        `).all(
-            user1,
-            user2,
-            user2,
-            user1
-        );
+                receiver,
+                sender
+            );
 
         res.json(messages);
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Messages error:", error);
 
         res.status(500).json({
-            error: "Could not load messages."
+            error: "Server error"
         });
-
     }
-
 });
 
-// ==========================================
-// SOCKET.IO
-// ==========================================
+/* =========================
+   ONLINE USERS
+========================= */
 
-io.on("connection", (socket) => {
+const onlineUsers = new Map();
 
-    console.log(
-        "User connected:",
-        socket.id
+function broadcastOnlineUsers() {
+
+    const users = Array.from(
+        onlineUsers.values()
     );
 
-    // ======================================
-    // INITIAL PLAYER DATA
-    // ======================================
+    io.emit("online-users", users);
+}
 
-    socket.emit(
-        "player-count",
-        onlineUsers.size
-    );
+/* =========================
+   SOCKET.IO
+========================= */
 
-    socket.emit(
-        "online-users",
-        Array.from(onlineUsers.keys())
-    );
+io.on("connection", socket => {
 
-    // ======================================
-    // LOGIN
-    // ======================================
+    console.log("Socket connected:", socket.id);
 
-    socket.on("login", (username) => {
+    /* LOGIN */
 
-        username = cleanUsername(username);
+    socket.on("login", username => {
 
-        if (!validUsername(username)) {
+        username = String(username || "").trim();
+
+        if (!username) {
             return;
         }
 
-        const oldSocketId =
-            onlineUsers.get(username);
-
-        if (
-            oldSocketId &&
-            oldSocketId !== socket.id
-        ) {
-
-            const oldSocket =
-                io.sockets.sockets.get(
-                    oldSocketId
-                );
-
-            if (oldSocket) {
-                oldSocket.username = null;
-            }
-
-        }
+        onlineUsers.set(socket.id, {
+            id: socket.id,
+            username
+        });
 
         socket.username = username;
 
-        onlineUsers.set(
-            username,
-            socket.id
-        );
-
-        socket.join(
-            `user:${username}`
-        );
-
-        io.emit(
-            "user-online",
-            {
-                username
-            }
-        );
-
-        sendOnlineCount();
-
         console.log(
-            `${username} is ONLINE`
+            `${username} is online`
         );
 
+        socket.emit("login-success", {
+            username,
+            id: socket.id
+        });
+
+        broadcastOnlineUsers();
     });
 
-    // ======================================
-    // SEND MESSAGE
-    // ======================================
+    /* =========================
+       CHAT
+    ========================= */
 
-    socket.on("send-message", (data) => {
+    socket.on("send-message", data => {
 
-        if (!socket.username) {
+        if (!data) {
             return;
         }
+
+        const sender =
+            socket.username ||
+            String(data.sender || "").trim();
 
         const receiver =
-            cleanUsername(data?.receiver);
+            String(data.receiver || "").trim();
 
         const message =
-            String(data?.message || "")
-                .trim();
+            String(data.message || "").trim();
 
-        if (!receiver || !message) {
+        if (!sender || !receiver || !message) {
             return;
         }
 
-        if (message.length > 2000) {
-            return;
-        }
+        db.prepare(`
+            INSERT INTO messages
+            (sender, receiver, message)
+            VALUES (?, ?, ?)
+        `).run(
+            sender,
+            receiver,
+            message
+        );
 
-        try {
+        let receiverSocket = null;
 
-            db.prepare(`
-                INSERT INTO messages
-                (sender, receiver, message)
-                VALUES (?, ?, ?)
-            `).run(
-                socket.username,
-                receiver,
-                message
-            );
+        for (const [socketId, user] of onlineUsers.entries()) {
 
-        } catch (error) {
+            if (
+                user.username.toLowerCase() ===
+                receiver.toLowerCase()
+            ) {
 
-            console.error(error);
-
-            return;
+                receiverSocket = socketId;
+                break;
+            }
         }
 
         const messageData = {
-
-            sender:
-                socket.username,
-
+            sender,
             receiver,
-
             message,
-
-            created_at:
-                new Date().toISOString()
-
+            created_at: new Date().toISOString()
         };
 
-        io.to(
-            `user:${socket.username}`
-        ).emit(
-            "new-message",
+        socket.emit(
+            "message-sent",
             messageData
         );
 
-        io.to(
-            `user:${receiver}`
-        ).emit(
-            "new-message",
-            messageData
-        );
+        if (receiverSocket) {
 
+            io.to(receiverSocket).emit(
+                "receive-message",
+                messageData
+            );
+        }
     });
 
-    // ======================================
-    // CALL USER
-    // ======================================
+    /* =========================
+       CALL REQUEST
+    ========================= */
 
-    socket.on("call-user", (data) => {
+    socket.on("call-user", data => {
 
-        if (!socket.username) {
+        if (!data) {
             return;
         }
 
         const receiver =
-            cleanUsername(data?.receiver);
+            String(data.receiver || "").trim();
 
-        const targetSocket =
-            onlineUsers.get(receiver);
+        if (!receiver) {
+            return;
+        }
 
-        if (!targetSocket) {
+        let receiverSocket = null;
 
-            socket.emit(
-                "call-failed",
-                {
-                    reason: "User is offline."
-                }
-            );
+        for (const [socketId, user] of onlineUsers.entries()) {
+
+            if (
+                user.username.toLowerCase() ===
+                receiver.toLowerCase()
+            ) {
+
+                receiverSocket = socketId;
+                break;
+            }
+        }
+
+        if (!receiverSocket) {
+
+            socket.emit("call-error", {
+                message: `${receiver} is not online.`
+            });
 
             return;
         }
 
-        io.to(targetSocket).emit(
-            "incoming-call",
+        io.to(receiverSocket).emit(
+            "call-user",
             {
-                caller:
-                    socket.username
+                caller: socket.username,
+                callerId: socket.id,
+                video: !!data.video
             }
         );
-
     });
 
-    // ======================================
-    // ACCEPT CALL
-    // ======================================
+    /* =========================
+       CALL ACCEPTED
+    ========================= */
 
-    socket.on("call-accepted", (data) => {
+    socket.on("call-accepted", data => {
 
-        const caller =
-            cleanUsername(data?.caller);
-
-        const targetSocket =
-            onlineUsers.get(caller);
-
-        if (!targetSocket) {
+        if (!data || !data.callerId) {
             return;
         }
 
-        io.to(targetSocket).emit(
+        io.to(data.callerId).emit(
             "call-accepted",
             {
-                username:
-                    socket.username
+                receiverId: socket.id,
+                receiver: socket.username
             }
         );
-
     });
 
-    // ======================================
-    // DECLINE CALL
-    // ======================================
+    /* =========================
+       CALL DECLINED
+    ========================= */
 
-    socket.on("call-declined", (data) => {
+    socket.on("call-declined", data => {
 
-        const caller =
-            cleanUsername(data?.caller);
-
-        const targetSocket =
-            onlineUsers.get(caller);
-
-        if (!targetSocket) {
+        if (!data || !data.callerId) {
             return;
         }
 
-        io.to(targetSocket).emit(
+        io.to(data.callerId).emit(
             "call-declined",
             {
-                username:
-                    socket.username
+                receiverId: socket.id,
+                receiver: socket.username
             }
         );
-
     });
 
-    // ======================================
-    // WEBRTC OFFER
-    // ======================================
+    /* =========================
+       WEBRTC OFFER
+    ========================= */
 
-    socket.on("webrtc-offer", (data) => {
+    socket.on("webrtc-offer", data => {
 
-        const target =
-            onlineUsers.get(
-                cleanUsername(data?.target)
-            );
-
-        if (!target) {
+        if (!data || !data.target) {
             return;
         }
 
-        io.to(target).emit(
+        io.to(data.target).emit(
             "webrtc-offer",
             {
-                from:
-                    socket.username,
-
-                offer:
-                    data.offer
+                offer: data.offer,
+                sender: socket.id
             }
         );
-
     });
 
-    // ======================================
-    // WEBRTC ANSWER
-    // ======================================
+    /* =========================
+       WEBRTC ANSWER
+    ========================= */
 
-    socket.on("webrtc-answer", (data) => {
+    socket.on("webrtc-answer", data => {
 
-        const target =
-            onlineUsers.get(
-                cleanUsername(data?.target)
-            );
-
-        if (!target) {
+        if (!data || !data.target) {
             return;
         }
 
-        io.to(target).emit(
+        io.to(data.target).emit(
             "webrtc-answer",
             {
-                from:
-                    socket.username,
-
-                answer:
-                    data.answer
+                answer: data.answer,
+                sender: socket.id
             }
         );
-
     });
 
-    // ======================================
-    // ICE CANDIDATES
-    // ======================================
+    /* =========================
+       ICE CANDIDATES
+    ========================= */
 
-    socket.on("webrtc-ice", (data) => {
+    socket.on("webrtc-ice", data => {
 
-        const target =
-            onlineUsers.get(
-                cleanUsername(data?.target)
-            );
-
-        if (!target) {
+        if (!data || !data.target) {
             return;
         }
 
-        io.to(target).emit(
+        io.to(data.target).emit(
             "webrtc-ice",
             {
-                from:
-                    socket.username,
-
-                candidate:
-                    data.candidate
+                candidate: data.candidate,
+                sender: socket.id
             }
         );
-
     });
 
-    // ======================================
-    // END CALL
-    // ======================================
+    /* =========================
+       END CALL
+    ========================= */
 
-    socket.on("end-call", (data) => {
+    socket.on("end-call", data => {
 
-        const target =
-            onlineUsers.get(
-                cleanUsername(data?.target)
-            );
-
-        if (!target) {
+        if (!data || !data.target) {
             return;
         }
 
-        io.to(target).emit(
-            "call-ended",
+        io.to(data.target).emit(
+            "end-call",
             {
-                username:
-                    socket.username
+                sender: socket.id
             }
         );
-
     });
 
-    // ======================================
-    // DISCONNECT
-    // ======================================
+    /* =========================
+       DISCONNECT
+    ========================= */
 
     socket.on("disconnect", () => {
 
-        const username =
-            socket.username;
+        const user =
+            onlineUsers.get(socket.id);
 
-        if (username) {
+        if (user) {
 
-            if (
-                onlineUsers.get(username)
-                === socket.id
-            ) {
+            console.log(
+                `${user.username} disconnected`
+            );
 
-                onlineUsers.delete(
-                    username
-                );
+            onlineUsers.delete(
+                socket.id
+            );
 
-                io.emit(
-                    "user-offline",
-                    {
-                        username
-                    }
-                );
-
-                console.log(
-                    `${username} is OFFLINE`
-                );
-
-                sendOnlineCount();
-
-            }
-
+            broadcastOnlineUsers();
         }
-
-        console.log(
-            "Disconnected:",
-            socket.id
-        );
-
     });
-
 });
 
-// ==========================================
-// START SERVER
-// ==========================================
+/* =========================
+   SERVER
+========================= */
 
 const PORT =
     process.env.PORT || 3002;
@@ -696,26 +530,26 @@ server.listen(
     "0.0.0.0",
     () => {
 
-        console.log(`
-========================================
-             GAMEHUB
-========================================
-
-GameHub server is running!
-
-Local:
-http://localhost:${PORT}
-
-Homepage:
-Schoolgames.html
-
-PWA:
-manifest.webmanifest
-sw.js
-
-Ready for players.
-========================================
-`);
-
+        console.log("");
+        console.log("================================");
+        console.log("       GAMEHUB SERVER ONLINE");
+        console.log("================================");
+        console.log("");
+        console.log(`Port: ${PORT}`);
+        console.log("");
+        console.log(
+            "Allowed GameHub:"
+        );
+        console.log(
+            "https://homeworkstudyh.netlify.app"
+        );
+        console.log("");
+        console.log(
+            "Render:"
+        );
+        console.log(
+            "https://gamehub-t22r.onrender.com"
+        );
+        console.log("");
     }
 );
