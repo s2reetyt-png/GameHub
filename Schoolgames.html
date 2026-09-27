@@ -2,29 +2,43 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>GameHub</title>
 
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#08090d">
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#070910">
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+:root{
+    --bg:#06070b;
+    --panel:#0c0f17;
+    --panel2:#111521;
+    --border:rgba(255,255,255,.08);
+    --text:#f5f7ff;
+    --muted:#8d95aa;
+    --accent:#7c5cff;
+    --accent2:#21d4fd;
+    --green:#35e69a;
+    --danger:#ff5277;
+    --shadow:0 20px 60px rgba(0,0,0,.45);
 }
 
-html,
-body{
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
     width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#07090d;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
+    min-height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+
+body{
+    overflow-x:hidden;
 }
 
 button,
@@ -36,623 +50,636 @@ button{
     cursor:pointer;
 }
 
-/* =====================================================
-   BOOT
-===================================================== */
+button:focus,
+input:focus{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+}
 
-#bootScreen{
+/* BACKGROUND */
+
+.background{
     position:fixed;
     inset:0;
-    z-index:99999;
-    background:#050608;
+    z-index:-5;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at 20% 10%,rgba(124,92,255,.14),transparent 28%),
+        radial-gradient(circle at 85% 25%,rgba(33,212,253,.08),transparent 25%),
+        linear-gradient(135deg,#06070b,#080b12 50%,#05060a);
+}
+
+.background::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    opacity:.16;
+    background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:45px 45px;
+    mask-image:linear-gradient(to bottom,black,transparent);
+}
+
+/* BOOT */
+
+#boot{
+    position:fixed;
+    inset:0;
+    z-index:9999;
     display:flex;
     align-items:center;
     justify-content:center;
-    transition:opacity .35s ease;
+    background:#05060a;
+    transition:opacity .5s;
 }
 
 .bootBox{
-    width:min(700px,90%);
+    width:min(500px,90%);
 }
 
-.bootTitle{
-    font-size:38px;
-    font-weight:950;
-    letter-spacing:5px;
-    margin-bottom:8px;
+.bootLogo{
+    font-size:52px;
+    font-weight:900;
+    letter-spacing:-4px;
 }
 
-.bootSubtitle{
-    color:#7d8797;
-    font-size:13px;
-    letter-spacing:2px;
-    margin-bottom:35px;
+.bootLogo span{
+    color:var(--accent);
 }
 
-.bootText{
-    min-height:120px;
-    font-family:Consolas,monospace;
-    font-size:13px;
-    color:#aeb8c8;
-    line-height:1.9;
+.bootSub{
+    color:var(--muted);
+    margin-top:8px;
 }
 
-.bootLine{
-    opacity:0;
-    animation:bootLine .3s forwards;
-}
-
-.bootProgress{
-    height:5px;
-    background:#171b22;
+.bootBar{
+    height:4px;
+    background:#181c28;
+    border-radius:99px;
     overflow:hidden;
-    margin-top:25px;
-    border-radius:5px;
+    margin-top:28px;
 }
 
-.bootProgressBar{
+.bootFill{
+    width:0%;
     height:100%;
-    width:100%;
-    background:#fff;
-    transform-origin:left;
-    animation:bootProgress 1.15s ease forwards;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    transition:width .25s;
 }
 
-@keyframes bootLine{
-    to{
-        opacity:1;
-    }
+.bootStatus{
+    margin-top:12px;
+    color:#687188;
+    font-size:13px;
 }
 
-@keyframes bootProgress{
-    from{
-        transform:scaleX(0);
-    }
+/* APP */
 
-    to{
-        transform:scaleX(1);
-    }
+.app{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:240px 1fr;
 }
 
-/* =====================================================
-   APP
-===================================================== */
+/* SIDEBAR */
 
-#app{
-    width:100%;
-    height:100%;
-    display:none;
-    flex-direction:column;
-    background:
-        radial-gradient(
-            circle at 80% -20%,
-            rgba(80,110,160,.16),
-            transparent 35%
-        ),
-        #080b10;
-}
-
-/* =====================================================
-   TOP BAR
-===================================================== */
-
-.topbar{
-    height:68px;
-    flex-shrink:0;
+.sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:22px 16px;
+    background:rgba(8,10,16,.78);
+    backdrop-filter:blur(24px);
+    border-right:1px solid var(--border);
     display:flex;
-    align-items:center;
-    gap:20px;
-    padding:0 22px;
-    background:rgba(10,13,18,.97);
-    border-bottom:1px solid #202630;
-    z-index:50;
+    flex-direction:column;
 }
 
 .logo{
-    font-size:22px;
-    font-weight:950;
-    letter-spacing:2px;
-    white-space:nowrap;
+    padding:8px 12px 28px;
+    font-size:25px;
+    font-weight:900;
+    letter-spacing:-1px;
 }
 
 .logo span{
-    color:#7f8cff;
+    color:var(--accent);
+}
+
+.logo small{
+    display:block;
+    color:#555d70;
+    font-size:9px;
+    letter-spacing:3px;
+    margin-top:4px;
 }
 
 .nav{
     display:flex;
-    gap:4px;
-    height:100%;
-    align-items:center;
+    flex-direction:column;
+    gap:5px;
 }
 
 .nav button{
     border:0;
     background:transparent;
-    color:#858e9d;
-    padding:10px 13px;
-    border-radius:7px;
+    color:#858da1;
+    text-align:left;
+    padding:13px 14px;
+    border-radius:12px;
+    transition:.2s;
+}
+
+.nav button:hover{
+    background:rgba(255,255,255,.05);
+    color:white;
+}
+
+.nav button.active{
+    background:linear-gradient(
+        90deg,
+        rgba(124,92,255,.2),
+        rgba(124,92,255,.05)
+    );
+    color:white;
+    box-shadow:inset 3px 0 var(--accent);
+}
+
+.sidebarBottom{
+    margin-top:auto;
+}
+
+.status{
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.025);
+    padding:13px;
+    border-radius:14px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.statusDot{
+    display:inline-block;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--green);
+    margin-right:7px;
+    box-shadow:0 0 10px var(--green);
+}
+
+/* MAIN */
+
+.main{
+    min-width:0;
+}
+
+.topbar{
+    height:70px;
+    padding:0 30px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:1px solid var(--border);
+    background:rgba(6,7,11,.55);
+    backdrop-filter:blur(20px);
+    position:sticky;
+    top:0;
+    z-index:50;
+}
+
+.search{
+    flex:1;
+    max-width:600px;
+    position:relative;
+}
+
+.search input{
+    width:100%;
+    background:#0d1018;
+    border:1px solid var(--border);
+    color:white;
+    border-radius:12px;
+    padding:12px 16px 12px 42px;
+}
+
+.searchIcon{
+    position:absolute;
+    left:15px;
+    top:11px;
+    color:#667087;
+}
+
+.topActions{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.iconButton{
+    border:1px solid var(--border);
+    background:#0d1018;
+    color:#b7bfd1;
+    border-radius:11px;
+    width:40px;
+    height:40px;
+}
+
+.iconButton:hover{
+    color:white;
+    background:#151a26;
+}
+
+.userPill{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:7px 11px;
+    border:1px solid var(--border);
+    background:#0d1018;
+    border-radius:12px;
     font-size:13px;
+}
+
+.avatar{
+    width:27px;
+    height:27px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:white;
+    font-size:12px;
     font-weight:800;
 }
 
-.nav button:hover,
-.nav button.active{
-    background:#181d26;
-    color:#fff;
-}
+/* CONTENT */
 
-.searchBox{
-    margin-left:auto;
-    width:230px;
-}
-
-.searchBox input{
-    width:100%;
-    height:38px;
-    border:1px solid #272e39;
-    background:#11151c;
-    color:#fff;
-    border-radius:8px;
-    outline:none;
-    padding:0 13px;
-}
-
-.searchBox input:focus{
-    border-color:#5964ff;
-}
-
-.onlineCounter{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    white-space:nowrap;
-    font-size:11px;
-    font-weight:900;
-    letter-spacing:1px;
-    color:#a9b2c0;
-}
-
-.onlineDot{
-    width:9px;
-    height:9px;
-    border-radius:50%;
-    background:#35ff6d;
-    box-shadow:0 0 10px #35ff6d;
-    animation:onlinePulse 1.5s infinite;
-}
-
-@keyframes onlinePulse{
-    0%,100%{
-        opacity:1;
-        transform:scale(1);
-    }
-
-    50%{
-        opacity:.45;
-        transform:scale(.75);
-    }
-}
-
-/* =====================================================
-   CONTENT
-===================================================== */
-
-#content{
-    flex:1;
-    overflow-y:auto;
-    overflow-x:hidden;
-}
-
-.page{
-    display:none;
-    min-height:100%;
+.content{
     padding:30px;
+    max-width:1500px;
+    margin:auto;
 }
 
-.page.active{
+.view{
+    display:none;
+    animation:fadeIn .25s ease;
+}
+
+.view.active{
     display:block;
 }
 
-/* =====================================================
-   HOME
-===================================================== */
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(5px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+/* HERO */
 
 .hero{
-    min-height:310px;
-    border:1px solid #252c37;
-    border-radius:15px;
-    background:
-        linear-gradient(
-            115deg,
-            rgba(22,28,39,.98),
-            rgba(10,13,18,.85)
-        ),
-        radial-gradient(
-            circle at 80% 30%,
-            #37466f,
-            transparent 35%
-        );
-    display:flex;
-    align-items:center;
-    padding:45px;
+    min-height:330px;
     position:relative;
     overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:24px;
+    background:
+        radial-gradient(circle at 80% 30%,rgba(124,92,255,.25),transparent 35%),
+        linear-gradient(135deg,#111521,#090b12);
+    padding:45px;
+    display:flex;
+    align-items:center;
 }
 
-.hero:after{
+.hero::after{
     content:"";
     position:absolute;
-    width:400px;
-    height:400px;
-    right:-150px;
-    top:-180px;
+    right:-100px;
+    top:-120px;
+    width:420px;
+    height:420px;
     border-radius:50%;
-    border:1px solid #333b4b;
+    border:1px solid rgba(124,92,255,.2);
     box-shadow:
-        0 0 0 40px rgba(255,255,255,.015),
-        0 0 0 80px rgba(255,255,255,.01);
+        0 0 0 50px rgba(124,92,255,.025),
+        0 0 0 100px rgba(124,92,255,.02);
 }
 
-.heroContent{
+.heroText{
     max-width:650px;
-    z-index:1;
+    position:relative;
+    z-index:2;
 }
 
-.heroSmall{
-    color:#8b96aa;
-    font-size:12px;
-    font-weight:900;
+.eyebrow{
+    color:var(--accent2);
+    font-size:11px;
     letter-spacing:3px;
-    margin-bottom:15px;
+    font-weight:800;
+    margin-bottom:12px;
 }
 
 .hero h1{
-    font-size:54px;
-    line-height:1;
-    margin-bottom:17px;
-    letter-spacing:-2px;
+    font-size:clamp(42px,6vw,78px);
+    line-height:.92;
+    letter-spacing:-5px;
+    margin:0;
+}
+
+.hero h1 span{
+    color:var(--accent);
 }
 
 .hero p{
-    color:#9aa4b5;
-    max-width:560px;
-    line-height:1.6;
-    margin-bottom:25px;
+    color:#9aa2b6;
+    max-width:540px;
+    line-height:1.7;
+    margin:22px 0;
 }
 
-.primaryBtn{
+.heroButtons{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.primary{
     border:0;
-    background:#fff;
-    color:#07090d;
-    padding:12px 20px;
-    border-radius:7px;
-    font-weight:900;
+    padding:13px 19px;
+    border-radius:11px;
+    color:white;
+    font-weight:800;
+    background:linear-gradient(135deg,var(--accent),#5c3fe0);
+    box-shadow:0 10px 30px rgba(124,92,255,.2);
 }
 
-.primaryBtn:hover{
-    background:#dce1ff;
+.secondary{
+    border:1px solid var(--border);
+    padding:13px 19px;
+    border-radius:11px;
+    color:#d8dceb;
+    background:#111521;
 }
 
-.sectionTitle{
+/* SECTION */
+
+.section{
+    margin-top:32px;
+}
+
+.sectionHead{
     display:flex;
     align-items:end;
     justify-content:space-between;
-    margin:35px 0 17px;
+    gap:20px;
+    margin-bottom:15px;
 }
 
-.sectionTitle h2{
+.sectionHead h2{
+    margin:0;
     font-size:22px;
+    letter-spacing:-.5px;
 }
 
-.sectionTitle span{
-    color:#697386;
+.sectionHead span{
+    color:#656e83;
     font-size:12px;
 }
 
-/* =====================================================
-   CARDS
-===================================================== */
+/* CARDS */
 
-.grid{
+.cards{
     display:grid;
-    grid-template-columns:
-        repeat(auto-fill,minmax(210px,1fr));
-    gap:15px;
+    grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+    gap:14px;
 }
 
 .card{
-    min-height:225px;
-    background:#0f131a;
-    border:1px solid #232a35;
-    border-radius:12px;
+    position:relative;
     overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:17px;
+    background:linear-gradient(145deg,#10131c,#0b0d13);
+    min-height:205px;
+    transition:.2s;
     cursor:pointer;
-    transition:
-        transform .18s,
-        border-color .18s,
-        background .18s;
 }
 
 .card:hover{
     transform:translateY(-4px);
-    border-color:#48536a;
-    background:#131821;
+    border-color:rgba(124,92,255,.4);
+    box-shadow:var(--shadow);
 }
 
-.cardArt{
+.cardVisual{
     height:125px;
     display:flex;
-    align-items:flex-end;
-    padding:15px;
-    position:relative;
-    overflow:hidden;
+    align-items:center;
+    justify-content:center;
+    font-size:46px;
     background:
-        linear-gradient(
-            135deg,
-            #171d29,
-            #0c1017
-        );
-}
-
-.cardArt:before{
-    content:"";
-    position:absolute;
-    inset:-40%;
-    background:
-        repeating-linear-gradient(
-            120deg,
-            transparent 0 18px,
-            rgba(255,255,255,.035) 19px 20px
-        );
-    transform:rotate(10deg);
-}
-
-.cardArt .bigText{
-    position:relative;
-    font-size:28px;
-    font-weight:950;
-    letter-spacing:-1px;
-    z-index:1;
-}
-
-.cardType{
-    position:absolute;
-    top:10px;
-    right:10px;
-    background:rgba(0,0,0,.55);
-    border:1px solid rgba(255,255,255,.1);
-    padding:5px 7px;
-    border-radius:5px;
-    font-size:9px;
-    font-weight:900;
-    letter-spacing:1px;
-    z-index:2;
+        radial-gradient(circle at 50% 30%,rgba(124,92,255,.22),transparent 55%),
+        #0d1018;
 }
 
 .cardInfo{
     padding:13px;
 }
 
-.cardInfo h3{
-    font-size:15px;
-    margin-bottom:6px;
+.cardName{
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
-.cardInfo p{
-    color:#707b8d;
+.cardMeta{
+    margin-top:5px;
+    color:#697286;
     font-size:11px;
-    line-height:1.4;
 }
 
-/* =====================================================
-   APPS
-===================================================== */
-
-.appCard{
-    min-height:180px;
+.badge{
+    position:absolute;
+    top:9px;
+    left:9px;
+    padding:4px 7px;
+    border-radius:6px;
+    background:rgba(0,0,0,.55);
+    backdrop-filter:blur(10px);
+    color:#b9c1d5;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:1px;
 }
 
-.appCard .cardArt{
-    height:100px;
-}
+/* GAME WINDOW */
 
-.appIcon{
-    width:55px;
-    height:55px;
-    border-radius:13px;
-    background:#202737;
-    display:flex;
+.overlay{
+    position:fixed;
+    inset:0;
+    z-index:500;
+    display:none;
     align-items:center;
     justify-content:center;
-    font-size:22px;
-    font-weight:950;
-    border:1px solid #3a4354;
-    position:relative;
-    z-index:2;
+    background:rgba(0,0,0,.78);
+    backdrop-filter:blur(10px);
+    padding:20px;
 }
 
-/* =====================================================
-   NEWS
-===================================================== */
-
-.newsBox{
-    border:1px solid #252c37;
-    background:#0e1218;
-    border-radius:12px;
-    padding:22px;
-    margin-bottom:12px;
-}
-
-.newsTag{
-    font-size:10px;
-    font-weight:900;
-    letter-spacing:2px;
-    color:#7e89ff;
-    margin-bottom:8px;
-}
-
-.newsBox h3{
-    margin-bottom:8px;
-}
-
-.newsBox p{
-    color:#788395;
-    line-height:1.5;
-    font-size:13px;
-}
-
-/* =====================================================
-   MOVIES
-===================================================== */
-
-.cineHero{
-    min-height:330px;
-    border:1px solid #282f3a;
-    border-radius:15px;
-    background:
-        linear-gradient(
-            90deg,
-            #10151d 20%,
-            rgba(16,21,29,.4)
-        ),
-        radial-gradient(
-            circle at 75% 50%,
-            #343c65,
-            transparent 45%
-        );
+.overlay.show{
     display:flex;
-    align-items:center;
-    padding:45px;
 }
 
-.cineHero h1{
-    font-size:46px;
-    margin-bottom:12px;
-}
-
-.cineHero p{
-    max-width:520px;
-    color:#8d98aa;
-    line-height:1.6;
-    margin-bottom:22px;
-}
-
-/* =====================================================
-   PHONE
-===================================================== */
-
-.phoneLayout{
-    height:calc(100vh - 128px);
-    min-height:500px;
-    display:grid;
-    grid-template-columns:280px 1fr;
-    border:1px solid #252c37;
-    background:#0d1117;
-    border-radius:14px;
+.gameWindow{
+    width:min(1200px,96vw);
+    height:min(780px,92vh);
+    background:#080a10;
+    border:1px solid #252a38;
+    border-radius:18px;
     overflow:hidden;
-}
-
-.phoneSide{
-    border-right:1px solid #252c37;
+    box-shadow:0 30px 100px rgba(0,0,0,.7);
     display:flex;
     flex-direction:column;
-    min-width:0;
 }
 
-.phoneHeader{
-    padding:18px;
-    border-bottom:1px solid #252c37;
-}
-
-.phoneHeader h2{
-    margin-bottom:12px;
-}
-
-.usernameBox{
+.windowBar{
+    height:48px;
     display:flex;
-    gap:6px;
+    align-items:center;
+    padding:0 12px;
+    background:#10131b;
+    border-bottom:1px solid var(--border);
 }
 
-.usernameBox input,
-.userSearch{
-    background:#080b10;
-    border:1px solid #2a313c;
-    color:#fff;
-    outline:none;
-    border-radius:6px;
-    padding:9px;
-    width:100%;
-}
-
-.smallBtn{
-    border:1px solid #313a49;
-    background:#181e28;
-    color:#fff;
-    border-radius:6px;
-    padding:8px 10px;
-    font-weight:800;
-    font-size:11px;
-}
-
-.smallBtn:hover{
-    background:#252d3b;
-}
-
-.contacts{
-    flex:1;
-    overflow-y:auto;
-}
-
-.contact{
-    padding:13px 16px;
-    border-bottom:1px solid #181e27;
-    cursor:pointer;
-}
-
-.contact:hover,
-.contact.selected{
-    background:#181e27;
-}
-
-.contactName{
-    font-weight:800;
+.windowTitle{
     font-size:13px;
+    font-weight:700;
+    flex:1;
 }
 
-.status{
-    font-size:10px;
-    color:#667284;
-    margin-top:4px;
+.windowClose{
+    width:30px;
+    height:30px;
+    border:0;
+    border-radius:7px;
+    color:#cbd0dc;
+    background:#191d27;
 }
 
-.status.online{
-    color:#4dff7c;
+.windowClose:hover{
+    background:var(--danger);
+    color:white;
 }
 
-.phoneMain{
+#gameFrame{
+    width:100%;
+    height:100%;
+    border:0;
+    background:#000;
+}
+
+/* CHAT */
+
+.chatLayout{
+    display:grid;
+    grid-template-columns:250px 1fr;
+    height:calc(100vh - 130px);
+    min-height:500px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    overflow:hidden;
+    background:#0b0e15;
+}
+
+.userList{
+    border-right:1px solid var(--border);
+    overflow:auto;
+}
+
+.userListHeader{
+    padding:18px;
+    font-weight:800;
+    border-bottom:1px solid var(--border);
+}
+
+.chatUser{
+    padding:13px 16px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    cursor:pointer;
+    color:#929aae;
+}
+
+.chatUser:hover,
+.chatUser.selected{
+    background:#151925;
+    color:white;
+}
+
+.onlineDot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#555d6e;
+}
+
+.onlineDot.online{
+    background:var(--green);
+    box-shadow:0 0 8px var(--green);
+}
+
+.chatPanel{
     display:flex;
     flex-direction:column;
     min-width:0;
 }
 
 .chatHeader{
-    height:63px;
-    border-bottom:1px solid #252c37;
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
     display:flex;
     align-items:center;
-    padding:0 17px;
-    gap:12px;
+    gap:10px;
 }
 
-.chatHeader h3{
+.chatHeaderName{
+    font-weight:800;
     flex:1;
 }
 
-.chatMessages{
+.callButtons{
+    display:flex;
+    gap:7px;
+}
+
+.callButton{
+    border:1px solid var(--border);
+    background:#151925;
+    color:#ccd2df;
+    width:38px;
+    height:38px;
+    border-radius:9px;
+}
+
+.callButton:hover{
+    background:var(--accent);
+    color:white;
+}
+
+.messages{
     flex:1;
-    overflow-y:auto;
     padding:20px;
+    overflow:auto;
     display:flex;
     flex-direction:column;
     gap:9px;
@@ -661,380 +688,258 @@ button{
 .message{
     max-width:70%;
     padding:10px 13px;
-    border-radius:9px;
-    background:#181e28;
-    color:#d9dfe9;
+    border-radius:13px;
+    background:#151925;
+    color:#d9deea;
     font-size:13px;
-    line-height:1.45;
-    align-self:flex-start;
-    overflow-wrap:anywhere;
 }
 
 .message.mine{
-    background:#313b62;
     align-self:flex-end;
+    background:linear-gradient(135deg,#684ce9,#5337c7);
+    color:white;
 }
 
 .chatInput{
-    border-top:1px solid #252c37;
-    padding:12px;
     display:flex;
     gap:8px;
+    padding:13px;
+    border-top:1px solid var(--border);
 }
 
 .chatInput input{
     flex:1;
-    background:#080b10;
-    border:1px solid #2a313c;
-    color:#fff;
-    border-radius:7px;
-    outline:none;
-    padding:11px;
+    min-width:0;
+    border:1px solid var(--border);
+    background:#11141d;
+    color:white;
+    border-radius:10px;
+    padding:12px;
 }
 
-/* =====================================================
-   OVERLAYS
-===================================================== */
+/* MODALS */
 
-.overlay{
+.modal{
     position:fixed;
     inset:0;
-    z-index:1000;
-    background:rgba(0,0,0,.82);
+    z-index:800;
     display:none;
     align-items:center;
     justify-content:center;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(12px);
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modalBox{
+    width:min(430px,90vw);
+    border:1px solid var(--border);
+    background:#10131c;
+    border-radius:20px;
     padding:25px;
+    box-shadow:var(--shadow);
 }
 
-.gameWindow{
-    width:min(1200px,96vw);
-    height:min(760px,90vh);
-    background:#080b10;
-    border:1px solid #343c4a;
-    border-radius:12px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    box-shadow:0 25px 80px rgba(0,0,0,.65);
+.modalBox h2{
+    margin-top:0;
 }
 
-.windowBar{
-    height:48px;
-    flex-shrink:0;
-    background:#11161e;
-    border-bottom:1px solid #272e39;
-    display:flex;
-    align-items:center;
-    padding:0 12px;
-    gap:10px;
-}
-
-.windowTitle{
-    flex:1;
-    font-weight:900;
-    font-size:13px;
-}
-
-.windowButton{
-    border:1px solid #303846;
-    background:#1a202a;
-    color:#fff;
-    border-radius:5px;
-    padding:6px 9px;
-    font-size:11px;
-}
-
-.windowButton:hover{
-    background:#2a3240;
-}
-
-.windowFrame{
-    flex:1;
+.modalBox input{
     width:100%;
-    height:100%;
-    border:0;
-    background:#000;
+    border:1px solid var(--border);
+    background:#080b11;
+    color:white;
+    padding:13px;
+    border-radius:10px;
+    margin:10px 0 15px;
 }
 
-.movieWindow{
-    width:min(1200px,95vw);
-    height:min(700px,90vh);
-    background:#050608;
-    border:1px solid #343c4a;
-    border-radius:12px;
-    overflow:hidden;
+.modalActions{
     display:flex;
-    flex-direction:column;
+    gap:8px;
+    justify-content:flex-end;
 }
 
-/* =====================================================
-   CALL UI
-===================================================== */
+/* CALL */
 
-.callModal{
-    width:min(420px,92vw);
-    background:#11161e;
-    border:1px solid #303847;
-    border-radius:14px;
-    padding:28px;
+.callBox{
     text-align:center;
+    width:min(440px,92vw);
+    background:#10131c;
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:30px;
 }
 
 .callAvatar{
-    width:75px;
-    height:75px;
-    border-radius:50%;
-    background:#252d3d;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:0 auto 17px;
+    width:80px;
+    height:80px;
+    border-radius:22px;
+    margin:auto;
+    display:grid;
+    place-items:center;
     font-size:28px;
-    font-weight:950;
+    font-weight:900;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
 }
 
-.callModal h2{
-    margin-bottom:7px;
+.callName{
+    font-size:22px;
+    font-weight:900;
+    margin-top:17px;
 }
 
-.callModal p{
-    color:#7d8797;
-    margin-bottom:22px;
+.callStatus{
+    color:var(--muted);
+    margin-top:6px;
 }
 
-.callButtons{
+.callActions{
     display:flex;
+    justify-content:center;
     gap:10px;
+    margin-top:25px;
 }
 
-.callButtons button{
-    flex:1;
-    padding:11px;
-    border-radius:7px;
-    border:1px solid #303846;
-    background:#1a202a;
-    color:#fff;
-    font-weight:900;
-}
-
-.acceptCall{
-    background:#245d39!important;
-}
-
-.declineCall{
-    background:#632c35!important;
-}
-
-.videoCall{
-    width:min(1000px,95vw);
-    height:min(650px,90vh);
-    background:#050608;
-    border:1px solid #303846;
-    border-radius:12px;
-    overflow:hidden;
-    position:relative;
-}
-
-.remoteVideo{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    background:#090c11;
-}
-
-.localVideo{
-    position:absolute;
-    right:18px;
-    bottom:18px;
-    width:220px;
-    height:145px;
-    object-fit:cover;
-    background:#111;
-    border:2px solid #fff;
-    border-radius:8px;
-}
-
-.callEnd{
-    position:absolute;
-    bottom:18px;
-    left:50%;
-    transform:translateX(-50%);
-    background:#8c3038;
-    color:#fff;
+.callActions button{
+    width:52px;
+    height:52px;
+    border-radius:50%;
     border:0;
-    padding:12px 25px;
-    border-radius:7px;
-    font-weight:900;
+    color:white;
+    background:#202532;
 }
 
-/* =====================================================
-   AD
-===================================================== */
+.callActions .hangup{
+    background:var(--danger);
+}
 
-.adOverlay{
+/* PHONE */
+
+.phoneGrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:15px;
+}
+
+.phoneCard{
+    border:1px solid var(--border);
+    background:#0e1119;
+    border-radius:17px;
+    padding:22px;
+}
+
+.phoneCard h3{
+    margin:0 0 8px;
+}
+
+.phoneCard p{
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* TOAST */
+
+.toast{
     position:fixed;
-    inset:0;
-    z-index:5000;
-    background:rgba(0,0,0,.94);
-    display:none;
-    align-items:center;
-    justify-content:center;
-}
-
-.adBox{
-    width:min(600px,90vw);
-    height:330px;
-    border:1px solid #394252;
-    background:#10151d;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    text-align:center;
+    right:20px;
+    bottom:20px;
+    z-index:2000;
+    background:#151923;
+    border:1px solid var(--border);
     border-radius:12px;
-}
-
-.adBox h2{
-    font-size:35px;
-    letter-spacing:4px;
-    margin-bottom:10px;
-}
-
-.adBox p{
-    color:#727e90;
-    margin-bottom:25px;
-}
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-#toast{
-    position:fixed;
-    left:50%;
-    bottom:25px;
-    transform:translateX(-50%) translateY(30px);
-    background:#151b24;
-    border:1px solid #343d4b;
-    padding:11px 17px;
-    border-radius:7px;
-    font-size:12px;
-    font-weight:800;
+    padding:13px 16px;
+    color:white;
+    box-shadow:var(--shadow);
+    transform:translateY(20px);
     opacity:0;
     pointer-events:none;
     transition:.25s;
-    z-index:9000;
 }
 
-#toast.show{
+.toast.show{
     opacity:1;
-    transform:translateX(-50%) translateY(0);
+    transform:none;
 }
 
-/* =====================================================
-   LOADING
-===================================================== */
+/* MOBILE */
 
-#gameLoading{
-    position:absolute;
-    inset:48px 0 0;
-    background:#050608;
+.mobileNav{
     display:none;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    gap:12px;
-    z-index:3;
 }
 
-.loadingSpinner{
-    width:38px;
-    height:38px;
-    border:3px solid #252c38;
-    border-top-color:#fff;
-    border-radius:50%;
-    animation:spin .7s linear infinite;
-}
+@media(max-width:800px){
 
-#gameLoadingText{
-    color:#8994a6;
-    font-size:12px;
-    font-weight:800;
-}
-
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media(max-width:950px){
-
-    .nav button{
-        padding:8px;
+    .app{
+        display:block;
     }
 
-    .searchBox{
-        width:160px;
-    }
-
-    .onlineCounter{
+    .sidebar{
         display:none;
     }
-}
-
-@media(max-width:700px){
 
     .topbar{
-        gap:8px;
-        padding:0 10px;
+        padding:0 14px;
     }
 
-    .logo{
-        font-size:17px;
-    }
-
-    .nav{
-        overflow-x:auto;
-    }
-
-    .nav button{
-        font-size:10px;
-    }
-
-    .searchBox{
-        display:none;
-    }
-
-    .page{
-        padding:16px;
+    .content{
+        padding:15px;
+        padding-bottom:90px;
     }
 
     .hero{
         padding:28px;
-        min-height:280px;
+        min-height:310px;
     }
 
     .hero h1{
-        font-size:40px;
+        letter-spacing:-3px;
     }
 
-    .phoneLayout{
+    .chatLayout{
         grid-template-columns:1fr;
+        height:calc(100vh - 150px);
     }
 
-    .phoneSide{
+    .userList{
         display:none;
     }
 
-    .grid{
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
+    .mobileNav{
+        position:fixed;
+        display:flex;
+        bottom:10px;
+        left:10px;
+        right:10px;
+        z-index:100;
+        padding:7px;
+        gap:4px;
+        background:rgba(12,15,23,.92);
+        border:1px solid var(--border);
+        border-radius:17px;
+        backdrop-filter:blur(20px);
+    }
+
+    .mobileNav button{
+        flex:1;
+        border:0;
+        background:transparent;
+        color:#7c8498;
+        padding:10px 4px;
+        border-radius:10px;
+        font-size:11px;
+    }
+
+    .mobileNav button.active{
+        color:white;
+        background:#171b28;
+    }
+
+    .userPill{
+        display:none;
     }
 }
 </style>
@@ -1042,613 +947,494 @@ button{
 
 <body>
 
-<!-- =====================================================
-     BOOT SCREEN
-===================================================== -->
+<div class="background"></div>
 
-<div id="bootScreen">
-
+<div id="boot">
     <div class="bootBox">
+        <div class="bootLogo">GAME<span>HUB</span></div>
+        <div class="bootSub">INITIALIZING GAME ENVIRONMENT</div>
 
-        <div class="bootTitle">
-            GAMEHUB SYSTEM
+        <div class="bootBar">
+            <div class="bootFill" id="bootFill"></div>
         </div>
 
-        <div class="bootSubtitle">
-            GAMEHUB OS — GAMING ENVIRONMENT
+        <div class="bootStatus" id="bootStatus">
+            Starting...
         </div>
-
-        <div class="bootText">
-
-            <div class="bootLine"
-                 style="animation-delay:.05s">
-                Initializing GameHub kernel...
-            </div>
-
-            <div class="bootLine"
-                 style="animation-delay:.25s">
-                Loading game library...
-            </div>
-
-            <div class="bootLine"
-                 style="animation-delay:.45s">
-                Connecting communication services...
-            </div>
-
-            <div class="bootLine"
-                 style="animation-delay:.65s">
-                Starting online services...
-            </div>
-
-            <div class="bootLine"
-                 style="animation-delay:.85s">
-                Loading user interface...
-            </div>
-
-        </div>
-
-        <div class="bootProgress">
-
-            <div class="bootProgressBar"></div>
-
-        </div>
-
     </div>
-
 </div>
 
+<div class="app">
 
-<!-- =====================================================
-     APP
-===================================================== -->
-
-<div id="app">
-
-    <header class="topbar">
+    <aside class="sidebar">
 
         <div class="logo">
             GAME<span>HUB</span>
+            <small>PLAY • CONNECT • CREATE</small>
         </div>
 
         <nav class="nav">
 
-            <button
-                class="active"
-                onclick="showPage('home',this)">
-                HOME
+            <button class="active" data-view="home">
+                🏠 Home
             </button>
 
-            <button
-                onclick="showPage('games',this)">
-                GAMES
+            <button data-view="games">
+                🎮 Games
             </button>
 
-            <button
-                onclick="showPage('apps',this)">
-                APPS
+            <button data-view="apps">
+                🧩 Apps
             </button>
 
-            <button
-                onclick="showPage('movies',this)">
-                MOVIES
+            <button data-view="movies">
+                🎬 Movies
             </button>
 
-            <button
-                onclick="showPage('news',this)">
-                NEWS
+            <button data-view="chat">
+                💬 Chat
             </button>
 
-            <button
-                onclick="showPage('phone',this)">
-                PHONE
+            <button data-view="phone">
+                📱 Phone
             </button>
 
         </nav>
 
-        <div class="searchBox">
+        <div class="sidebarBottom">
 
-            <input
-                id="searchInput"
-                type="text"
-                placeholder="Search GameHub..."
-                oninput="searchEverything()">
+            <div class="status">
+                <span class="statusDot"></span>
+                <span id="connectionStatus">
+                    Connecting...
+                </span>
+            </div>
 
         </div>
 
-        <div class="onlineCounter">
+    </aside>
 
-            <span class="onlineDot"></span>
+    <main class="main">
 
-            <span id="onlineCount">
-                0
-            </span>
+        <header class="topbar">
 
-            ONLINE
+            <div class="search">
+                <span class="searchIcon">⌕</span>
+                <input
+                    id="searchInput"
+                    placeholder="Search games, apps..."
+                >
+            </div>
 
-        </div>
+            <div class="topActions">
 
-    </header>
+                <button
+                    class="iconButton"
+                    id="refreshButton"
+                    title="Refresh"
+                >
+                    ↻
+                </button>
 
+                <button
+                    class="iconButton"
+                    id="chatButton"
+                    title="Chat"
+                >
+                    ◇
+                </button>
 
-    <main id="content">
+                <div class="userPill">
 
-        <!-- HOME -->
-
-        <section
-            id="home"
-            class="page active">
-
-            <div class="hero">
-
-                <div class="heroContent">
-
-                    <div class="heroSmall">
-                        WELCOME TO GAMEHUB
+                    <div class="avatar" id="avatar">
+                        ?
                     </div>
 
-                    <h1>
-                        PLAY.<br>
-                        CONNECT.<br>
-                        HAVE FUN.
-                    </h1>
-
-                    <p>
-                        Your gaming hub for games, apps,
-                        movies, communication and everything
-                        else GameHub.
-                    </p>
-
-                    <button
-                        class="primaryBtn"
-                        onclick="showPageByName('games')">
-                        PLAY GAMES
-                    </button>
+                    <span id="usernameDisplay">
+                        Guest
+                    </span>
 
                 </div>
 
             </div>
 
+        </header>
 
-            <div class="sectionTitle">
+        <div class="content">
 
-                <h2>
-                    Featured Games
-                </h2>
+            <!-- HOME -->
 
-                <span>
-                    PLAY NOW
-                </span>
+            <section class="view active" id="view-home">
 
-            </div>
+                <div class="hero">
 
-            <div
-                id="homeGames"
-                class="grid">
-            </div>
+                    <div class="heroText">
 
-        </section>
+                        <div class="eyebrow">
+                            GAMEHUB // ONLINE
+                        </div>
 
+                        <h1>
+                            YOUR<br>
+                            <span>PLAYGROUND.</span>
+                        </h1>
 
-        <!-- GAMES -->
+                        <p>
+                            Games, apps, movies and friends in one place.
+                            Pick something and start playing.
+                        </p>
 
-        <section
-            id="games"
-            class="page">
-
-            <div class="sectionTitle">
-
-                <h2>
-                    Games
-                </h2>
-
-                <span id="gameCountText">
-                </span>
-
-            </div>
-
-            <div
-                id="gamesGrid"
-                class="grid">
-            </div>
-
-        </section>
-
-
-        <!-- APPS -->
-
-        <section
-            id="apps"
-            class="page">
-
-            <div class="sectionTitle">
-
-                <h2>
-                    Apps
-                </h2>
-
-                <span>
-                    GAMEHUB APPLICATIONS
-                </span>
-
-            </div>
-
-            <div
-                id="appsGrid"
-                class="grid">
-            </div>
-
-        </section>
-
-
-        <!-- MOVIES -->
-
-        <section
-            id="movies"
-            class="page">
-
-            <div class="cineHero">
-
-                <div>
-
-                    <div class="heroSmall">
-                        GAMEHUB MOVIES
-                    </div>
-
-                    <h1>
-                        CINEJOY
-                    </h1>
-
-                    <p>
-                        Browse movies and shows through
-                        Cinejoy directly inside GameHub.
-                    </p>
-
-                    <button
-                        class="primaryBtn"
-                        onclick="openCinejoy()">
-                        OPEN CINEJOY
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- NEWS -->
-
-        <section
-            id="news"
-            class="page">
-
-            <div class="sectionTitle">
-
-                <h2>
-                    GameHub News
-                </h2>
-
-                <span>
-                    LATEST
-                </span>
-
-            </div>
-
-
-            <div class="newsBox">
-
-                <div class="newsTag">
-                    GAMEHUB
-                </div>
-
-                <h3>
-                    GameHub is now online!
-                </h3>
-
-                <p>
-                    The GameHub website is now running
-                    as a real online service.
-                </p>
-
-            </div>
-
-
-            <div class="newsBox">
-
-                <div class="newsTag">
-                    ONLINE
-                </div>
-
-                <h3>
-                    Live player counter
-                </h3>
-
-                <p>
-                    The online counter shows how many
-                    GameHub users are currently connected.
-                </p>
-
-            </div>
-
-
-            <div class="newsBox">
-
-                <div class="newsTag">
-                    PHONE
-                </div>
-
-                <h3>
-                    GameHub Phone
-                </h3>
-
-                <p>
-                    Find users, send messages and
-                    make calls.
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <!-- PHONE -->
-
-        <section
-            id="phone"
-            class="page">
-
-            <div class="phoneLayout">
-
-                <aside class="phoneSide">
-
-                    <div class="phoneHeader">
-
-                        <h2>
-                            PHONE
-                        </h2>
-
-                        <div class="usernameBox">
-
-                            <input
-                                id="usernameInput"
-                                placeholder="Username"
-                                maxlength="20">
+                        <div class="heroButtons">
 
                             <button
-                                class="smallBtn"
-                                onclick="setUsername()">
-                                SET
+                                class="primary"
+                                id="playButton"
+                            >
+                                ▶ Play something
+                            </button>
+
+                            <button
+                                class="secondary"
+                                data-open-view="games"
+                            >
+                                Browse games
                             </button>
 
                         </div>
 
-                        <div
-                            style="height:8px">
+                    </div>
+
+                </div>
+
+                <div class="section">
+
+                    <div class="sectionHead">
+                        <h2>Featured games</h2>
+                        <span id="gameCount"></span>
+                    </div>
+
+                    <div class="cards" id="featuredGames"></div>
+
+                </div>
+
+            </section>
+
+            <!-- GAMES -->
+
+            <section class="view" id="view-games">
+
+                <div class="sectionHead">
+                    <div>
+                        <h2>Games</h2>
+                        <span>Your GameHub library</span>
+                    </div>
+                </div>
+
+                <div class="cards" id="gamesGrid"></div>
+
+            </section>
+
+            <!-- APPS -->
+
+            <section class="view" id="view-apps">
+
+                <div class="sectionHead">
+                    <div>
+                        <h2>Apps</h2>
+                        <span>Tools inside GameHub</span>
+                    </div>
+                </div>
+
+                <div class="cards" id="appsGrid"></div>
+
+            </section>
+
+            <!-- MOVIES -->
+
+            <section class="view" id="view-movies">
+
+                <div class="hero">
+
+                    <div class="heroText">
+
+                        <div class="eyebrow">
+                            GAMEHUB MOVIES
                         </div>
 
-                        <input
-                            class="userSearch"
-                            id="userSearch"
-                            placeholder="Find users..."
-                            oninput="searchUsers()">
+                        <h1>
+                            WATCH<br>
+                            <span>ANYTHING.</span>
+                        </h1>
 
-                    </div>
-
-                    <div
-                        id="contacts"
-                        class="contacts">
-                    </div>
-
-                </aside>
-
-
-                <div class="phoneMain">
-
-                    <div class="chatHeader">
-
-                        <div>
-
-                            <h3 id="chatName">
-                                Select a user
-                            </h3>
-
-                            <div
-                                id="chatStatus"
-                                class="status">
-                                No conversation selected
-                            </div>
-
-                        </div>
+                        <p>
+                            Open the movie section and browse Cinejoy.
+                            GameHub will ask before leaving the site.
+                        </p>
 
                         <button
-                            class="smallBtn"
-                            onclick="startCall()">
-                            CALL
-                        </button>
-
-                    </div>
-
-
-                    <div
-                        id="chatMessages"
-                        class="chatMessages">
-                    </div>
-
-
-                    <div class="chatInput">
-
-                        <input
-                            id="messageInput"
-                            placeholder="Type a message..."
-                            maxlength="2000"
-                            onkeydown="messageKey(event)">
-
-                        <button
-                            class="smallBtn"
-                            onclick="sendMessage()">
-                            SEND
+                            class="primary"
+                            id="moviesButton"
+                        >
+                            🎬 Open Movies
                         </button>
 
                     </div>
 
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+            <!-- CHAT -->
+
+            <section class="view" id="view-chat">
+
+                <div class="sectionHead">
+                    <div>
+                        <h2>Friends & Chat</h2>
+                        <span>
+                            <span id="onlineCount">0</span>
+                            online
+                        </span>
+                    </div>
+                </div>
+
+                <div class="chatLayout">
+
+                    <div class="userList">
+
+                        <div class="userListHeader">
+                            Players
+                        </div>
+
+                        <div id="userList"></div>
+
+                    </div>
+
+                    <div class="chatPanel">
+
+                        <div class="chatHeader">
+
+                            <div class="chatHeaderName" id="chatTarget">
+                                Select someone
+                            </div>
+
+                            <div class="callButtons">
+
+                                <button
+                                    class="callButton"
+                                    id="voiceCall"
+                                    title="Voice call"
+                                >
+                                    📞
+                                </button>
+
+                                <button
+                                    class="callButton"
+                                    id="videoCall"
+                                    title="Video call"
+                                >
+                                    📹
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="messages" id="messages">
+
+                            <div style="color:#667087;text-align:center;margin:auto">
+                                Select a player to start chatting.
+                            </div>
+
+                        </div>
+
+                        <form class="chatInput" id="chatForm">
+
+                            <input
+                                id="messageInput"
+                                placeholder="Type a message..."
+                                autocomplete="off"
+                            >
+
+                            <button
+                                class="primary"
+                                type="submit"
+                            >
+                                Send
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- PHONE -->
+
+            <section class="view" id="view-phone">
+
+                <div class="sectionHead">
+                    <div>
+                        <h2>GameHub Phone</h2>
+                        <span>Communication center</span>
+                    </div>
+                </div>
+
+                <div class="phoneGrid">
+
+                    <div class="phoneCard">
+                        <h3>📞 Voice</h3>
+                        <p>
+                            Call another GameHub user using your
+                            browser microphone.
+                        </p>
+                    </div>
+
+                    <div class="phoneCard">
+                        <h3>📹 Video</h3>
+                        <p>
+                            Start a browser video call with another
+                            online GameHub user.
+                        </p>
+                    </div>
+
+                    <div class="phoneCard">
+                        <h3>💬 Messages</h3>
+                        <p>
+                            Send messages through the GameHub server.
+                        </p>
+                    </div>
+
+                    <div class="phoneCard">
+                        <h3>🟢 Online</h3>
+                        <p>
+                            See which GameHub users are currently
+                            connected.
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
 
     </main>
 
 </div>
 
+<div class="mobileNav">
 
-<!-- =====================================================
-     GAME WINDOW
-===================================================== -->
+    <button class="active" data-view="home">⌂<br>Home</button>
+    <button data-view="games">🎮<br>Games</button>
+    <button data-view="apps">◆<br>Apps</button>
+    <button data-view="chat">◇<br>Chat</button>
+    <button data-view="phone">☎<br>Phone</button>
 
-<div
-    id="gameOverlay"
-    class="overlay">
+</div>
+
+<!-- GAME WINDOW -->
+
+<div class="overlay" id="gameOverlay">
 
     <div class="gameWindow">
 
         <div class="windowBar">
 
             <div
-                id="gameWindowTitle"
-                class="windowTitle">
+                class="windowTitle"
+                id="gameTitle"
+            >
                 Game
             </div>
 
             <button
-                class="windowButton"
-                onclick="reloadGame()">
-                ↻
-            </button>
-
-            <button
-                class="windowButton"
-                onclick="fullscreenGame()">
-                ⛶
-            </button>
-
-            <button
-                class="windowButton"
-                onclick="closeGame()">
-                ✕
+                class="windowClose"
+                id="closeGame"
+            >
+                ×
             </button>
 
         </div>
-
-
-        <div id="gameLoading">
-
-            <div class="loadingSpinner"></div>
-
-            <div id="gameLoadingText">
-                Loading...
-            </div>
-
-        </div>
-
 
         <iframe
             id="gameFrame"
-            class="windowFrame"
             allow="fullscreen; autoplay; gamepad"
-            allowfullscreen>
-        </iframe>
+        ></iframe>
 
     </div>
 
 </div>
 
+<!-- LOGIN -->
 
-<!-- =====================================================
-     MOVIE WINDOW
-===================================================== -->
+<div class="modal" id="loginModal">
 
-<div
-    id="movieOverlay"
-    class="overlay">
+    <div class="modalBox">
 
-    <div class="movieWindow">
+        <h2>Welcome to GameHub</h2>
 
-        <div class="windowBar">
+        <p style="color:#7e879c">
+            Pick a username so other players can find you.
+        </p>
 
-            <div class="windowTitle">
-                Cinejoy
-            </div>
+        <input
+            id="usernameInput"
+            maxlength="24"
+            placeholder="Username"
+        >
 
-            <button
-                class="windowButton"
-                onclick="openCinejoyExternal()">
-                OPEN SITE
-            </button>
+        <div class="modalActions">
 
             <button
-                class="windowButton"
-                onclick="closeMovie()">
-                ✕
+                class="primary"
+                id="loginButton"
+            >
+                Enter GameHub
             </button>
 
         </div>
 
-
-        <iframe
-            id="movieVideo"
-            class="windowFrame"
-            src="about:blank"
-            allow="
-                autoplay;
-                fullscreen;
-                picture-in-picture;
-                encrypted-media
-            "
-            allowfullscreen>
-        </iframe>
-
     </div>
 
 </div>
 
+<!-- INCOMING CALL -->
 
-<!-- =====================================================
-     INCOMING CALL
-===================================================== -->
+<div class="modal" id="incomingCall">
 
-<div
-    id="incomingCallOverlay"
-    class="overlay">
+    <div class="callBox">
 
-    <div class="callModal">
-
-        <div
-            id="callerAvatar"
-            class="callAvatar">
+        <div class="callAvatar" id="incomingAvatar">
             ?
         </div>
 
-        <h2 id="callerName">
-            Incoming Call
-        </h2>
+        <div
+            class="callName"
+            id="incomingName"
+        >
+            Player
+        </div>
 
-        <p>
-            is calling you...
-        </p>
+        <div class="callStatus">
+            Incoming call...
+        </div>
 
-        <div class="callButtons">
+        <div class="callActions">
 
             <button
-                class="acceptCall"
-                onclick="acceptCall()">
-                ACCEPT
+                id="declineCall"
+                class="hangup"
+            >
+                ✕
             </button>
 
             <button
-                class="declineCall"
-                onclick="declineCall()">
-                DECLINE
+                id="acceptCall"
+            >
+                ✓
             </button>
 
         </div>
@@ -1657,1372 +1443,659 @@ button{
 
 </div>
 
+<!-- ACTIVE CALL -->
 
-<!-- =====================================================
-     VIDEO CALL
-===================================================== -->
+<div class="modal" id="activeCall">
 
-<div
-    id="videoCallOverlay"
-    class="overlay">
+    <div class="callBox">
 
-    <div class="videoCall">
+        <div class="callAvatar" id="activeAvatar">
+            ?
+        </div>
+
+        <div
+            class="callName"
+            id="activeName"
+        >
+            Player
+        </div>
+
+        <div
+            class="callStatus"
+            id="activeStatus"
+        >
+            Connecting...
+        </div>
 
         <video
             id="remoteVideo"
-            class="remoteVideo"
             autoplay
-            playsinline>
-        </video>
+            playsinline
+            style="
+                width:100%;
+                margin-top:20px;
+                border-radius:14px;
+                background:#050609;
+                display:none;
+            "
+        ></video>
 
-        <video
-            id="localVideo"
-            class="localVideo"
-            autoplay
-            muted
-            playsinline>
-        </video>
+        <div class="callActions">
 
-        <button
-            class="callEnd"
-            onclick="endCall()">
-            END CALL
-        </button>
+            <button id="muteButton">
+                🎤
+            </button>
+
+            <button id="cameraButton">
+                📷
+            </button>
+
+            <button
+                id="hangupButton"
+                class="hangup"
+            >
+                ☎
+            </button>
+
+        </div>
 
     </div>
 
 </div>
-
-
-<!-- =====================================================
-     AD
-===================================================== -->
 
 <div
-    id="adOverlay"
-    class="adOverlay">
+    class="toast"
+    id="toast"
+></div>
 
-    <div class="adBox">
-
-        <h2>
-            GAMEHUB AD
-        </h2>
-
-        <p>
-            Thanks for supporting GameHub.
-        </p>
-
-        <button
-            class="primaryBtn"
-            onclick="closeAd()">
-            CONTINUE
-        </button>
-
-    </div>
-
-</div>
-
-
-<div id="toast"></div>
-
-
-<!-- =====================================================
-     SOCKET.IO
-===================================================== -->
-
-<script src="/socket.io/socket.io.js"></script>
-
+<script src="https://gamehub-t22r.onrender.com/socket.io/socket.io.js"></script>
 
 <script>
-
-/* =====================================================
+/* =========================
    GAME DATA
-===================================================== */
+========================= */
 
-const games = [
+const GAMES = [
 
     {
         name:"Among Us",
         file:"Among-Us.html",
         description:"Find the impostor.",
-        type:"GAME"
+        type:"GAME",
+        icon:"🧑‍🚀"
     },
 
     {
         name:"FNAF 1",
         file:"FNAF-1.html",
         description:"Five Nights at Freddy's.",
-        type:"HORROR"
+        type:"HORROR",
+        icon:"🐻"
     },
 
     {
         name:"FNAF 2",
         file:"FNAF-2.html",
         description:"Survive another night.",
-        type:"HORROR"
+        type:"HORROR",
+        icon:"🎭"
     },
 
     {
         name:"FNAF 3",
         file:"FNAF-3.html",
         description:"The nightmare continues.",
-        type:"HORROR"
+        type:"HORROR",
+        icon:"🟢"
     },
 
     {
         name:"FNAF 4",
         file:"FNAF-4.html",
         description:"Don't fall asleep.",
-        type:"HORROR"
+        type:"HORROR",
+        icon:"👁️"
     },
 
     {
         name:"Geomorty Dash",
         file:"Geomorty-Dash.html",
         description:"Jump through the chaos.",
-        type:"ARCADE"
+        type:"ARCADE",
+        icon:"🔷"
     },
 
     {
         name:"GTA Clone",
         file:"GTA-Clone.html",
         description:"Open world chaos.",
-        type:"ACTION"
+        type:"ACTION",
+        icon:"🚗"
     },
 
     {
         name:"Happy Wheels",
         file:"Happy-Wheels.html",
         description:"Physics-based madness.",
-        type:"ACTION"
+        type:"ACTION",
+        icon:"🛞"
     },
 
     {
         name:"Mortal Kombat",
         file:"Mortal-Kombat.html",
         description:"Fight.",
-        type:"FIGHTING"
+        type:"FIGHTING",
+        icon:"🥊"
     },
 
     {
         name:"PVZ Clone",
         file:"PVZ-Clone.html",
         description:"Defend your lawn.",
-        type:"STRATEGY"
+        type:"STRATEGY",
+        icon:"🌻"
     },
 
     {
         name:"Crazy Cattle 3D",
         file:"Crazy-Cattle3d.html",
         description:"Absolutely normal cattle.",
-        type:"3D"
+        type:"3D",
+        icon:"🐑"
     },
 
     {
         name:"Subway Surfer",
         file:"Subway-Surfer.html",
         description:"Run forever.",
-        type:"RUNNER"
+        type:"RUNNER",
+        icon:"🚆"
     },
 
     {
         name:"Minecraft",
         file:"Minecraft.html",
         description:"Build your world.",
-        type:"SANDBOX"
+        type:"SANDBOX",
+        icon:"⛏️"
     },
 
     {
         name:"Melon Playground",
         file:"Melon-Playground.html",
         description:"Create chaos.",
-        type:"SANDBOX"
+        type:"SANDBOX",
+        icon:"🍉"
     },
 
     {
         name:"Level Devil",
         file:"Level-Devil.html",
         description:"The level hates you.",
-        type:"PLATFORMER"
+        type:"PLATFORMER",
+        icon:"😈"
     },
 
     {
         name:"Doblox",
         file:"Doblox.html",
         description:"Blocky adventures.",
-        type:"3D"
+        type:"3D",
+        icon:"🧱"
     },
 
     {
         name:"Dublix",
-        url:
-            "https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",
+        url:"https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html",
         description:"Online 3D multiplayer.",
-        type:"ONLINE"
+        type:"ONLINE",
+        icon:"🌐"
     }
 
 ];
 
-
-const apps = [
+const APPS = [
 
     {
         name:"AI",
         file:"AI.html",
         description:"GameHub AI",
-        type:"AI"
+        type:"AI",
+        icon:"🤖"
     },
 
     {
         name:"Helios Offline",
         file:"Helios-Offline.html",
         description:"Offline AI",
-        type:"AI"
+        type:"AI",
+        icon:"☀️"
     }
 
 ];
 
+const CINEJOY_URL = "https://cinejoy.pk/";
 
-/* =====================================================
-   STARTUP
-===================================================== */
-
-function startGameHub(){
-
-    const boot =
-        document.getElementById("bootScreen");
-
-    const app =
-        document.getElementById("app");
-
-    if(!boot || !app){
-        return;
-    }
-
-    app.style.display = "flex";
-
-    requestAnimationFrame(() => {
-
-        boot.style.opacity = "0";
-
-        setTimeout(() => {
-
-            boot.style.display = "none";
-
-        },350);
-
-    });
-
-}
+const RENDER_SERVER =
+    "https://gamehub-t22r.onrender.com";
 
 
-/*
-   Do NOT wait for window.load.
+/* =========================
+   STATE
+========================= */
 
-   The old version waited for the complete page load,
-   which could be delayed by external resources.
+let currentUser =
+    localStorage.getItem("gamehub_username") || "";
 
-   DOMContentLoaded is enough because all GameHub
-   elements already exist before this script.
-*/
+let selectedUser = "";
 
-if(document.readyState === "loading"){
+let onlineUsers = [];
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        startGameHub,
-        {
-            once:true
+let incomingCaller = null;
+
+let currentCallTarget = null;
+
+let currentCallId = null;
+
+let peerConnection = null;
+
+let localStream = null;
+
+let callVideo = false;
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const $ = id =>
+    document.getElementById(id);
+
+
+/* =========================
+   BOOT
+========================= */
+
+let bootProgress = 0;
+
+const bootMessages = [
+    "Loading games...",
+    "Loading GameHub systems...",
+    "Connecting to network...",
+    "Checking multiplayer...",
+    "Preparing dashboard...",
+    "GameHub ready."
+];
+
+const bootTimer =
+    setInterval(() => {
+
+        bootProgress += 20;
+
+        $("bootFill").style.width =
+            bootProgress + "%";
+
+        $("bootStatus").textContent =
+            bootMessages[
+                Math.min(
+                    bootMessages.length - 1,
+                    Math.floor(bootProgress / 20)
+                )
+            ];
+
+        if(bootProgress >= 100){
+
+            clearInterval(bootTimer);
+
+            setTimeout(() => {
+
+                $("boot").style.opacity = "0";
+
+                setTimeout(() => {
+                    $("boot").remove();
+                },500);
+
+            },250);
         }
-    );
 
-}else{
-
-    startGameHub();
-
-}
+    },180);
 
 
-/* =====================================================
-   PAGE SYSTEM
-===================================================== */
+/* =========================
+   RENDER CARDS
+========================= */
 
-function showPage(name,button){
-
-    document
-        .querySelectorAll(".page")
-        .forEach(page => {
-
-            page.classList.remove("active");
-
-        });
-
-
-    const page =
-        document.getElementById(name);
-
-    if(page){
-
-        page.classList.add("active");
-
-    }
-
-
-    document
-        .querySelectorAll(".nav button")
-        .forEach(btn => {
-
-            btn.classList.remove("active");
-
-        });
-
-
-    if(button){
-
-        button.classList.add("active");
-
-    }
-
-}
-
-
-function showPageByName(name){
-
-    const buttons =
-        document.querySelectorAll(
-            ".nav button"
-        );
-
-    const indexes = {
-        home:0,
-        games:1,
-        apps:2,
-        movies:3,
-        news:4,
-        phone:5
-    };
-
-    const index =
-        indexes[name] ?? 0;
-
-    showPage(
-        name,
-        buttons[index]
-    );
-
-}
-
-
-/* =====================================================
-   GAME CARDS
-===================================================== */
-
-function createGameCard(game){
+function gameCard(game){
 
     const card =
         document.createElement("div");
 
     card.className = "card";
 
-    card.dataset.search =
-        (
-            game.name +
-            " " +
-            game.description +
-            " " +
-            game.type
-        ).toLowerCase();
-
-    card.onclick = () => {
-
-        launchGame(game);
-
-    };
-
-
     card.innerHTML = `
+        <div class="badge">
+            ${escapeHTML(game.type)}
+        </div>
 
-        <div class="cardArt">
-
-            <div class="bigText">
-                ${escapeHTML(game.name)}
-            </div>
-
-            <div class="cardType">
-                ${escapeHTML(game.type)}
-            </div>
-
+        <div class="cardVisual">
+            ${game.icon}
         </div>
 
         <div class="cardInfo">
-
-            <h3>
+            <div class="cardName">
                 ${escapeHTML(game.name)}
-            </h3>
+            </div>
 
-            <p>
+            <div class="cardMeta">
                 ${escapeHTML(game.description)}
-            </p>
-
+            </div>
         </div>
     `;
 
+    card.addEventListener("click",() => {
+        launchGame(game);
+    });
+
     return card;
-
 }
-
 
 function renderGames(){
 
-    const grid =
-        document.getElementById(
-            "gamesGrid"
-        );
+    $("gamesGrid").innerHTML = "";
 
-    const homeGrid =
-        document.getElementById(
-            "homeGames"
-        );
+    GAMES.forEach(game => {
 
-
-    if(!grid || !homeGrid){
-        return;
-    }
-
-
-    grid.innerHTML = "";
-    homeGrid.innerHTML = "";
-
-
-    games.forEach(game => {
-
-        grid.appendChild(
-            createGameCard(game)
-        );
+        $("gamesGrid")
+            .appendChild(gameCard(game));
 
     });
 
+    $("featuredGames").innerHTML = "";
 
-    games
-        .slice(0,6)
+    GAMES.slice(0,6)
         .forEach(game => {
 
-            homeGrid.appendChild(
-                createGameCard(game)
-            );
+            $("featuredGames")
+                .appendChild(gameCard(game));
 
         });
 
-
-    const count =
-        document.getElementById(
-            "gameCountText"
-        );
-
-    if(count){
-
-        count.textContent =
-            `${games.length} GAMES`;
-
-    }
-
+    $("gameCount").textContent =
+        `${GAMES.length} games`;
 }
-
-
-/* =====================================================
-   APP CARDS
-===================================================== */
 
 function renderApps(){
 
-    const grid =
-        document.getElementById(
-            "appsGrid"
-        );
+    $("appsGrid").innerHTML = "";
 
-    if(!grid){
-        return;
+    APPS.forEach(app => {
+
+        $("appsGrid")
+            .appendChild(gameCard(app));
+
+    });
+}
+
+renderGames();
+renderApps();
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showView(view){
+
+    document
+        .querySelectorAll(".view")
+        .forEach(el => {
+            el.classList.remove("active");
+        });
+
+    const target =
+        $("view-" + view);
+
+    if(target){
+        target.classList.add("active");
     }
 
-    grid.innerHTML = "";
+    document
+        .querySelectorAll("[data-view]")
+        .forEach(button => {
 
+            button.classList.toggle(
+                "active",
+                button.dataset.view === view
+            );
 
-    apps.forEach(app => {
+        });
+}
 
-        const card =
-            document.createElement("div");
+document
+    .querySelectorAll("[data-view]")
+    .forEach(button => {
 
-        card.className =
-            "card appCard";
-
-        card.dataset.search =
-            (
-                app.name +
-                " " +
-                app.description +
-                " " +
-                app.type
-            ).toLowerCase();
-
-
-        card.onclick = () => {
-
-            openApp(app);
-
-        };
-
-
-        card.innerHTML = `
-
-            <div class="cardArt">
-
-                <div class="appIcon">
-
-                    ${
-                        app.name === "AI"
-                            ? "AI"
-                            : "H"
-                    }
-
-                </div>
-
-                <div class="cardType">
-                    APP
-                </div>
-
-            </div>
-
-            <div class="cardInfo">
-
-                <h3>
-                    ${escapeHTML(app.name)}
-                </h3>
-
-                <p>
-                    ${escapeHTML(app.description)}
-                </p>
-
-            </div>
-        `;
-
-
-        grid.appendChild(card);
+        button.addEventListener(
+            "click",
+            () => showView(button.dataset.view)
+        );
 
     });
 
-}
+document
+    .querySelectorAll("[data-open-view]")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => showView(button.dataset.openView)
+        );
+
+    });
+
+$("chatButton").addEventListener(
+    "click",
+    () => showView("chat")
+);
 
 
-/* =====================================================
+/* =========================
+   SEARCH
+========================= */
+
+$("searchInput").addEventListener(
+    "input",
+    event => {
+
+        const query =
+            event.target.value
+                .toLowerCase()
+                .trim();
+
+        document
+            .querySelectorAll("#gamesGrid .card")
+            .forEach((card,index) => {
+
+                const game =
+                    GAMES[index];
+
+                card.style.display =
+                    !query ||
+                    game.name
+                        .toLowerCase()
+                        .includes(query) ||
+                    game.description
+                        .toLowerCase()
+                        .includes(query)
+                        ? ""
+                        : "none";
+
+            });
+
+    }
+);
+
+
+/* =========================
    GAME LAUNCHER
-===================================================== */
-
-let gamesPlayedSinceAd = 0;
-
-let currentGameURL = "";
-
-let loadingTimer = null;
-
+========================= */
 
 function launchGame(game){
 
-    /*
-       Count actual game launches.
-
-       Game 1
-       Game 2
-       AD
-       Game 3
-       Game 4
-       AD
-    */
-
-    gamesPlayedSinceAd++;
-
-
-    if(gamesPlayedSinceAd > 2){
-
-        gamesPlayedSinceAd = 1;
-
-        showAd(() => {
-
-            actuallyLaunchGame(game);
-
-        });
-
-        return;
-
-    }
-
-
-    actuallyLaunchGame(game);
-
-}
-
-
-function actuallyLaunchGame(game){
-
-    const overlay =
-        document.getElementById(
-            "gameOverlay"
-        );
-
-    const frame =
-        document.getElementById(
-            "gameFrame"
-        );
-
-    const title =
-        document.getElementById(
-            "gameWindowTitle"
-        );
-
-    const loading =
-        document.getElementById(
-            "gameLoading"
-        );
-
-    const loadingText =
-        document.getElementById(
-            "gameLoadingText"
-        );
-
-
-    if(!overlay || !frame){
-        return;
-    }
-
-
-    currentGameURL =
+    const url =
         game.url || game.file;
 
+    if(!url){
+        return;
+    }
 
-    title.textContent =
+    $("gameTitle").textContent =
         game.name;
 
+    $("gameFrame").src =
+        url;
 
-    loading.style.display =
-        "flex";
-
-    loadingText.textContent =
-        "Loading " + game.name + "...";
-
-
-    frame.src =
-        "about:blank";
-
-
-    overlay.style.display =
-        "flex";
-
-
-    clearTimeout(loadingTimer);
-
-
-    loadingTimer =
-        setTimeout(() => {
-
-            if(loading){
-
-                loading.style.display =
-                    "none";
-
-            }
-
-        },5000);
-
-
-    frame.onload = () => {
-
-        clearTimeout(loadingTimer);
-
-        if(loading){
-
-            loading.style.display =
-                "none";
-
-        }
-
-    };
-
-
-    /*
-       Small delay prevents the browser from trying
-       to replace the iframe before the overlay is visible.
-    */
-
-    requestAnimationFrame(() => {
-
-        frame.src =
-            currentGameURL;
-
-    });
-
-
-    showToast(
-        "Launching " +
-        game.name
-    );
-
+    $("gameOverlay")
+        .classList.add("show");
 }
 
+$("closeGame").addEventListener(
+    "click",
+    closeGame
+);
 
 function closeGame(){
 
-    clearTimeout(loadingTimer);
+    $("gameFrame").src = "about:blank";
 
-    const frame =
-        document.getElementById(
-            "gameFrame"
-        );
-
-    if(frame){
-
-        frame.src =
-            "about:blank";
-
-    }
-
-
-    const overlay =
-        document.getElementById(
-            "gameOverlay"
-        );
-
-    if(overlay){
-
-        overlay.style.display =
-            "none";
-
-    }
-
+    $("gameOverlay")
+        .classList.remove("show");
 }
 
+$("gameOverlay").addEventListener(
+    "click",
+    event => {
 
-function reloadGame(){
-
-    if(!currentGameURL){
-        return;
-    }
-
-
-    const frame =
-        document.getElementById(
-            "gameFrame"
-        );
-
-    const loading =
-        document.getElementById(
-            "gameLoading"
-        );
-
-
-    if(loading){
-
-        loading.style.display =
-            "flex";
+        if(event.target === $("gameOverlay")){
+            closeGame();
+        }
 
     }
+);
 
 
-    frame.src =
-        "about:blank";
+/* =========================
+   PLAY RANDOM
+========================= */
 
+$("playButton").addEventListener(
+    "click",
+    () => {
 
-    setTimeout(() => {
+        const game =
+            GAMES[
+                Math.floor(
+                    Math.random() * GAMES.length
+                )
+            ];
 
-        frame.src =
-            currentGameURL;
-
-    },50);
-
-}
-
-
-function fullscreenGame(){
-
-    const frame =
-        document.getElementById(
-            "gameFrame"
-        );
-
-    if(frame?.requestFullscreen){
-
-        frame.requestFullscreen();
-
+        launchGame(game);
     }
+);
 
-}
 
+/* =========================
+   MOVIES
+========================= */
 
-/* =====================================================
-   APPS
-===================================================== */
+$("moviesButton").addEventListener(
+    "click",
+    () => {
 
-function openApp(app){
-
-    const overlay =
-        document.getElementById(
-            "gameOverlay"
-        );
-
-    const frame =
-        document.getElementById(
-            "gameFrame"
-        );
-
-    const title =
-        document.getElementById(
-            "gameWindowTitle"
-        );
-
-    const loading =
-        document.getElementById(
-            "gameLoading"
-        );
-
-
-    title.textContent =
-        app.name;
-
-    currentGameURL =
-        app.file;
-
-
-    loading.style.display =
-        "flex";
-
-
-    frame.src =
-        "about:blank";
-
-
-    overlay.style.display =
-        "flex";
-
-
-    setTimeout(() => {
-
-        frame.src =
-            app.file;
-
-    },50);
-
-
-    frame.onload = () => {
-
-        loading.style.display =
-            "none";
-
-    };
-
-}
-
-
-/* =====================================================
-   CINEJOY
-===================================================== */
-
-const CINEJOY_URL =
-    "https://cinejoy.pk/";
-
-
-function openCinejoy(){
-
-    const overlay =
-        document.getElementById(
-            "movieOverlay"
-        );
-
-    const frame =
-        document.getElementById(
-            "movieVideo"
-        );
-
-
-    frame.src =
-        CINEJOY_URL;
-
-
-    overlay.style.display =
-        "flex";
-
-
-    showToast(
-        "Loading Cinejoy..."
-    );
-
-}
-
-
-function openCinejoyExternal(){
-
-    window.open(
-        CINEJOY_URL,
-        "_blank",
-        "noopener,noreferrer"
-    );
-
-}
-
-
-function closeMovie(){
-
-    const frame =
-        document.getElementById(
-            "movieVideo"
-        );
-
-    if(frame){
-
-        frame.src =
-            "about:blank";
-
-    }
-
-
-    document.getElementById(
-        "movieOverlay"
-    ).style.display =
-        "none";
-
-}
-
-
-/* =====================================================
-   ADS
-===================================================== */
-
-let adCallback = null;
-
-
-function showAd(callback){
-
-    adCallback =
-        typeof callback === "function"
-            ? callback
-            : null;
-
-
-    document.getElementById(
-        "adOverlay"
-    ).style.display =
-        "flex";
-
-}
-
-
-function closeAd(){
-
-    document.getElementById(
-        "adOverlay"
-    ).style.display =
-        "none";
-
-
-    if(adCallback){
-
-        const callback =
-            adCallback;
-
-        adCallback =
-            null;
-
-        callback();
-
-    }
-
-}
-
-
-/* =====================================================
-   SEARCH
-===================================================== */
-
-function searchEverything(){
-
-    const input =
-        document.getElementById(
-            "searchInput"
-        );
-
-    if(!input){
-        return;
-    }
-
-
-    const query =
-        input.value
-            .toLowerCase()
-            .trim();
-
-
-    const allCards =
-        document.querySelectorAll(
-            ".card"
-        );
-
-
-    if(!query){
-
-        allCards.forEach(card => {
-
-            card.style.display = "";
-
-        });
-
-        return;
-
-    }
-
-
-    /*
-       Search games and apps.
-       The page is switched based on where
-       the result exists.
-    */
-
-    const matchingGames =
-        games.filter(game => {
-
-            const text =
-                (
-                    game.name +
-                    " " +
-                    game.description +
-                    " " +
-                    game.type
-                ).toLowerCase();
-
-            return text.includes(query);
-
-        });
-
-
-    const matchingApps =
-        apps.filter(app => {
-
-            const text =
-                (
-                    app.name +
-                    " " +
-                    app.description +
-                    " " +
-                    app.type
-                ).toLowerCase();
-
-            return text.includes(query);
-
-        });
-
-
-    if(matchingApps.length > 0 &&
-       matchingGames.length === 0){
-
-        showPageByName("apps");
-
-    }else{
-
-        showPageByName("games");
-
-    }
-
-
-    allCards.forEach(card => {
-
-        const text =
-            card.dataset.search || "";
-
-        card.style.display =
-            text.includes(query)
-                ? ""
-                : "none";
-
-    });
-
-}
-
-
-/* =====================================================
-   SOCKET.IO
-===================================================== */
-
-let socket = null;
-
-let socketConnected = false;
-
-
-function connectSocket(){
-
-    if(
-        typeof io !== "function"
-    ){
-
-        console.warn(
-            "Socket.IO is not available."
-        );
-
-        return;
-
-    }
-
-
-    try{
-
-        socket =
-            io(
-                window.location.origin,
-                {
-                    transports:[
-                        "websocket",
-                        "polling"
-                    ],
-                    reconnection:true,
-                    reconnectionAttempts:10,
-                    timeout:5000
-                }
+        const confirmed =
+            confirm(
+                "Open Cinejoy in a new tab?"
             );
 
-
-        socket.on(
-            "connect",
-            () => {
-
-                socketConnected =
-                    true;
-
-                console.log(
-                    "GameHub connected."
-                );
-
-
-                if(myUsername){
-
-                    socket.emit(
-                        "login",
-                        myUsername
-                    );
-
-                }
-
-            }
-        );
-
-
-        socket.on(
-            "disconnect",
-            () => {
-
-                socketConnected =
-                    false;
-
-                console.log(
-                    "GameHub disconnected."
-                );
-
-            }
-        );
-
-
-        socket.on(
-            "connect_error",
-            error => {
-
-                socketConnected =
-                    false;
-
-                console.warn(
-                    "Socket connection error:",
-                    error.message
-                );
-
-            }
-        );
-
-
-        socket.on(
-            "player-count",
-            count => {
-
-                const counter =
-                    document.getElementById(
-                        "onlineCount"
-                    );
-
-                if(counter){
-
-                    counter.textContent =
-                        Number(count) || 0;
-
-                }
-
-            }
-        );
-
-
-        socket.on(
-            "online-users",
-            users => {
-
-                onlineUsers =
-                    Array.isArray(users)
-                        ? users
-                        : [];
-
-                updateContactStatuses();
-
-            }
-        );
-
-
-        socket.on(
-            "user-online",
-            data => {
-
-                if(data?.username){
-
-                    showToast(
-                        data.username +
-                        " came online"
-                    );
-
-                    updateContactStatuses();
-
-                }
-
-            }
-        );
-
-
-        socket.on(
-            "user-offline",
-            data => {
-
-                if(data?.username){
-
-                    showToast(
-                        data.username +
-                        " went offline"
-                    );
-
-                }
-
-                updateContactStatuses();
-
-            }
-        );
-
-
-        setupMessageEvents();
-        setupCallEvents();
-
-    }catch(error){
-
-        console.error(
-            "Socket startup error:",
-            error
-        );
+        if(confirmed){
+            window.open(
+                CINEJOY_URL,
+                "_blank"
+            );
+        }
 
     }
+);
+
+
+/* =========================
+   REFRESH
+========================= */
+
+$("refreshButton").addEventListener(
+    "click",
+    () => location.reload()
+);
+
+
+/* =========================
+   USER LOGIN
+========================= */
+
+function updateUserUI(){
+
+    if(!currentUser){
+
+        $("loginModal")
+            .classList.add("show");
+
+        return;
+    }
+
+    $("usernameDisplay").textContent =
+        currentUser;
+
+    $("avatar").textContent =
+        currentUser
+            .charAt(0)
+            .toUpperCase();
 
 }
 
+$("loginButton").addEventListener(
+    "click",
+    login
+);
 
-connectSocket();
+$("usernameInput").addEventListener(
+    "keydown",
+    event => {
 
-
-/* =====================================================
-   PHONE STATE
-===================================================== */
-
-let onlineUsers = [];
-
-let myUsername =
-    localStorage.getItem(
-        "gamehub_username"
-    ) || "";
-
-let selectedUser = "";
-
-let pendingCaller = "";
-
-let currentCallUser = "";
-
-let localStream = null;
-
-let peerConnection = null;
-
-let pendingIceCandidates = [];
-
-
-/* =====================================================
-   USERNAME
-===================================================== */
-
-function setUsername(){
-
-    const input =
-        document.getElementById(
-            "usernameInput"
-        );
-
-    if(!input){
-        return;
-    }
-
-
-    let username =
-        input.value.trim();
-
-
-    username =
-        username.replace(
-            /\s+/g,
-            "_"
-        );
-
-
-    if(
-        !/^[a-zA-Z0-9_]{3,20}$/
-            .test(username)
-    ){
-
-        showToast(
-            "Username must be 3-20 letters, numbers or _"
-        );
-
-        return;
+        if(event.key === "Enter"){
+            login();
+        }
 
     }
+);
 
+async function login(){
 
-    myUsername =
-        username;
+    const username =
+        $("usernameInput")
+            .value
+            .trim();
 
-
-    localStorage.setItem(
-        "gamehub_username",
-        myUsername
-    );
-
-
-    connectUsername();
-
-}
-
-
-async function connectUsername(){
-
-    if(!myUsername){
+    if(!username){
+        toast("Enter a username.");
         return;
     }
-
 
     try{
 
         const response =
             await fetch(
-                "/api/register",
+                RENDER_SERVER + "/api/register",
                 {
                     method:"POST",
                     headers:{
@@ -3030,664 +2103,134 @@ async function connectUsername(){
                             "application/json"
                     },
                     body:JSON.stringify({
-                        username:
-                            myUsername
+                        username
                     })
                 }
             );
 
-
-        if(!response.ok){
-
-            throw new Error(
-                "Server returned " +
-                response.status
-            );
-
-        }
-
-
         const data =
             await response.json();
 
-
-        if(!data.success){
-
-            showToast(
+        if(!response.ok){
+            throw new Error(
                 data.error ||
-                "Could not create username."
+                "Login failed"
             );
-
-            return;
-
         }
 
+        currentUser = username;
 
-        if(
-            socket &&
-            socket.connected
-        ){
+        localStorage.setItem(
+            "gamehub_username",
+            currentUser
+        );
+
+        $("loginModal")
+            .classList.remove("show");
+
+        updateUserUI();
+
+        connectSocket();
+
+    }catch(error){
+
+        toast(
+            "Could not connect to GameHub server."
+        );
+
+        console.error(error);
+    }
+}
+
+updateUserUI();
+
+
+/* =========================
+   SOCKET.IO
+========================= */
+
+let socket = null;
+
+function connectSocket(){
+
+    if(!currentUser){
+        return;
+    }
+
+    if(socket){
+        socket.disconnect();
+    }
+
+    socket =
+        io(RENDER_SERVER,{
+            transports:[
+                "websocket",
+                "polling"
+            ],
+            reconnection:true
+        });
+
+    socket.on(
+        "connect",
+        () => {
+
+            $("connectionStatus")
+                .textContent =
+                "Connected";
 
             socket.emit(
                 "login",
-                myUsername
+                currentUser
             );
 
-        }
-
-
-        showToast(
-            "Logged in as " +
-            myUsername
-        );
-
-
-        searchUsers();
-
-    }catch(error){
-
-        console.error(error);
-
-        showToast(
-            "Phone server unavailable."
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   RESTORE USERNAME
-===================================================== */
-
-function restoreUsername(){
-
-    if(!myUsername){
-        return;
-    }
-
-
-    const input =
-        document.getElementById(
-            "usernameInput"
-        );
-
-
-    if(input){
-
-        input.value =
-            myUsername;
-
-    }
-
-
-    /*
-       Don't block GameHub startup waiting
-       for the phone server.
-    */
-
-    setTimeout(
-        connectUsername,
-        500
-    );
-
-}
-
-
-/* =====================================================
-   USER SEARCH
-===================================================== */
-
-let searchTimer = null;
-
-
-function searchUsers(){
-
-    clearTimeout(
-        searchTimer
-    );
-
-
-    searchTimer =
-        setTimeout(
-            loadUsers,
-            250
-        );
-
-}
-
-
-async function loadUsers(){
-
-    const input =
-        document.getElementById(
-            "userSearch"
-        );
-
-
-    if(!input){
-        return;
-    }
-
-
-    const search =
-        input.value.trim();
-
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/users?search=" +
-                encodeURIComponent(search)
-            );
-
-
-        if(!response.ok){
-            return;
-        }
-
-
-        const users =
-            await response.json();
-
-
-        renderContacts(users);
-
-    }catch(error){
-
-        console.warn(
-            "User search unavailable.",
-            error
-        );
-
-    }
-
-}
-
-
-function renderContacts(users){
-
-    const container =
-        document.getElementById(
-            "contacts"
-        );
-
-
-    if(!container){
-        return;
-    }
-
-
-    container.innerHTML = "";
-
-
-    if(!Array.isArray(users)){
-        return;
-    }
-
-
-    users.forEach(user => {
-
-        if(
-            !user ||
-            user.username === myUsername
-        ){
-
-            return;
-
-        }
-
-
-        const contact =
-            document.createElement(
-                "div"
-            );
-
-
-        contact.className =
-            "contact";
-
-
-        if(
-            user.username ===
-            selectedUser
-        ){
-
-            contact.classList.add(
-                "selected"
-            );
-
-        }
-
-
-        const online =
-            onlineUsers.includes(
-                user.username
-            );
-
-
-        contact.innerHTML = `
-
-            <div class="contactName">
-                ${escapeHTML(
-                    user.username
-                )}
-            </div>
-
-            <div class="status ${
-                online
-                    ? "online"
-                    : ""
-            }">
-
-                ${
-                    online
-                        ? "● ONLINE"
-                        : "OFFLINE"
-                }
-
-            </div>
-        `;
-
-
-        contact.onclick = () => {
-
-            selectUser(
-                user.username
-            );
-
-        };
-
-
-        container.appendChild(
-            contact
-        );
-
-    });
-
-}
-
-
-function updateContactStatuses(){
-
-    loadUsers();
-
-    updateChatStatus();
-
-}
-
-
-/* =====================================================
-   CHAT
-===================================================== */
-
-async function selectUser(username){
-
-    selectedUser =
-        username;
-
-
-    const chatName =
-        document.getElementById(
-            "chatName"
-        );
-
-
-    if(chatName){
-
-        chatName.textContent =
-            username;
-
-    }
-
-
-    updateChatStatus();
-
-    await loadMessages();
-
-
-    const users =
-        await fetchUsersForCurrentSearch();
-
-
-    renderContacts(users);
-
-}
-
-
-function updateChatStatus(){
-
-    const status =
-        document.getElementById(
-            "chatStatus"
-        );
-
-
-    if(!status){
-        return;
-    }
-
-
-    if(
-        selectedUser &&
-        onlineUsers.includes(
-            selectedUser
-        )
-    ){
-
-        status.textContent =
-            "● ONLINE";
-
-        status.classList.add(
-            "online"
-        );
-
-    }else if(selectedUser){
-
-        status.textContent =
-            "OFFLINE";
-
-        status.classList.remove(
-            "online"
-        );
-
-    }else{
-
-        status.textContent =
-            "No conversation selected";
-
-        status.classList.remove(
-            "online"
-        );
-
-    }
-
-}
-
-
-async function fetchUsersForCurrentSearch(){
-
-    try{
-
-        const input =
-            document.getElementById(
-                "userSearch"
-            );
-
-
-        const search =
-            input
-                ? input.value.trim()
-                : "";
-
-
-        const response =
-            await fetch(
-                "/api/users?search=" +
-                encodeURIComponent(search)
-            );
-
-
-        if(!response.ok){
-            return [];
-        }
-
-
-        return await response.json();
-
-    }catch{
-
-        return [];
-
-    }
-
-}
-
-
-async function loadMessages(){
-
-    if(
-        !myUsername ||
-        !selectedUser
-    ){
-
-        return;
-
-    }
-
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/messages?" +
-                "user1=" +
-                encodeURIComponent(
-                    myUsername
-                ) +
-                "&user2=" +
-                encodeURIComponent(
-                    selectedUser
-                )
-            );
-
-
-        if(!response.ok){
-            return;
-        }
-
-
-        const messages =
-            await response.json();
-
-
-        const box =
-            document.getElementById(
-                "chatMessages"
-            );
-
-
-        if(!box){
-            return;
-        }
-
-
-        box.innerHTML = "";
-
-
-        if(Array.isArray(messages)){
-
-            messages.forEach(
-                addMessage
-            );
-
-        }
-
-
-        box.scrollTop =
-            box.scrollHeight;
-
-    }catch(error){
-
-        console.warn(
-            "Messages unavailable.",
-            error
-        );
-
-    }
-
-}
-
-
-function addMessage(message){
-
-    if(!message){
-        return;
-    }
-
-
-    const box =
-        document.getElementById(
-            "chatMessages"
-        );
-
-
-    if(!box){
-        return;
-    }
-
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.className =
-        "message" +
-        (
-            message.sender ===
-            myUsername
-                ? " mine"
-                : ""
-        );
-
-
-    div.textContent =
-        message.message || "";
-
-
-    box.appendChild(div);
-
-}
-
-
-function sendMessage(){
-
-    if(!myUsername){
-
-        showToast(
-            "Set a username first."
-        );
-
-        return;
-
-    }
-
-
-    if(!selectedUser){
-
-        showToast(
-            "Select a user first."
-        );
-
-        return;
-
-    }
-
-
-    if(
-        !socket ||
-        !socket.connected
-    ){
-
-        showToast(
-            "Phone server is offline."
-        );
-
-        return;
-
-    }
-
-
-    const input =
-        document.getElementById(
-            "messageInput"
-        );
-
-
-    const message =
-        input.value.trim();
-
-
-    if(!message){
-        return;
-    }
-
-
-    socket.emit(
-        "send-message",
-        {
-            receiver:
-                selectedUser,
-            message
         }
     );
-
-
-    input.value = "";
-
-}
-
-
-function messageKey(event){
-
-    if(
-        event.key ===
-        "Enter"
-    ){
-
-        event.preventDefault();
-
-        sendMessage();
-
-    }
-
-}
-
-
-function setupMessageEvents(){
-
-    if(!socket){
-        return;
-    }
-
 
     socket.on(
-        "new-message",
+        "disconnect",
+        () => {
+
+            $("connectionStatus")
+                .textContent =
+                "Offline";
+
+        }
+    );
+
+    socket.on(
+        "online-users",
+        users => {
+
+            onlineUsers = users;
+
+            renderUsers();
+
+            $("onlineCount")
+                .textContent =
+                users.length;
+
+        }
+    );
+
+    socket.on(
+        "receive-message",
         message => {
 
             if(
-                message.sender ===
-                    selectedUser ||
-                message.receiver ===
-                    selectedUser
+                selectedUser &&
+                message.sender.toLowerCase() ===
+                selectedUser.toLowerCase()
             ){
 
                 addMessage(
-                    message
+                    message,
+                    false
                 );
-
-
-                const box =
-                    document.getElementById(
-                        "chatMessages"
-                    );
-
-
-                if(box){
-
-                    box.scrollTop =
-                        box.scrollHeight;
-
-                }
 
             }else{
 
-                showToast(
-                    "New message from " +
+                toast(
+                    "Message from " +
                     message.sender
                 );
 
@@ -3696,384 +2239,519 @@ function setupMessageEvents(){
         }
     );
 
-}
+    socket.on(
+        "message-sent",
+        message => {
 
+            if(
+                selectedUser &&
+                message.receiver.toLowerCase() ===
+                selectedUser.toLowerCase()
+            ){
 
-/* =====================================================
-   CALLING
-===================================================== */
+                addMessage(
+                    message,
+                    true
+                );
 
-function startCall(){
+            }
 
-    if(!myUsername){
-
-        showToast(
-            "Set a username first."
-        );
-
-        return;
-
-    }
-
-
-    if(!selectedUser){
-
-        showToast(
-            "Select a user first."
-        );
-
-        return;
-
-    }
-
-
-    if(
-        !onlineUsers.includes(
-            selectedUser
-        )
-    ){
-
-        showToast(
-            "That user is offline."
-        );
-
-        return;
-
-    }
-
-
-    if(
-        !socket ||
-        !socket.connected
-    ){
-
-        showToast(
-            "Phone server is offline."
-        );
-
-        return;
-
-    }
-
-
-    currentCallUser =
-        selectedUser;
-
-
-    socket.emit(
-        "call-user",
-        {
-            receiver:
-                selectedUser
         }
     );
 
-
-    showToast(
-        "Calling " +
-        selectedUser +
-        "..."
-    );
-
-}
-
-
-function setupCallEvents(){
-
-    if(!socket){
-        return;
-    }
-
-
     socket.on(
-        "incoming-call",
+        "call-user",
         data => {
 
-            pendingCaller =
+            incomingCaller = data;
+
+            $("incomingName")
+                .textContent =
                 data.caller;
 
-
-            document.getElementById(
-                "callerName"
-            ).textContent =
-                data.caller +
-                " is calling";
-
-
-            document.getElementById(
-                "callerAvatar"
-            ).textContent =
+            $("incomingAvatar")
+                .textContent =
                 data.caller
                     .charAt(0)
                     .toUpperCase();
 
-
-            document.getElementById(
-                "incomingCallOverlay"
-            ).style.display =
-                "flex";
+            $("incomingCall")
+                .classList.add("show");
 
         }
     );
-
 
     socket.on(
         "call-accepted",
-        data => {
+        async data => {
 
-            currentCallUser =
-                data.username;
+            currentCallId =
+                data.receiverId;
 
-            startWebRTC(false);
+            await createOffer(
+                currentCallId
+            );
 
         }
     );
-
 
     socket.on(
         "call-declined",
-        data => {
+        () => {
 
-            showToast(
-                data.username +
-                " declined the call."
-            );
+            toast("Call declined.");
+
+            endCall();
 
         }
     );
-
 
     socket.on(
         "webrtc-offer",
-        handleWebRTCOffer
-    );
+        async data => {
 
+            await handleOffer(data);
+
+        }
+    );
 
     socket.on(
         "webrtc-answer",
-        handleWebRTCAnswer
-    );
+        async data => {
 
+            if(peerConnection){
+
+                await peerConnection
+                    .setRemoteDescription(
+                        new RTCSessionDescription(
+                            data.answer
+                        )
+                    );
+            }
+
+        }
+    );
 
     socket.on(
         "webrtc-ice",
-        handleWebRTCIce
-    );
+        async data => {
 
+            if(
+                peerConnection &&
+                data.candidate
+            ){
+
+                try{
+
+                    await peerConnection
+                        .addIceCandidate(
+                            new RTCIceCandidate(
+                                data.candidate
+                            )
+                        );
+
+                }catch(error){
+                    console.error(error);
+                }
+
+            }
+
+        }
+    );
 
     socket.on(
-        "call-ended",
-        data => {
+        "end-call",
+        () => {
+            endCall(false);
+        }
+    );
+}
 
-            showToast(
-                data.username +
-                " ended the call."
+if(currentUser){
+    connectSocket();
+}
+
+
+/* =========================
+   USERS
+========================= */
+
+function renderUsers(){
+
+    const list =
+        $("userList");
+
+    list.innerHTML = "";
+
+    onlineUsers
+        .filter(
+            user =>
+                user.username !== currentUser
+        )
+        .forEach(user => {
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "chatUser" +
+                (
+                    selectedUser ===
+                    user.username
+                    ? " selected"
+                    : ""
+                );
+
+            row.innerHTML = `
+                <span class="onlineDot online"></span>
+                <span>${escapeHTML(user.username)}</span>
+            `;
+
+            row.addEventListener(
+                "click",
+                () => selectUser(user.username)
             );
 
-            closeCall();
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   ACCEPT / DECLINE
-===================================================== */
-
-function acceptCall(){
-
-    document.getElementById(
-        "incomingCallOverlay"
-    ).style.display =
-        "none";
-
-
-    currentCallUser =
-        pendingCaller;
-
-
-    socket.emit(
-        "call-accepted",
-        {
-            caller:
-                pendingCaller
-        }
-    );
-
-
-    startWebRTC(true);
-
-}
-
-
-function declineCall(){
-
-    document.getElementById(
-        "incomingCallOverlay"
-    ).style.display =
-        "none";
-
-
-    if(socket){
-
-        socket.emit(
-            "call-declined",
-            {
-                caller:
-                    pendingCaller
-            }
-        );
-
-    }
-
-
-    pendingCaller = "";
-
-}
-
-
-/* =====================================================
-   WEBRTC
-===================================================== */
-
-function createPeerConnection(){
-
-    peerConnection =
-        new RTCPeerConnection({
-
-            iceServers:[
-                {
-                    urls:
-                        "stun:stun.l.google.com:19302"
-                }
-            ]
+            list.appendChild(row);
 
         });
 
+    if(!list.children.length){
 
-    peerConnection.onicecandidate =
-        event => {
+        list.innerHTML = `
+            <div style="
+                padding:20px;
+                color:#667087;
+                font-size:12px;
+            ">
+                No other players online.
+            </div>
+        `;
 
-            if(
-                event.candidate &&
-                currentCallUser &&
-                socket
-            ){
+    }
+}
 
-                socket.emit(
-                    "webrtc-ice",
-                    {
-                        target:
-                            currentCallUser,
-                        candidate:
-                            event.candidate
-                    }
-                );
+function selectUser(username){
 
-            }
+    selectedUser = username;
 
-        };
+    $("chatTarget")
+        .textContent =
+        username;
 
+    renderUsers();
 
-    peerConnection.ontrack =
-        event => {
-
-            const remote =
-                document.getElementById(
-                    "remoteVideo"
-                );
-
-
-            if(remote){
-
-                remote.srcObject =
-                    event.streams[0];
-
-            }
-
-        };
-
-
-    peerConnection.onconnectionstatechange =
-        () => {
-
-            if(
-                !peerConnection
-            ){
-
-                return;
-
-            }
-
-
-            if(
-                peerConnection.connectionState ===
-                    "failed" ||
-                peerConnection.connectionState ===
-                    "disconnected"
-            ){
-
-                showToast(
-                    "Call connection lost."
-                );
-
-            }
-
-        };
-
+    loadMessages();
 }
 
 
-async function startWebRTC(
-    isReceiver
-){
+/* =========================
+   CHAT
+========================= */
+
+$("chatForm").addEventListener(
+    "submit",
+    event => {
+
+        event.preventDefault();
+
+        if(!socket){
+            toast("Not connected.");
+            return;
+        }
+
+        if(!selectedUser){
+            toast("Select a player first.");
+            return;
+        }
+
+        const input =
+            $("messageInput");
+
+        const message =
+            input.value.trim();
+
+        if(!message){
+            return;
+        }
+
+        socket.emit(
+            "send-message",
+            {
+                receiver:selectedUser,
+                message
+            }
+        );
+
+        input.value = "";
+
+    }
+);
+
+async function loadMessages(){
+
+    if(!currentUser || !selectedUser){
+        return;
+    }
+
+    $("messages").innerHTML = "";
 
     try{
 
-        if(
-            !navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia
-        ){
+        const url =
+            RENDER_SERVER +
+            "/api/messages?sender=" +
+            encodeURIComponent(currentUser) +
+            "&receiver=" +
+            encodeURIComponent(selectedUser);
 
-            throw new Error(
-                "Camera/microphone unavailable."
+        const response =
+            await fetch(url);
+
+        const messages =
+            await response.json();
+
+        messages.forEach(message => {
+
+            addMessage(
+                message,
+                message.sender === currentUser
             );
 
-        }
+        });
 
+    }catch(error){
+
+        console.error(error);
+
+    }
+}
+
+function addMessage(message,mine){
+
+    const empty =
+        $("messages")
+            .querySelector(
+                '[style*="margin:auto"]'
+            );
+
+    if(empty){
+        empty.remove();
+    }
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        "message" +
+        (mine ? " mine" : "");
+
+    div.textContent =
+        message.message;
+
+    $("messages")
+        .appendChild(div);
+
+    $("messages").scrollTop =
+        $("messages").scrollHeight;
+}
+
+
+/* =========================
+   VOICE / VIDEO CALL
+========================= */
+
+$("voiceCall").addEventListener(
+    "click",
+    () => startCall(false)
+);
+
+$("videoCall").addEventListener(
+    "click",
+    () => startCall(true)
+);
+
+async function startCall(video){
+
+    if(!selectedUser){
+
+        toast("Select someone first.");
+
+        return;
+    }
+
+    if(!socket){
+
+        toast("Not connected.");
+
+        return;
+    }
+
+    try{
 
         localStream =
             await navigator.mediaDevices
                 .getUserMedia({
-                    video:true,
-                    audio:true
+                    audio:true,
+                    video:video
                 });
 
+        callVideo = video;
 
-        const localVideo =
-            document.getElementById(
-                "localVideo"
+        currentCallTarget =
+            selectedUser;
+
+        $("activeName")
+            .textContent =
+            selectedUser;
+
+        $("activeAvatar")
+            .textContent =
+            selectedUser
+                .charAt(0)
+                .toUpperCase();
+
+        $("activeStatus")
+            .textContent =
+            "Calling...";
+
+        $("activeCall")
+            .classList.add("show");
+
+        socket.emit(
+            "call-user",
+            {
+                receiver:selectedUser,
+                video
+            }
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Microphone/camera permission was denied."
+        );
+
+    }
+}
+
+$("acceptCall").addEventListener(
+    "click",
+    async () => {
+
+        if(!incomingCaller){
+            return;
+        }
+
+        try{
+
+            callVideo =
+                incomingCaller.video;
+
+            currentCallTarget =
+                incomingCaller.caller;
+
+            currentCallId =
+                incomingCaller.callerId;
+
+            localStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+                        audio:true,
+                        video:callVideo
+                    });
+
+            $("incomingCall")
+                .classList.remove("show");
+
+            $("activeName")
+                .textContent =
+                incomingCaller.caller;
+
+            $("activeAvatar")
+                .textContent =
+                incomingCaller.caller
+                    .charAt(0)
+                    .toUpperCase();
+
+            $("activeStatus")
+                .textContent =
+                "Connecting...";
+
+            $("activeCall")
+                .classList.add("show");
+
+            socket.emit(
+                "call-accepted",
+                {
+                    callerId:
+                        incomingCaller.callerId
+                }
             );
 
+        }catch(error){
 
-        if(localVideo){
+            console.error(error);
 
-            localVideo.srcObject =
-                localStream;
+            $("incomingCall")
+                .classList.remove("show");
+
+            toast(
+                "Could not access microphone/camera."
+            );
 
         }
 
+    }
+);
 
-        document.getElementById(
-            "videoCallOverlay"
-        ).style.display =
-            "flex";
+$("declineCall").addEventListener(
+    "click",
+    () => {
+
+        if(
+            incomingCaller &&
+            socket
+        ){
+
+            socket.emit(
+                "call-declined",
+                {
+                    callerId:
+                        incomingCaller.callerId
+                }
+            );
+
+        }
+
+        $("incomingCall")
+            .classList.remove("show");
+
+        incomingCaller = null;
+
+    }
+);
 
 
-        createPeerConnection();
+/* =========================
+   WEBRTC
+========================= */
 
+function createPeerConnection(target){
+
+    peerConnection =
+        new RTCPeerConnection({
+            iceServers:[
+                {
+                    urls:
+                    "stun:stun.l.google.com:19302"
+                }
+            ]
+        });
+
+    if(localStream){
 
         localStream
             .getTracks()
@@ -4086,501 +2764,356 @@ async function startWebRTC(
 
             });
 
-
-        if(!isReceiver){
-
-            const offer =
-                await peerConnection
-                    .createOffer();
-
-
-            await peerConnection
-                .setLocalDescription(
-                    offer
-                );
-
-
-            socket.emit(
-                "webrtc-offer",
-                {
-                    target:
-                        currentCallUser,
-                    offer
-                }
-            );
-
-        }
-
-    }catch(error){
-
-        console.error(
-            "WebRTC error:",
-            error
-        );
-
-
-        showToast(
-            "Camera/microphone permission was denied."
-        );
-
-
-        closeCall();
-
     }
 
-}
+    peerConnection.onicecandidate =
+        event => {
 
+            if(
+                event.candidate &&
+                socket
+            ){
 
-async function handleWebRTCOffer(
-    data
-){
+                socket.emit(
+                    "webrtc-ice",
+                    {
+                        target,
+                        candidate:
+                            event.candidate
+                    }
+                );
 
-    currentCallUser =
-        data.from;
-
-
-    try{
-
-        if(!peerConnection){
-
-            await startWebRTC(true);
-
-        }
-
-
-        await peerConnection
-            .setRemoteDescription(
-                new RTCSessionDescription(
-                    data.offer
-                )
-            );
-
-
-        for(
-            const candidate
-            of pendingIceCandidates
-        ){
-
-            try{
-
-                await peerConnection
-                    .addIceCandidate(
-                        candidate
-                    );
-
-            }catch{}
-
-        }
-
-
-        pendingIceCandidates = [];
-
-
-        const answer =
-            await peerConnection
-                .createAnswer();
-
-
-        await peerConnection
-            .setLocalDescription(
-                answer
-            );
-
-
-        socket.emit(
-            "webrtc-answer",
-            {
-                target:
-                    data.from,
-                answer
             }
-        );
 
-    }catch(error){
+        };
 
-        console.error(
-            "Offer error:",
-            error
-        );
+    peerConnection.ontrack =
+        event => {
 
-    }
+            const video =
+                $("remoteVideo");
 
+            video.srcObject =
+                event.streams[0];
+
+            video.style.display =
+                "block";
+
+        };
+
+    peerConnection.onconnectionstatechange =
+        () => {
+
+            if(!peerConnection){
+                return;
+            }
+
+            const state =
+                peerConnection
+                    .connectionState;
+
+            if(state === "connected"){
+
+                $("activeStatus")
+                    .textContent =
+                    "Connected";
+
+            }
+
+            if(
+                state === "failed" ||
+                state === "disconnected"
+            ){
+
+                $("activeStatus")
+                    .textContent =
+                    "Connection lost";
+
+            }
+
+        };
+
+    return peerConnection;
 }
 
+async function createOffer(target){
 
-async function handleWebRTCAnswer(
-    data
-){
+    createPeerConnection(target);
 
-    if(!peerConnection){
-        return;
-    }
-
-
-    try{
-
+    const offer =
         await peerConnection
-            .setRemoteDescription(
-                new RTCSessionDescription(
-                    data.answer
-                )
-            );
+            .createOffer();
 
+    await peerConnection
+        .setLocalDescription(offer);
 
-        for(
-            const candidate
-            of pendingIceCandidates
-        ){
-
-            try{
-
-                await peerConnection
-                    .addIceCandidate(
-                        candidate
-                    );
-
-            }catch{}
-
+    socket.emit(
+        "webrtc-offer",
+        {
+            target,
+            offer
         }
-
-
-        pendingIceCandidates = [];
-
-    }catch(error){
-
-        console.error(
-            "Answer error:",
-            error
-        );
-
-    }
-
+    );
 }
 
+async function handleOffer(data){
 
-async function handleWebRTCIce(
-    data
-){
+    currentCallId =
+        data.sender;
 
     if(!peerConnection){
 
-        return;
+        createPeerConnection(
+            data.sender
+        );
 
     }
 
-
-    const candidate =
-        new RTCIceCandidate(
-            data.candidate
+    await peerConnection
+        .setRemoteDescription(
+            new RTCSessionDescription(
+                data.offer
+            )
         );
 
+    const answer =
+        await peerConnection
+            .createAnswer();
 
-    if(
-        peerConnection.remoteDescription &&
-        peerConnection.remoteDescription.type
-    ){
+    await peerConnection
+        .setLocalDescription(answer);
 
-        try{
-
-            await peerConnection
-                .addIceCandidate(
-                    candidate
-                );
-
-        }catch(error){
-
-            console.error(
-                "ICE error:",
-                error
-            );
-
+    socket.emit(
+        "webrtc-answer",
+        {
+            target:data.sender,
+            answer
         }
+    );
 
-    }else{
-
-        pendingIceCandidates.push(
-            candidate
-        );
-
-    }
-
+    $("activeStatus")
+        .textContent =
+        "Connected";
 }
 
 
-function endCall(){
+/* =========================
+   CALL CONTROLS
+========================= */
+
+$("muteButton").addEventListener(
+    "click",
+    () => {
+
+        if(!localStream){
+            return;
+        }
+
+        const track =
+            localStream
+                .getAudioTracks()[0];
+
+        if(!track){
+            return;
+        }
+
+        track.enabled =
+            !track.enabled;
+
+        $("muteButton")
+            .textContent =
+            track.enabled
+            ? "🎤"
+            : "🔇";
+    }
+);
+
+$("cameraButton").addEventListener(
+    "click",
+    () => {
+
+        if(!localStream){
+            return;
+        }
+
+        const track =
+            localStream
+                .getVideoTracks()[0];
+
+        if(!track){
+            return;
+        }
+
+        track.enabled =
+            !track.enabled;
+
+        $("cameraButton")
+            .textContent =
+            track.enabled
+            ? "📷"
+            : "🚫";
+    }
+);
+
+$("hangupButton").addEventListener(
+    "click",
+    () => endCall(true)
+);
+
+function endCall(sendSignal=true){
 
     if(
-        currentCallUser &&
-        socket
+        sendSignal &&
+        socket &&
+        currentCallId
     ){
 
         socket.emit(
             "end-call",
             {
-                target:
-                    currentCallUser
+                target:currentCallId
             }
         );
 
     }
 
+    if(peerConnection){
 
-    closeCall();
+        peerConnection.close();
+        peerConnection = null;
 
-}
-
-
-function closeCall(){
+    }
 
     if(localStream){
 
         localStream
             .getTracks()
             .forEach(track => {
-
                 track.stop();
-
             });
 
-
-        localStream =
-            null;
+        localStream = null;
 
     }
 
+    $("remoteVideo").srcObject = null;
 
-    if(peerConnection){
+    $("remoteVideo").style.display =
+        "none";
 
-        peerConnection.close();
+    $("activeCall")
+        .classList.remove("show");
 
-        peerConnection =
-            null;
+    $("incomingCall")
+        .classList.remove("show");
 
-    }
+    currentCallTarget = null;
+    currentCallId = null;
+    incomingCaller = null;
 
+    $("muteButton")
+        .textContent = "🎤";
 
-    const local =
-        document.getElementById(
-            "localVideo"
-        );
-
-    const remote =
-        document.getElementById(
-            "remoteVideo"
-        );
-
-
-    if(local){
-
-        local.srcObject =
-            null;
-
-    }
-
-
-    if(remote){
-
-        remote.srcObject =
-            null;
-
-    }
-
-
-    const overlay =
-        document.getElementById(
-            "videoCallOverlay"
-        );
-
-
-    if(overlay){
-
-        overlay.style.display =
-            "none";
-
-    }
-
-
-    currentCallUser =
-        "";
-
-    pendingIceCandidates =
-        [];
-
+    $("cameraButton")
+        .textContent = "📷";
 }
 
 
-/* =====================================================
+/* =========================
    TOAST
-===================================================== */
+========================= */
 
 let toastTimer = null;
 
+function toast(message){
 
-function showToast(message){
+    const element =
+        $("toast");
 
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    if(!toast){
-        return;
-    }
-
-
-    toast.textContent =
+    element.textContent =
         message;
 
+    element.classList.add("show");
 
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
+    clearTimeout(toastTimer);
 
     toastTimer =
         setTimeout(() => {
 
-            toast.classList.remove(
+            element.classList.remove(
                 "show"
             );
 
-        },3000);
-
+        },2800);
 }
 
 
-/* =====================================================
-   ESCAPE KEY
-===================================================== */
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+/* =========================
+   KEYBOARD
+========================= */
 
 document.addEventListener(
     "keydown",
     event => {
 
-        if(
-            event.key !==
-            "Escape"
-        ){
+        if(event.key === "Escape"){
 
-            return;
+            if(
+                $("gameOverlay")
+                    .classList.contains("show")
+            ){
+
+                closeGame();
+
+            }
+
+            if(
+                $("activeCall")
+                    .classList.contains("show")
+            ){
+
+                endCall(true);
+
+            }
 
         }
-
-
-        closeGame();
-        closeMovie();
-        closeCall();
-
-
-        document.getElementById(
-            "incomingCallOverlay"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "adOverlay"
-        ).style.display =
-            "none";
 
     }
 );
 
 
-/* =====================================================
-   SECURITY
-===================================================== */
+/* =========================
+   SERVICE WORKER
+========================= */
 
-function escapeHTML(value){
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* =====================================================
-   INITIALIZE
-===================================================== */
-
-renderGames();
-
-renderApps();
-
-restoreUsername();
-
-
-/* =====================================================
-   PWA
-===================================================== */
-
-/*
-   This is intentionally a separate script section
-   in the original HTML structure.
-
-   Registering /sw.js is correct when GameHub is
-   served from the root of the HTTPS domain.
-*/
-
-if(
-    "serviceWorker" in navigator
-){
+if("serviceWorker" in navigator){
 
     navigator.serviceWorker
-        .register(
-            "/sw.js",
-            {
-                scope:"/"
-            }
-        )
-        .then(
-            registration => {
-
-                console.log(
-                    "GameHub PWA ready:",
-                    registration.scope
-                );
-
-            }
-        )
+        .register("/sw.js")
         .catch(
-            error => {
-
+            error =>
                 console.warn(
-                    "GameHub PWA unavailable:",
+                    "Service worker:",
                     error
-                );
-
-            }
+                )
         );
 
 }
-
 </script>
 
 </body>
