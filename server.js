@@ -44,14 +44,36 @@ db.exec(`
 `);
 
 // ==========================================
-// SERVE GAMEHUB
+// SERVE GAMEHUB FILES
 // ==========================================
 
 app.use(express.static(__dirname));
 
+// ==========================================
+// GAMEHUB HOMEPAGE
+// ==========================================
+
 app.get("/", (req, res) => {
     res.sendFile(
-        path.join(__dirname, "launch.html")
+        path.join(__dirname, "Schoolgames.html")
+    );
+});
+
+// ==========================================
+// PWA FILES
+// ==========================================
+
+// Manifest
+app.get("/manifest.webmanifest", (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "manifest.webmanifest")
+    );
+});
+
+// Service worker
+app.get("/sw.js", (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "sw.js")
     );
 });
 
@@ -125,7 +147,9 @@ function sendOnlineCount() {
 
 app.post("/api/register", (req, res) => {
 
-    const username = cleanUsername(req.body.username);
+    const username = cleanUsername(
+        req.body.username
+    );
 
     if (!validUsername(username)) {
 
@@ -270,7 +294,10 @@ io.on("connection", (socket) => {
         socket.id
     );
 
-    // Send current count immediately
+    // ======================================
+    // INITIAL PLAYER DATA
+    // ======================================
+
     socket.emit(
         "player-count",
         onlineUsers.size
@@ -293,15 +320,18 @@ io.on("connection", (socket) => {
             return;
         }
 
-        // If this username was already connected,
-        // remove the old socket from the online list.
-        const oldSocketId = onlineUsers.get(username);
+        const oldSocketId =
+            onlineUsers.get(username);
 
-        if (oldSocketId && oldSocketId !== socket.id) {
+        if (
+            oldSocketId &&
+            oldSocketId !== socket.id
+        ) {
 
-            const oldSocket = io.sockets.sockets.get(
-                oldSocketId
-            );
+            const oldSocket =
+                io.sockets.sockets.get(
+                    oldSocketId
+                );
 
             if (oldSocket) {
                 oldSocket.username = null;
@@ -320,9 +350,12 @@ io.on("connection", (socket) => {
             `user:${username}`
         );
 
-        io.emit("user-online", {
-            username
-        });
+        io.emit(
+            "user-online",
+            {
+                username
+            }
+        );
 
         sendOnlineCount();
 
@@ -342,13 +375,12 @@ io.on("connection", (socket) => {
             return;
         }
 
-        const receiver = cleanUsername(
-            data?.receiver
-        );
+        const receiver =
+            cleanUsername(data?.receiver);
 
-        const message = String(
-            data?.message || ""
-        ).trim();
+        const message =
+            String(data?.message || "")
+                .trim();
 
         if (!receiver || !message) {
             return;
@@ -379,7 +411,8 @@ io.on("connection", (socket) => {
 
         const messageData = {
 
-            sender: socket.username,
+            sender:
+                socket.username,
 
             receiver,
 
@@ -416,9 +449,8 @@ io.on("connection", (socket) => {
             return;
         }
 
-        const receiver = cleanUsername(
-            data?.receiver
-        );
+        const receiver =
+            cleanUsername(data?.receiver);
 
         const targetSocket =
             onlineUsers.get(receiver);
@@ -438,7 +470,8 @@ io.on("connection", (socket) => {
         io.to(targetSocket).emit(
             "incoming-call",
             {
-                caller: socket.username
+                caller:
+                    socket.username
             }
         );
 
@@ -450,9 +483,8 @@ io.on("connection", (socket) => {
 
     socket.on("call-accepted", (data) => {
 
-        const caller = cleanUsername(
-            data?.caller
-        );
+        const caller =
+            cleanUsername(data?.caller);
 
         const targetSocket =
             onlineUsers.get(caller);
@@ -464,7 +496,8 @@ io.on("connection", (socket) => {
         io.to(targetSocket).emit(
             "call-accepted",
             {
-                username: socket.username
+                username:
+                    socket.username
             }
         );
 
@@ -476,9 +509,8 @@ io.on("connection", (socket) => {
 
     socket.on("call-declined", (data) => {
 
-        const caller = cleanUsername(
-            data?.caller
-        );
+        const caller =
+            cleanUsername(data?.caller);
 
         const targetSocket =
             onlineUsers.get(caller);
@@ -490,7 +522,8 @@ io.on("connection", (socket) => {
         io.to(targetSocket).emit(
             "call-declined",
             {
-                username: socket.username
+                username:
+                    socket.username
             }
         );
 
@@ -502,9 +535,10 @@ io.on("connection", (socket) => {
 
     socket.on("webrtc-offer", (data) => {
 
-        const target = onlineUsers.get(
-            cleanUsername(data?.target)
-        );
+        const target =
+            onlineUsers.get(
+                cleanUsername(data?.target)
+            );
 
         if (!target) {
             return;
@@ -513,8 +547,11 @@ io.on("connection", (socket) => {
         io.to(target).emit(
             "webrtc-offer",
             {
-                from: socket.username,
-                offer: data.offer
+                from:
+                    socket.username,
+
+                offer:
+                    data.offer
             }
         );
 
@@ -526,9 +563,10 @@ io.on("connection", (socket) => {
 
     socket.on("webrtc-answer", (data) => {
 
-        const target = onlineUsers.get(
-            cleanUsername(data?.target)
-        );
+        const target =
+            onlineUsers.get(
+                cleanUsername(data?.target)
+            );
 
         if (!target) {
             return;
@@ -537,8 +575,11 @@ io.on("connection", (socket) => {
         io.to(target).emit(
             "webrtc-answer",
             {
-                from: socket.username,
-                answer: data.answer
+                from:
+                    socket.username,
+
+                answer:
+                    data.answer
             }
         );
 
@@ -550,9 +591,10 @@ io.on("connection", (socket) => {
 
     socket.on("webrtc-ice", (data) => {
 
-        const target = onlineUsers.get(
-            cleanUsername(data?.target)
-        );
+        const target =
+            onlineUsers.get(
+                cleanUsername(data?.target)
+            );
 
         if (!target) {
             return;
@@ -561,8 +603,11 @@ io.on("connection", (socket) => {
         io.to(target).emit(
             "webrtc-ice",
             {
-                from: socket.username,
-                candidate: data.candidate
+                from:
+                    socket.username,
+
+                candidate:
+                    data.candidate
             }
         );
 
@@ -574,9 +619,10 @@ io.on("connection", (socket) => {
 
     socket.on("end-call", (data) => {
 
-        const target = onlineUsers.get(
-            cleanUsername(data?.target)
-        );
+        const target =
+            onlineUsers.get(
+                cleanUsername(data?.target)
+            );
 
         if (!target) {
             return;
@@ -585,7 +631,8 @@ io.on("connection", (socket) => {
         io.to(target).emit(
             "call-ended",
             {
-                username: socket.username
+                username:
+                    socket.username
             }
         );
 
@@ -597,12 +644,11 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
 
-        const username = socket.username;
+        const username =
+            socket.username;
 
         if (username) {
 
-            // Only remove this username if THIS
-            // socket is the current connection.
             if (
                 onlineUsers.get(username)
                 === socket.id
@@ -661,7 +707,11 @@ Local:
 http://localhost:${PORT}
 
 Homepage:
-launch.html
+Schoolgames.html
+
+PWA:
+manifest.webmanifest
+sw.js
 
 Ready for players.
 ========================================
