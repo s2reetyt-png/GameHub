@@ -50,7 +50,9 @@ db.exec(`
 app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "Schoolgames.html"));
+    res.sendFile(
+        path.join(__dirname, "launch.html")
+    );
 });
 
 // ==========================================
@@ -248,20 +250,20 @@ io.on("connection", (socket) => {
 
         socket.username = username;
 
-        onlineUsers.set(username, socket.id);
+onlineUsers.set(username, socket.id);
 
-        socket.join(`user:${username}`);
+socket.join(`user:${username}`);
 
-        io.emit("user-online", {
-            username
-        });
+io.emit("user-online", {
+    username
+});
 
-        io.emit("online-users",
-            Array.from(onlineUsers.keys())
-        );
+// Send live player count to everybody
+io.emit("player-count", onlineUsers.size);
 
-        console.log(username, "is online.");
-    });
+io.emit("online-users",
+    Array.from(onlineUsers.keys())
+);
 
     // --------------------------------------
     // SEND MESSAGE
@@ -463,23 +465,19 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
 
-        if (socket.username) {
+        onlineUsers.delete(socket.username);
 
-            onlineUsers.delete(socket.username);
+io.emit("user-offline", {
+    username: socket.username
+});
 
-            io.emit("user-offline", {
-                username: socket.username
-            });
+// Update everybody's live player count
+io.emit("player-count", onlineUsers.size);
 
-            io.emit("online-users",
-                Array.from(onlineUsers.keys())
-            );
-
-            console.log(
-                socket.username,
-                "went offline."
-            );
-        }
+io.emit("online-users",
+    Array.from(onlineUsers.keys())
+);
+}
 
         console.log("Disconnected:", socket.id);
     });
