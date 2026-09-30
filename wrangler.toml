@@ -1,5 +1,8 @@
 name = "gamehub"
 compatibility_date = "2026-09-30"
 
+workers_dev = true
+
 [assets]
 directory = "."
+not_found_handling = "single-page-application"
