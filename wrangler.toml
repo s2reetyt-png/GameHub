@@ -1,8 +1,20 @@
 name = "gamehub"
-compatibility_date = "2026-09-30"
+main = "worker.js"
+
+compatibility_date = "2026-10-06"
 
 workers_dev = true
 
 [assets]
 directory = "."
+binding = "ASSETS"
 not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/ws/*"]
+
+[[durable_objects.bindings]]
+name = "GAMEHUB_ROOM"
+class_name = "GameHubRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GameHubRoom"]
