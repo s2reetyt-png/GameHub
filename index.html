@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>GAMEHUB</title>
+<title>GameHub</title>
 
 <style>
 *{
@@ -13,252 +13,364 @@
 }
 
 :root{
-    --bg:#07080d;
-    --panel:#10121b;
-    --panel2:#151824;
-    --border:rgba(255,255,255,.08);
+    --bg:#08090d;
+    --bg2:#0d0f15;
+    --panel:#11141c;
+    --panel2:#171a24;
+    --panel3:#1c202b;
     --text:#f5f7ff;
-    --muted:#858ba0;
-    --accent:#7c5cff;
-    --accent2:#9b83ff;
-    --green:#36e39b;
-    --red:#ff5577;
-    --blue:#4aa3ff;
+    --muted:#7e8495;
+    --muted2:#5d6372;
+    --purple:#795cff;
+    --purple2:#9b86ff;
+    --green:#35dfa0;
+    --red:#ff4969;
+    --blue:#4ca7ff;
+    --line:rgba(255,255,255,.075);
 }
 
 html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    font-family:Inter,Segoe UI,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
-
-button,input{
-    font:inherit;
-}
-
-button{
-    border:0;
-    cursor:pointer;
 }
 
 body{
-    background:
-        radial-gradient(circle at 75% 10%,rgba(124,92,255,.16),transparent 30%),
-        radial-gradient(circle at 20% 80%,rgba(52,227,155,.06),transparent 25%),
-        #07080d;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    color:var(--text);
+    background:#08090d;
 }
 
-/* STARTUP */
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.background{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+}
+
+.glow{
+    position:absolute;
+    width:650px;
+    height:650px;
+    border-radius:50%;
+    filter:blur(100px);
+    opacity:.12;
+}
+
+.glow.one{
+    background:#7658ff;
+    top:-350px;
+    right:-100px;
+}
+
+.glow.two{
+    background:#3a8fff;
+    bottom:-450px;
+    left:-250px;
+}
+
+/* =========================================================
+   STARTUP
+========================================================= */
 
 #startup{
     position:fixed;
     inset:0;
-    z-index:9999;
+    z-index:99999;
+    background:#050609;
     display:flex;
     align-items:center;
     justify-content:center;
-    background:#05060a;
-    transition:opacity .8s,visibility .8s;
+    transition:opacity .7s,visibility .7s;
 }
 
-#startup.hidden{
+#startup.hide{
     opacity:0;
     visibility:hidden;
 }
 
-.startupBox{
-    width:min(650px,90vw);
-    text-align:center;
+.boot{
+    width:min(650px,88vw);
 }
 
-.startupLogo{
-    font-size:clamp(48px,9vw,100px);
-    font-weight:900;
-    letter-spacing:-5px;
-    background:linear-gradient(135deg,#fff,#9d8aff 45%,#6748ff);
+.bootLogo{
+    font-size:clamp(55px,9vw,105px);
+    font-weight:950;
+    letter-spacing:-7px;
+    line-height:.9;
+    background:
+        linear-gradient(
+            120deg,
+            #fff 10%,
+            #b8adff 40%,
+            #7155ff 80%
+        );
     -webkit-background-clip:text;
     color:transparent;
 }
 
-.startupSub{
-    margin-top:12px;
-    color:#777d91;
-    letter-spacing:5px;
-    font-size:12px;
+.bootVersion{
+    margin-top:15px;
+    color:#5f6474;
+    font-size:11px;
+    letter-spacing:4px;
     text-transform:uppercase;
 }
 
-.bootLine{
-    height:3px;
-    margin:42px auto 18px;
-    width:100%;
-    background:#171923;
-    overflow:hidden;
+.bootTrack{
+    height:4px;
+    background:#171922;
+    margin-top:45px;
     border-radius:99px;
+    overflow:hidden;
 }
 
-.bootProgress{
-    width:0%;
+.bootBar{
     height:100%;
-    background:linear-gradient(90deg,#6748ff,#9e8cff);
-    animation:boot 2.4s ease forwards;
+    width:0;
+    background:linear-gradient(90deg,#6042ff,#a18eff);
+    animation:boot 2.3s cubic-bezier(.2,.8,.2,1) forwards;
 }
 
 @keyframes boot{
-    to{width:100%}
+    0%{width:0}
+    35%{width:30%}
+    65%{width:68%}
+    100%{width:100%}
 }
 
-.bootText{
-    color:#656b7c;
-    font-size:12px;
+.bootStatus{
+    color:#626879;
+    font-size:11px;
+    margin-top:13px;
 }
 
-/* APP */
+/* =========================================================
+   APP
+========================================================= */
 
 #app{
     width:100%;
     height:100%;
-    display:grid;
-    grid-template-columns:250px 1fr;
+    display:flex;
+    position:relative;
 }
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 .sidebar{
+    width:245px;
+    flex-shrink:0;
     height:100%;
-    background:rgba(9,10,16,.92);
-    border-right:1px solid var(--border);
-    padding:22px 14px;
+    background:rgba(9,10,14,.94);
+    border-right:1px solid var(--line);
+    padding:20px 13px;
     display:flex;
     flex-direction:column;
-    backdrop-filter:blur(25px);
+    z-index:10;
 }
 
-.brand{
+.logo{
     display:flex;
     align-items:center;
     gap:11px;
-    padding:8px 12px 30px;
+    padding:6px 11px 30px;
 }
 
-.brandMark{
-    width:36px;
-    height:36px;
-    border-radius:11px;
+.logoBox{
+    width:38px;
+    height:38px;
+    border-radius:12px;
     display:grid;
     place-items:center;
-    background:linear-gradient(135deg,#7d5cff,#4e36c9);
-    font-weight:900;
-    box-shadow:0 8px 30px rgba(124,92,255,.35);
+    background:
+        linear-gradient(
+            145deg,
+            #917cff,
+            #5437dc
+        );
+    font-weight:950;
+    font-size:19px;
+    box-shadow:
+        0 10px 35px rgba(102,72,255,.3);
 }
 
-.brandText{
-    font-weight:900;
-    letter-spacing:-.5px;
+.logoText{
+    font-weight:950;
+    letter-spacing:-.7px;
 }
 
-.brandText span{
-    color:#8370ff;
+.logoText span{
+    color:#8872ff;
 }
 
-.navLabel{
-    color:#555b6d;
-    font-size:10px;
+.sidebarLabel{
+    padding:0 12px 8px;
+    margin-top:5px;
+    color:#4e5361;
     text-transform:uppercase;
-    letter-spacing:1.5px;
-    padding:12px 13px 8px;
+    letter-spacing:1.7px;
+    font-size:9px;
+    font-weight:800;
 }
 
 .nav{
     display:flex;
     flex-direction:column;
-    gap:5px;
+    gap:3px;
 }
 
 .nav button{
-    width:100%;
-    text-align:left;
-    background:transparent;
-    color:#858b9e;
-    padding:12px 13px;
-    border-radius:11px;
+    position:relative;
     display:flex;
     align-items:center;
     gap:12px;
-    transition:.2s;
+    width:100%;
+    padding:11px 12px;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:#858b9c;
+    cursor:pointer;
+    text-align:left;
+    transition:.18s;
 }
 
 .nav button:hover{
-    color:#fff;
-    background:#151722;
+    background:#151821;
+    color:#e8eaf0;
 }
 
 .nav button.active{
-    color:#fff;
-    background:linear-gradient(90deg,rgba(124,92,255,.2),rgba(124,92,255,.05));
+    background:
+        linear-gradient(
+            90deg,
+            rgba(121,92,255,.22),
+            rgba(121,92,255,.055)
+        );
+    color:white;
+}
+
+.nav button.active::before{
+    content:"";
+    position:absolute;
+    left:-13px;
+    top:9px;
+    bottom:9px;
+    width:3px;
+    border-radius:0 5px 5px 0;
+    background:#836cff;
 }
 
 .navIcon{
-    width:23px;
+    width:22px;
     text-align:center;
-    font-size:17px;
+    font-size:16px;
 }
 
-.sideBottom{
-    margin-top:auto;
+.navName{
+    font-size:12px;
+    font-weight:650;
 }
 
-.profileMini{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:13px;
-    background:#11131c;
-    border:1px solid var(--border);
-    border-radius:14px;
-}
-
-.avatar{
-    width:35px;
-    height:35px;
-    border-radius:50%;
-    background:linear-gradient(135deg,#765aff,#35d99a);
+.navBadge{
+    margin-left:auto;
+    min-width:18px;
+    height:18px;
+    padding:0 5px;
     display:grid;
     place-items:center;
+    border-radius:6px;
+    background:#ff4969;
+    color:white;
+    font-size:9px;
     font-weight:800;
 }
 
-.profileInfo{
-    min-width:0;
+.sidebarBottom{
+    margin-top:auto;
 }
 
-.profileName{
-    font-size:13px;
-    font-weight:700;
-    white-space:nowrap;
+.accountCard{
+    border:1px solid var(--line);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.04),
+            rgba(255,255,255,.015)
+        );
+    border-radius:15px;
+    padding:11px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.avatar{
+    width:37px;
+    height:37px;
+    border-radius:11px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    background:
+        linear-gradient(
+            135deg,
+            #795cff,
+            #35dfa0
+        );
+    color:#fff;
+    font-weight:900;
+}
+
+.accountInfo{
+    min-width:0;
+    flex:1;
+}
+
+.accountName{
+    font-size:12px;
+    font-weight:800;
     overflow:hidden;
+    white-space:nowrap;
     text-overflow:ellipsis;
 }
 
-.onlineDot{
-    width:7px;
-    height:7px;
-    background:var(--green);
-    border-radius:50%;
-    display:inline-block;
-    margin-right:5px;
-}
-
-.profileStatus{
-    color:#6d7488;
-    font-size:10px;
+.accountStatus{
     margin-top:3px;
+    color:#62697a;
+    font-size:9px;
 }
 
-/* MAIN */
+.statusDot{
+    display:inline-block;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--green);
+    margin-right:4px;
+    box-shadow:0 0 10px rgba(53,223,160,.7);
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
 
 .main{
+    flex:1;
     min-width:0;
     height:100%;
     display:flex;
@@ -266,99 +378,113 @@ body{
 }
 
 .topbar{
-    height:74px;
-    border-bottom:1px solid var(--border);
+    height:70px;
+    flex-shrink:0;
     display:flex;
     align-items:center;
-    padding:0 28px;
-    gap:18px;
-    background:rgba(7,8,13,.7);
-    backdrop-filter:blur(20px);
+    gap:16px;
+    padding:0 25px;
+    background:rgba(8,9,13,.75);
+    border-bottom:1px solid var(--line);
+    backdrop-filter:blur(22px);
+    z-index:8;
 }
 
-.search{
-    flex:1;
-    max-width:560px;
+.searchBox{
+    width:min(500px,55vw);
     position:relative;
 }
 
-.search input{
+.searchBox input{
     width:100%;
-    border:1px solid var(--border);
-    background:#11131c;
-    color:#fff;
-    border-radius:13px;
-    padding:12px 16px 12px 42px;
+    height:39px;
+    border:1px solid var(--line);
+    border-radius:11px;
+    background:#11131a;
+    color:white;
     outline:none;
+    padding:0 15px 0 39px;
+    font-size:11px;
+    transition:.2s;
 }
 
-.search input:focus{
-    border-color:rgba(124,92,255,.6);
+.searchBox input:focus{
+    border-color:rgba(121,92,255,.6);
+    box-shadow:0 0 0 3px rgba(121,92,255,.08);
 }
 
 .searchIcon{
     position:absolute;
-    left:15px;
+    left:14px;
     top:10px;
-    color:#6f7588;
+    color:#656b7b;
+    font-size:15px;
 }
 
-.topActions{
+.topRight{
     margin-left:auto;
     display:flex;
-    gap:8px;
+    align-items:center;
+    gap:7px;
 }
 
-.iconBtn{
-    width:40px;
-    height:40px;
-    border-radius:11px;
-    background:#11131c;
-    border:1px solid var(--border);
-    color:#aeb3c3;
+.topButton{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    background:#11131a;
+    border:1px solid var(--line);
+    color:#9ba1b0;
+    cursor:pointer;
     position:relative;
+    transition:.18s;
 }
 
-.iconBtn:hover{
-    color:#fff;
-    background:#181b26;
+.topButton:hover{
+    background:#191c26;
+    color:white;
 }
 
-.badge{
+.topBadge{
     position:absolute;
-    top:-4px;
     right:-4px;
-    min-width:16px;
+    top:-4px;
+    width:16px;
     height:16px;
     border-radius:50%;
-    background:#ff4f73;
+    background:#ff4969;
+    border:2px solid #08090d;
     color:white;
-    font-size:9px;
     display:grid;
     place-items:center;
-    border:2px solid #08090e;
+    font-size:8px;
+    font-weight:900;
 }
 
-/* CONTENT */
+/* =========================================================
+   CONTENT
+========================================================= */
 
 .content{
     flex:1;
     overflow:auto;
-    padding:34px;
+    padding:30px;
 }
 
 .content::-webkit-scrollbar{
-    width:8px;
+    width:7px;
 }
 
 .content::-webkit-scrollbar-thumb{
-    background:#202330;
-    border-radius:99px;
+    background:#20232d;
+    border-radius:20px;
 }
 
 .page{
     display:none;
-    animation:pageIn .25s ease;
+    max-width:1450px;
+    margin:auto;
+    animation:pageIn .2s ease;
 }
 
 .page.active{
@@ -366,195 +492,394 @@ body{
 }
 
 @keyframes pageIn{
-    from{opacity:0;transform:translateY(5px)}
-    to{opacity:1;transform:none}
+    from{
+        opacity:0;
+        transform:translateY(7px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
 }
+
+/* =========================================================
+   HOME HERO
+========================================================= */
 
 .hero{
-    position:relative;
-    min-height:280px;
-    border:1px solid var(--border);
+    min-height:390px;
     border-radius:25px;
     overflow:hidden;
+    position:relative;
+    border:1px solid var(--line);
     background:
-        radial-gradient(circle at 80% 20%,rgba(130,100,255,.35),transparent 30%),
-        linear-gradient(120deg,#141525,#0c0e16);
-    display:flex;
-    align-items:center;
-    padding:45px;
+        radial-gradient(
+            circle at 76% 35%,
+            rgba(129,99,255,.36),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 92% 70%,
+            rgba(52,213,160,.09),
+            transparent 25%
+        ),
+        linear-gradient(
+            115deg,
+            #11131d 0%,
+            #171528 47%,
+            #0b0d13 100%
+        );
 }
 
-.hero::before{
+.hero::after{
     content:"";
     position:absolute;
-    width:400px;
-    height:400px;
+    inset:0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(8,9,13,.9) 0%,
+            rgba(8,9,13,.45) 52%,
+            transparent 100%
+        );
+}
+
+.heroShape{
+    position:absolute;
     right:-100px;
-    top:-160px;
+    top:-100px;
+    width:570px;
+    height:570px;
     border-radius:50%;
-    border:1px solid rgba(124,92,255,.18);
+    border:1px solid rgba(150,132,255,.16);
     box-shadow:
-        0 0 0 60px rgba(124,92,255,.025),
-        0 0 0 120px rgba(124,92,255,.02);
+        0 0 0 65px rgba(150,132,255,.025),
+        0 0 0 130px rgba(150,132,255,.018),
+        0 0 0 195px rgba(150,132,255,.012);
 }
 
-.heroText{
+.heroGrid{
+    position:absolute;
+    inset:0;
+    opacity:.08;
+    background-image:
+        linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px);
+    background-size:45px 45px;
+    mask-image:linear-gradient(90deg,black,transparent);
+}
+
+.heroContent{
     position:relative;
-    z-index:1;
-    max-width:650px;
+    z-index:2;
+    padding:52px;
+    max-width:700px;
 }
 
-.eyebrow{
-    color:#9d8dff;
+.heroEyebrow{
+    color:#a493ff;
+    font-size:10px;
+    letter-spacing:2.5px;
     text-transform:uppercase;
-    letter-spacing:2px;
+    font-weight:900;
+    margin-bottom:16px;
+}
+
+.heroTitle{
+    font-size:clamp(45px,5vw,76px);
+    line-height:.88;
+    letter-spacing:-5px;
+    font-weight:950;
+}
+
+.heroTitle span{
+    color:#8a73ff;
+}
+
+.heroDescription{
+    max-width:560px;
+    color:#8b91a2;
+    font-size:13px;
+    line-height:1.7;
+    margin-top:20px;
+}
+
+.heroActions{
+    display:flex;
+    gap:9px;
+    margin-top:27px;
+}
+
+.primaryButton,
+.secondaryButton{
+    border-radius:10px;
+    padding:12px 17px;
     font-size:11px;
     font-weight:800;
-    margin-bottom:14px;
+    cursor:pointer;
+    transition:.2s;
 }
 
-.hero h1{
-    font-size:clamp(35px,4vw,60px);
-    line-height:.98;
-    letter-spacing:-3px;
+.primaryButton{
+    background:#795cff;
+    color:white;
+    box-shadow:0 10px 30px rgba(121,92,255,.24);
 }
 
-.hero p{
-    color:#8e94a7;
-    margin-top:17px;
-    max-width:530px;
-    line-height:1.6;
+.primaryButton:hover{
+    background:#8c75ff;
+    transform:translateY(-1px);
 }
 
-.heroButtons{
+.secondaryButton{
+    background:#191c26;
+    border:1px solid var(--line);
+    color:#d1d4dc;
+}
+
+.secondaryButton:hover{
+    background:#222631;
+}
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.sectionHeader{
     display:flex;
-    gap:10px;
-    margin-top:25px;
-}
-
-.primary{
-    background:#7658ff;
-    color:#fff;
-    padding:12px 18px;
-    border-radius:11px;
-    font-weight:700;
-    box-shadow:0 10px 30px rgba(118,88,255,.2);
-}
-
-.primary:hover{
-    background:#876dff;
-}
-
-.secondary{
-    background:#191b26;
-    color:#d8dbe5;
-    padding:12px 18px;
-    border-radius:11px;
-    border:1px solid var(--border);
-}
-
-.sectionHead{
-    display:flex;
-    align-items:center;
+    align-items:end;
     justify-content:space-between;
-    margin:30px 2px 15px;
+    margin:31px 2px 15px;
 }
 
-.sectionHead h2{
-    font-size:19px;
+.sectionTitle{
+    font-size:18px;
+    font-weight:850;
+    letter-spacing:-.5px;
 }
 
-.sectionHead span{
-    color:#62697b;
-    font-size:12px;
+.sectionDescription{
+    color:#606778;
+    font-size:10px;
 }
 
-/* GAMES */
+/* =========================================================
+   GAME CARDS
+========================================================= */
 
 .gameGrid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-    gap:16px;
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(230px,1fr)
+        );
+    gap:14px;
 }
 
 .gameCard{
-    min-height:190px;
-    background:#10121b;
-    border:1px solid var(--border);
-    border-radius:18px;
+    border:1px solid var(--line);
+    background:#10131a;
+    border-radius:17px;
     overflow:hidden;
-    transition:.25s;
     cursor:pointer;
-    position:relative;
+    transition:
+        transform .25s,
+        border-color .25s,
+        box-shadow .25s;
 }
 
 .gameCard:hover{
-    transform:translateY(-4px);
-    border-color:rgba(124,92,255,.4);
-    box-shadow:0 18px 50px rgba(0,0,0,.25);
+    transform:translateY(-5px);
+    border-color:rgba(131,108,255,.45);
+    box-shadow:0 20px 45px rgba(0,0,0,.32);
 }
 
-.gameArt{
-    height:125px;
+.gameImage{
+    height:155px;
+    position:relative;
+    overflow:hidden;
     display:flex;
     align-items:flex-end;
     padding:17px;
-    background:
-        radial-gradient(circle at 80% 30%,rgba(255,255,255,.15),transparent 22%),
-        linear-gradient(135deg,#25283d,#11131b);
 }
 
-.gameArt.purple{
+.gameImage::after{
+    content:"";
+    position:absolute;
+    inset:0;
     background:
-        radial-gradient(circle at 80% 20%,rgba(147,112,255,.4),transparent 35%),
-        linear-gradient(135deg,#27213e,#101018);
+        linear-gradient(
+            0deg,
+            rgba(0,0,0,.62),
+            transparent 65%
+        );
 }
 
-.gameArt.red{
+.gameImage.red{
     background:
-        radial-gradient(circle at 70% 20%,rgba(255,75,100,.3),transparent 35%),
-        linear-gradient(135deg,#321c26,#101018);
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(255,55,90,.42),
+            transparent 28%
+        ),
+        linear-gradient(135deg,#391924,#11131b);
 }
 
-.gameArt.blue{
+.gameImage.purple{
     background:
-        radial-gradient(circle at 70% 20%,rgba(65,160,255,.3),transparent 35%),
-        linear-gradient(135deg,#162c42,#101018);
+        radial-gradient(
+            circle at 75% 25%,
+            rgba(157,111,255,.42),
+            transparent 30%
+        ),
+        linear-gradient(135deg,#302143,#101219);
 }
 
-.gameArt.green{
+.gameImage.blue{
     background:
-        radial-gradient(circle at 70% 20%,rgba(55,230,160,.3),transparent 35%),
-        linear-gradient(135deg,#16362e,#101018);
+        radial-gradient(
+            circle at 75% 25%,
+            rgba(70,166,255,.42),
+            transparent 30%
+        ),
+        linear-gradient(135deg,#16344c,#0d1218);
+}
+
+.gameImage.green{
+    background:
+        radial-gradient(
+            circle at 75% 25%,
+            rgba(54,225,158,.38),
+            transparent 30%
+        ),
+        linear-gradient(135deg,#14382e,#0d1513);
+}
+
+.gameImage.dark{
+    background:
+        radial-gradient(
+            circle at 75% 20%,
+            rgba(255,255,255,.1),
+            transparent 30%
+        ),
+        linear-gradient(135deg,#272a34,#0d0f14);
 }
 
 .gameLogo{
-    font-size:27px;
-    font-weight:900;
-    letter-spacing:-1px;
+    position:relative;
+    z-index:2;
+    font-size:25px;
+    font-weight:950;
+    letter-spacing:-1.5px;
+}
+
+.gameTag{
+    position:absolute;
+    right:11px;
+    top:11px;
+    z-index:3;
+    background:rgba(0,0,0,.45);
+    border:1px solid rgba(255,255,255,.09);
+    backdrop-filter:blur(10px);
+    border-radius:7px;
+    padding:5px 7px;
+    font-size:8px;
+    font-weight:800;
+    color:#c9ccd5;
 }
 
 .gameInfo{
-    padding:14px 16px;
+    padding:14px 15px 16px;
 }
 
 .gameName{
-    font-weight:800;
+    font-size:12px;
+    font-weight:850;
 }
 
 .gameMeta{
-    color:#646b7d;
-    font-size:11px;
-    margin-top:4px;
+    margin-top:5px;
+    color:#646b7b;
+    font-size:9px;
 }
 
-/* LISTS */
+.gamePlay{
+    margin-top:13px;
+    width:100%;
+    border-radius:8px;
+    padding:8px;
+    background:#1b1e29;
+    color:#bfc3cf;
+    font-size:9px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.gameCard:hover .gamePlay{
+    background:#795cff;
+    color:white;
+}
+
+/* =========================================================
+   QUICK CARDS
+========================================================= */
+
+.quickGrid{
+    display:grid;
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0,1fr)
+        );
+    gap:13px;
+}
+
+.quickCard{
+    border:1px solid var(--line);
+    background:#10131a;
+    border-radius:16px;
+    padding:17px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.quickCard:hover{
+    background:#151821;
+    transform:translateY(-2px);
+}
+
+.quickIcon{
+    width:35px;
+    height:35px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    background:#1b1e29;
+    margin-bottom:14px;
+}
+
+.quickTitle{
+    font-size:12px;
+    font-weight:800;
+}
+
+.quickText{
+    color:#666d7d;
+    font-size:9px;
+    line-height:1.5;
+    margin-top:5px;
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
 
 .panel{
-    background:#10121b;
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:18px;
+    border:1px solid var(--line);
+    background:#10131a;
+    border-radius:17px;
+    padding:17px;
 }
 
 .list{
@@ -563,189 +888,470 @@ body{
     gap:7px;
 }
 
-.row{
+.listRow{
+    min-height:62px;
     display:flex;
     align-items:center;
-    gap:13px;
-    padding:12px;
-    border-radius:13px;
-    background:#141621;
+    gap:12px;
+    padding:10px;
+    border-radius:12px;
+    background:#151821;
     border:1px solid transparent;
+    transition:.18s;
 }
 
-.row:hover{
-    border-color:var(--border);
+.listRow:hover{
+    border-color:var(--line);
+    background:#181b25;
 }
 
-.rowInfo{
-    flex:1;
+.listInfo{
     min-width:0;
+    flex:1;
 }
 
-.rowName{
-    font-weight:700;
-}
-
-.rowSub{
-    color:#666d80;
+.listName{
     font-size:11px;
+    font-weight:800;
+}
+
+.listSub{
+    color:#656c7d;
+    font-size:9px;
     margin-top:3px;
 }
 
-.rowAction{
-    padding:8px 12px;
-    border-radius:9px;
-    background:#1d202c;
-    color:#c8cbd5;
-    font-size:11px;
+.actionButton{
+    border:0;
+    border-radius:8px;
+    padding:8px 11px;
+    background:#1e222d;
+    color:#bfc3ce;
+    font-size:9px;
+    font-weight:800;
+    cursor:pointer;
 }
 
-.rowAction.call{
-    background:rgba(54,227,155,.1);
-    color:#4ce9a6;
+.actionButton:hover{
+    background:#795cff;
+    color:white;
 }
 
-.rowAction:hover{
-    background:#7658ff;
-    color:#fff;
+.actionButton.call{
+    background:rgba(53,223,160,.09);
+    color:#55e8ac;
 }
 
-/* SERVERS */
+.actionButton.call:hover{
+    background:#35dfa0;
+    color:#06120d;
+}
+
+/* =========================================================
+   SERVER CARDS
+========================================================= */
 
 .serverGrid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
-    gap:14px;
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(270px,1fr)
+        );
+    gap:13px;
 }
 
-.server{
-    background:#10121b;
-    border:1px solid var(--border);
-    border-radius:17px;
-    padding:18px;
+.serverCard{
+    background:#10131a;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:17px;
 }
 
 .serverTop{
     display:flex;
-    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.serverIcon{
+    width:40px;
+    height:40px;
+    border-radius:11px;
+    display:grid;
+    place-items:center;
+    background:#1c202b;
+}
+
+.serverInfo{
+    flex:1;
 }
 
 .serverName{
-    font-weight:800;
+    font-size:11px;
+    font-weight:850;
 }
 
-.serverPing{
-    color:#46e2a0;
-    font-size:11px;
+.serverGame{
+    color:#666d7d;
+    font-size:9px;
+    margin-top:3px;
+}
+
+.serverOnline{
+    color:#4ee4a5;
+    font-size:8px;
+    font-weight:900;
 }
 
 .serverBar{
     height:5px;
-    background:#20232f;
     border-radius:99px;
-    margin:16px 0 10px;
+    background:#20242f;
     overflow:hidden;
+    margin:17px 0 10px;
 }
 
 .serverFill{
     height:100%;
-    width:60%;
-    background:#7658ff;
+    background:#795cff;
+    border-radius:99px;
 }
 
 .serverBottom{
-    color:#686f82;
-    font-size:11px;
     display:flex;
-    justify-content:space-between;
-}
-
-/* SEARCH */
-
-.searchBig{
-    display:flex;
-    gap:10px;
-}
-
-.searchBig input{
-    flex:1;
-    background:#11131c;
-    color:#fff;
-    border:1px solid var(--border);
-    padding:14px 16px;
-    border-radius:12px;
-    outline:none;
-}
-
-/* MODAL */
-
-.modal{
-    position:fixed;
-    inset:0;
-    z-index:1000;
-    background:rgba(0,0,0,.78);
-    backdrop-filter:blur(12px);
-    display:none;
     align-items:center;
-    justify-content:center;
+    justify-content:space-between;
+    color:#62697a;
+    font-size:9px;
 }
 
-.modal.open{
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.chat{
+    height:calc(100vh - 185px);
+    min-height:450px;
+    display:grid;
+    grid-template-columns:245px 1fr;
+    gap:12px;
+}
+
+.chatUsers{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#10131a;
+    padding:11px;
+}
+
+.chatTitle{
+    padding:7px;
+    font-size:10px;
+    color:#606778;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.chatUser{
+    padding:10px;
     display:flex;
+    align-items:center;
+    gap:9px;
+    border-radius:10px;
+    cursor:pointer;
 }
 
-.gameWindow{
-    width:min(1200px,94vw);
-    height:min(760px,88vh);
-    background:#090a0f;
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:18px;
+.chatUser:hover,
+.chatUser.selected{
+    background:#181b25;
+}
+
+.chatUserInfo{
+    min-width:0;
+}
+
+.chatUserName{
+    font-size:10px;
+    font-weight:800;
+}
+
+.chatUserStatus{
+    font-size:8px;
+    color:#52dba4;
+    margin-top:2px;
+}
+
+.chatWindow{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#10131a;
     overflow:hidden;
-    box-shadow:0 30px 100px rgba(0,0,0,.65);
     display:flex;
     flex-direction:column;
 }
 
-.windowBar{
-    height:48px;
+.chatHeader{
+    height:58px;
+    flex-shrink:0;
     display:flex;
     align-items:center;
-    padding:0 14px;
-    background:#11131b;
-    border-bottom:1px solid var(--border);
+    gap:10px;
+    padding:10px 15px;
+    border-bottom:1px solid var(--line);
+}
+
+.chatHeaderInfo{
+    flex:1;
+}
+
+.chatHeaderName{
+    font-size:11px;
+    font-weight:850;
+}
+
+.chatHeaderStatus{
+    color:#4ddd9f;
+    font-size:8px;
+    margin-top:3px;
+}
+
+.chatMessages{
+    flex:1;
+    overflow:auto;
+    padding:17px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+}
+
+.message{
+    max-width:65%;
+    padding:9px 11px;
+    border-radius:11px;
+    background:#191c26;
+    align-self:flex-start;
+}
+
+.message.mine{
+    align-self:flex-end;
+    background:#6c51e6;
+}
+
+.messageName{
+    font-size:8px;
+    color:#777e8f;
+    margin-bottom:3px;
+}
+
+.message.mine .messageName{
+    color:#d1c9ff;
+}
+
+.messageText{
+    font-size:10px;
+    line-height:1.5;
+}
+
+.chatInput{
+    display:flex;
+    gap:8px;
+    padding:11px;
+    border-top:1px solid var(--line);
+}
+
+.chatInput input{
+    flex:1;
+    height:38px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#151821;
+    color:white;
+    padding:0 12px;
+    outline:none;
+    font-size:10px;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.searchPanel{
+    border:1px solid var(--line);
+    background:#10131a;
+    border-radius:18px;
+    padding:25px;
+}
+
+.bigSearch{
+    display:flex;
+    gap:8px;
+}
+
+.bigSearch input{
+    flex:1;
+    height:46px;
+    border-radius:11px;
+    border:1px solid var(--line);
+    background:#151821;
+    color:white;
+    padding:0 15px;
+    outline:none;
+    font-size:11px;
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.setting{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:15px 5px;
+    border-bottom:1px solid var(--line);
+}
+
+.setting:last-child{
+    border-bottom:0;
+}
+
+.settingInfo{
+    flex:1;
+}
+
+.settingName{
+    font-size:11px;
+    font-weight:800;
+}
+
+.settingDesc{
+    margin-top:4px;
+    color:#656c7c;
+    font-size:9px;
+}
+
+.toggle{
+    width:40px;
+    height:22px;
+    border-radius:99px;
+    background:#292d37;
+    cursor:pointer;
+    position:relative;
+}
+
+.toggle.on{
+    background:#795cff;
+}
+
+.toggle::after{
+    content:"";
+    position:absolute;
+    width:16px;
+    height:16px;
+    top:3px;
+    left:3px;
+    background:white;
+    border-radius:50%;
+    transition:.2s;
+}
+
+.toggle.on::after{
+    left:21px;
+}
+
+/* =========================================================
+   GAME MODAL
+========================================================= */
+
+#gameModal{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:rgba(0,0,0,.84);
+    backdrop-filter:blur(15px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+#gameModal.open{
+    display:flex;
+}
+
+.gameWindow{
+    width:min(1400px,96vw);
+    height:min(850px,92vh);
+    background:#06070a;
+    border:1px solid rgba(255,255,255,.11);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 40px 120px rgba(0,0,0,.75);
+    display:flex;
+    flex-direction:column;
+}
+
+.gameWindowBar{
+    height:48px;
+    flex-shrink:0;
+    background:#11131a;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    padding:0 13px;
+}
+
+.windowDots{
+    display:flex;
+    gap:5px;
+}
+
+.windowDot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#363a45;
 }
 
 .windowTitle{
     flex:1;
-    font-size:13px;
-    font-weight:700;
+    text-align:center;
+    font-size:10px;
+    font-weight:800;
+    color:#aeb3c0;
 }
 
-.windowClose{
-    width:31px;
-    height:31px;
+.closeGame{
+    width:29px;
+    height:29px;
     border-radius:8px;
-    background:#1d202a;
+    border:0;
+    background:#1d2029;
     color:#aaa;
+    cursor:pointer;
 }
 
-.windowClose:hover{
-    background:#ff4d6d;
+.closeGame:hover{
+    background:#ff4969;
     color:white;
 }
 
-.gameFrame{
+#gameFrame{
+    width:100%;
     flex:1;
     border:0;
-    background:#000;
+    background:black;
 }
 
-/* CALL */
+/* =========================================================
+   CALL UI
+========================================================= */
 
-.callOverlay{
+#callLayer{
     position:fixed;
     inset:0;
-    z-index:3000;
+    z-index:5000;
     display:none;
     align-items:center;
     justify-content:center;
@@ -753,207 +1359,354 @@ body{
     backdrop-filter:blur(18px);
 }
 
-.callOverlay.show{
+#callLayer.show{
     display:flex;
 }
 
-.callBox{
-    width:min(850px,92vw);
-    background:#0d0f17;
+.callWindow{
+    width:min(900px,94vw);
     border:1px solid rgba(255,255,255,.1);
-    border-radius:24px;
+    border-radius:22px;
     overflow:hidden;
-    box-shadow:0 30px 100px rgba(0,0,0,.7);
+    background:#0b0d12;
+    box-shadow:0 40px 130px rgba(0,0,0,.8);
 }
 
-.callHeader{
-    padding:18px 22px;
-    border-bottom:1px solid var(--border);
+.callTop{
+    height:57px;
     display:flex;
     align-items:center;
+    padding:0 17px;
+    border-bottom:1px solid var(--line);
 }
 
-.callTitle{
+.callPerson{
+    display:flex;
+    align-items:center;
+    gap:10px;
     flex:1;
-    font-weight:800;
 }
 
-.callStatus{
-    color:#5ee8ad;
+.callPersonInfo{
+    min-width:0;
+}
+
+.callPersonName{
     font-size:11px;
+    font-weight:850;
 }
 
-.videoArea{
-    height:450px;
-    background:
-        radial-gradient(circle at center,rgba(124,92,255,.16),transparent 35%),
-        #07080c;
-    position:relative;
-    display:grid;
-    place-items:center;
-}
-
-.remoteVideo{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    background:#08090d;
-}
-
-.localVideo{
-    position:absolute;
-    right:18px;
-    bottom:18px;
-    width:180px;
-    height:120px;
-    object-fit:cover;
-    background:#161923;
-    border:2px solid rgba(255,255,255,.15);
-    border-radius:13px;
-}
-
-.callAvatar{
-    width:90px;
-    height:90px;
-    border-radius:50%;
-    display:grid;
-    place-items:center;
-    background:linear-gradient(135deg,#7658ff,#35d99a);
-    font-size:30px;
-    font-weight:900;
-}
-
-.callControls{
-    height:78px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:12px;
-    border-top:1px solid var(--border);
-}
-
-.callBtn{
-    width:46px;
-    height:46px;
-    border-radius:50%;
-    background:#1b1e29;
-    color:#fff;
-}
-
-.callBtn:hover{
-    background:#292d3b;
-}
-
-.callBtn.end{
-    background:#f04463;
-}
-
-.callBtn.end:hover{
-    background:#ff5575;
-}
-
-/* TOAST */
-
-.toastArea{
-    position:fixed;
-    right:22px;
-    bottom:22px;
-    z-index:5000;
-    display:flex;
-    flex-direction:column;
-    gap:9px;
-}
-
-.toast{
-    width:310px;
-    background:#151823;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:13px;
-    padding:13px 15px;
-    box-shadow:0 15px 50px rgba(0,0,0,.4);
-    animation:toastIn .25s ease;
-}
-
-.toastTitle{
-    font-size:12px;
-    font-weight:800;
-}
-
-.toastText{
-    color:#858b9d;
-    font-size:11px;
+.callState{
+    color:#5ee5aa;
+    font-size:8px;
     margin-top:3px;
 }
 
-@keyframes toastIn{
-    from{opacity:0;transform:translateX(20px)}
-    to{opacity:1;transform:none}
+.callVideo{
+    height:480px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(121,92,255,.13),
+            transparent 35%
+        ),
+        #07080c;
+    position:relative;
+    overflow:hidden;
 }
 
-/* RESPONSIVE */
+#remoteVideo{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#07080c;
+}
 
-@media(max-width:850px){
-    #app{
-        grid-template-columns:75px 1fr;
+#localVideo{
+    position:absolute;
+    width:190px;
+    height:130px;
+    right:18px;
+    bottom:18px;
+    border-radius:13px;
+    border:2px solid rgba(255,255,255,.12);
+    object-fit:cover;
+    background:#151821;
+}
+
+.callPlaceholder{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    pointer-events:none;
+}
+
+.callBigAvatar{
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:
+        linear-gradient(
+            135deg,
+            #795cff,
+            #35dfa0
+        );
+    font-size:30px;
+    font-weight:950;
+    box-shadow:0 20px 70px rgba(121,92,255,.2);
+}
+
+.callControls{
+    height:82px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    border-top:1px solid var(--line);
+}
+
+.callButton{
+    width:45px;
+    height:45px;
+    border:0;
+    border-radius:50%;
+    background:#1a1d27;
+    color:white;
+    cursor:pointer;
+    transition:.18s;
+}
+
+.callButton:hover{
+    background:#282c38;
+}
+
+.callButton.end{
+    background:#ed4665;
+}
+
+.callButton.end:hover{
+    background:#ff5775;
+}
+
+.incoming{
+    position:fixed;
+    right:22px;
+    top:85px;
+    width:320px;
+    z-index:6000;
+    border:1px solid rgba(255,255,255,.1);
+    background:#11141c;
+    border-radius:16px;
+    padding:15px;
+    box-shadow:0 25px 70px rgba(0,0,0,.5);
+    display:none;
+}
+
+.incoming.show{
+    display:block;
+    animation:incoming .25s ease;
+}
+
+@keyframes incoming{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
     }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.incomingTitle{
+    font-size:11px;
+    font-weight:850;
+}
+
+.incomingText{
+    color:#6c7384;
+    font-size:9px;
+    margin-top:4px;
+}
+
+.incomingActions{
+    display:flex;
+    gap:7px;
+    margin-top:14px;
+}
+
+.acceptCall,
+.declineCall{
+    flex:1;
+    border:0;
+    border-radius:9px;
+    padding:9px;
+    font-size:9px;
+    font-weight:850;
+    cursor:pointer;
+}
+
+.acceptCall{
+    background:#35dfa0;
+    color:#06130e;
+}
+
+.declineCall{
+    background:#272a34;
+    color:#ddd;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toastArea{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    z-index:9000;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.toast{
+    width:290px;
+    border:1px solid var(--line);
+    background:#151821;
+    border-radius:13px;
+    padding:12px 14px;
+    box-shadow:0 18px 60px rgba(0,0,0,.5);
+    animation:toastIn .2s ease;
+}
+
+@keyframes toastIn{
+    from{
+        opacity:0;
+        transform:translateX(15px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.toastTitle{
+    font-size:10px;
+    font-weight:850;
+}
+
+.toastText{
+    margin-top:3px;
+    color:#737a8b;
+    font-size:9px;
+    line-height:1.5;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
 
     .sidebar{
-        padding:15px 9px;
+        width:75px;
     }
 
-    .brandText,
-    .navLabel,
-    .nav button span:not(.navIcon),
-    .profileInfo{
+    .logoText,
+    .sidebarLabel,
+    .navName,
+    .navBadge,
+    .accountInfo{
         display:none;
     }
 
-    .brand{
+    .logo{
         justify-content:center;
-        padding-bottom:25px;
     }
 
     .nav button{
         justify-content:center;
-        padding:13px;
     }
 
-    .profileMini{
+    .nav button.active::before{
+        left:-13px;
+    }
+
+    .accountCard{
         justify-content:center;
     }
 
-    .content{
-        padding:20px;
+    .heroContent{
+        padding:35px;
     }
 
-    .hero{
-        padding:28px;
+    .quickGrid{
+        grid-template-columns:1fr;
+    }
+
+    .chat{
+        grid-template-columns:190px 1fr;
     }
 }
 
-@media(max-width:600px){
-    .topbar{
-        padding:0 14px;
+@media(max-width:650px){
+
+    .sidebar{
+        width:62px;
     }
 
-    .topActions .iconBtn:nth-child(-n+2){
+    .content{
+        padding:17px;
+    }
+
+    .topbar{
+        padding:0 13px;
+    }
+
+    .searchBox{
+        width:100%;
+    }
+
+    .topButton:nth-child(1),
+    .topButton:nth-child(3){
         display:none;
     }
 
     .hero{
-        min-height:330px;
+        min-height:430px;
     }
 
-    .hero h1{
-        letter-spacing:-2px;
+    .heroContent{
+        padding:28px;
+    }
+
+    .heroTitle{
+        font-size:48px;
     }
 
     .gameGrid{
-        grid-template-columns:1fr 1fr;
+        grid-template-columns:1fr;
     }
 
-    .videoArea{
-        height:330px;
+    .chat{
+        display:block;
+    }
+
+    .chatUsers{
+        display:none;
+    }
+
+    .callVideo{
+        height:350px;
+    }
+
+    #localVideo{
+        width:120px;
+        height:85px;
     }
 }
 </style>
@@ -961,120 +1714,197 @@ body{
 
 <body>
 
-<!-- STARTUP -->
-<div id="startup">
-    <div class="startupBox">
-        <div class="startupLogo">GAMEHUB</div>
-        <div class="startupSub">Games · Friends · Servers · More</div>
-
-        <div class="bootLine">
-            <div class="bootProgress"></div>
-        </div>
-
-        <div class="bootText" id="bootText">
-            Starting GameHub...
-        </div>
-    </div>
+<div class="background">
+    <div class="glow one"></div>
+    <div class="glow two"></div>
 </div>
 
-<!-- APP -->
+<!-- =====================================================
+     STARTUP
+===================================================== -->
+
+<div id="startup">
+
+    <div class="boot">
+
+        <div class="bootLogo">
+            GAMEHUB
+        </div>
+
+        <div class="bootVersion">
+            Game Platform // Online
+        </div>
+
+        <div class="bootTrack">
+            <div class="bootBar"></div>
+        </div>
+
+        <div class="bootStatus" id="bootStatus">
+            Initializing GameHub...
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     APP
+===================================================== -->
+
 <div id="app">
 
     <aside class="sidebar">
 
-        <div class="brand">
-            <div class="brandMark">G</div>
-            <div class="brandText">GAME<span>HUB</span></div>
+        <div class="logo">
+            <div class="logoBox">G</div>
+
+            <div class="logoText">
+                GAME<span>HUB</span>
+            </div>
         </div>
 
-        <div class="navLabel">Main</div>
+        <div class="sidebarLabel">
+            Discover
+        </div>
 
         <div class="nav">
-            <button class="active" data-page="home">
+
+            <button
+                class="active"
+                data-page="home"
+            >
                 <span class="navIcon">⌂</span>
-                <span>Home</span>
+                <span class="navName">Home</span>
             </button>
 
             <button data-page="games">
                 <span class="navIcon">▣</span>
-                <span>Games</span>
+                <span class="navName">Games</span>
             </button>
 
             <button data-page="servers">
                 <span class="navIcon">◈</span>
-                <span>Servers</span>
+                <span class="navName">Servers</span>
             </button>
+
+        </div>
+
+        <div class="sidebarLabel">
+            Social
+        </div>
+
+        <div class="nav">
 
             <button data-page="friends">
                 <span class="navIcon">♙</span>
-                <span>Friends</span>
+                <span class="navName">Friends</span>
+                <span
+                    class="navBadge"
+                    id="friendBadge"
+                    style="display:none"
+                >
+                    0
+                </span>
             </button>
 
             <button data-page="messages">
                 <span class="navIcon">◌</span>
-                <span>Messages</span>
+                <span class="navName">Messages</span>
             </button>
 
             <button data-page="notifications">
                 <span class="navIcon">♢</span>
-                <span>Notifications</span>
+                <span class="navName">Notifications</span>
+
+                <span
+                    class="navBadge"
+                    id="notificationBadge"
+                >
+                    2
+                </span>
             </button>
+
         </div>
 
-        <div class="navLabel">Tools</div>
+        <div class="sidebarLabel">
+            Tools
+        </div>
 
         <div class="nav">
-            <button data-page="searchPage">
+
+            <button data-page="search">
                 <span class="navIcon">⌕</span>
-                <span>Search</span>
+                <span class="navName">Search</span>
             </button>
 
             <button onclick="openHelios()">
                 <span class="navIcon">H</span>
-                <span>Helios</span>
+                <span class="navName">Helios</span>
             </button>
 
             <button data-page="settings">
                 <span class="navIcon">⚙</span>
-                <span>Settings</span>
+                <span class="navName">Settings</span>
             </button>
+
         </div>
 
-        <div class="sideBottom">
-            <div class="profileMini">
-                <div class="avatar" id="avatar">A</div>
+        <div class="sidebarBottom">
 
-                <div class="profileInfo">
-                    <div class="profileName" id="profileName">
+            <div class="accountCard">
+
+                <div
+                    class="avatar"
+                    id="userAvatar"
+                >
+                    A
+                </div>
+
+                <div class="accountInfo">
+
+                    <div
+                        class="accountName"
+                        id="userName"
+                    >
                         Player
                     </div>
 
-                    <div class="profileStatus">
-                        <span class="onlineDot"></span>
+                    <div class="accountStatus">
+                        <span class="statusDot"></span>
                         Online
                     </div>
+
                 </div>
+
             </div>
+
         </div>
 
     </aside>
 
     <main class="main">
 
+        <!-- TOPBAR -->
+
         <header class="topbar">
 
-            <div class="search">
-                <span class="searchIcon">⌕</span>
+            <div class="searchBox">
+
+                <span class="searchIcon">
+                    ⌕
+                </span>
+
                 <input
                     id="topSearch"
-                    placeholder="Search games, people, servers..."
+                    placeholder="Search GameHub..."
                 >
+
             </div>
 
-            <div class="topActions">
+            <div class="topRight">
 
                 <button
-                    class="iconBtn"
+                    class="topButton"
                     onclick="showPage('messages')"
                     title="Messages"
                 >
@@ -1082,16 +1912,23 @@ body{
                 </button>
 
                 <button
-                    class="iconBtn"
+                    class="topButton"
                     onclick="showPage('notifications')"
                     title="Notifications"
                 >
                     ♢
-                    <span class="badge" id="notificationBadge">2</span>
+
+                    <span
+                        class="topBadge"
+                        id="topNotificationBadge"
+                    >
+                        2
+                    </span>
+
                 </button>
 
                 <button
-                    class="iconBtn"
+                    class="topButton"
                     onclick="showPage('friends')"
                     title="Friends"
                 >
@@ -1104,337 +1941,922 @@ body{
 
         <section class="content">
 
-            <!-- HOME -->
-            <div class="page active" id="page-home">
+            <!-- =================================================
+                 HOME
+            ================================================= -->
 
-                <div class="hero">
+            <div
+                class="page active"
+                id="page-home"
+            >
 
-                    <div class="heroText">
+                <section class="hero">
 
-                        <div class="eyebrow">
-                            Your games. Your people. Your world.
+                    <div class="heroShape"></div>
+                    <div class="heroGrid"></div>
+
+                    <div class="heroContent">
+
+                        <div class="heroEyebrow">
+                            Welcome back
                         </div>
 
-                        <h1>
-                            Welcome to<br>
-                            GameHub.
+                        <h1 class="heroTitle">
+                            PLAY.<br>
+                            CONNECT.<br>
+                            <span>EXIST.</span>
                         </h1>
 
-                        <p>
-                            Play games, discover servers, talk with friends,
-                            and eventually build your own little corner of the internet.
+                        <p class="heroDescription">
+                            GameHub is your place for games,
+                            friends, servers, messages and
+                            everything else we're going to build.
                         </p>
 
-                        <div class="heroButtons">
+                        <div class="heroActions">
+
                             <button
-                                class="primary"
+                                class="primaryButton"
                                 onclick="showPage('games')"
                             >
                                 Browse Games
                             </button>
 
                             <button
-                                class="secondary"
-                                onclick="showPage('friends')"
+                                class="secondaryButton"
+                                onclick="showPage('servers')"
                             >
-                                Find Friends
+                                Find a Server
                             </button>
+
                         </div>
 
                     </div>
 
-                </div>
+                </section>
 
-                <div class="sectionHead">
-                    <h2>Featured</h2>
-                    <span>Games you can play right now</span>
-                </div>
+                <div class="sectionHeader">
 
-                <div class="gameGrid">
-                    <div class="gameCard" onclick="openGame('FNAF-1.html','FNAF 1')">
-                        <div class="gameArt red">
-                            <div class="gameLogo">FNAF</div>
-                        </div>
-                        <div class="gameInfo">
-                            <div class="gameName">Five Nights at Freddy's</div>
-                            <div class="gameMeta">Horror · Singleplayer</div>
-                        </div>
+                    <div class="sectionTitle">
+                        Continue Playing
                     </div>
 
-                    <div class="gameCard" onclick="openGame('Crazy-Cattle3d.html','Crazy Cattle 3D')">
-                        <div class="gameArt purple">
-                            <div class="gameLogo">CRAZY CATTLE</div>
-                        </div>
-                        <div class="gameInfo">
-                            <div class="gameName">Crazy Cattle 3D</div>
-                            <div class="gameMeta">Chaos · 3D</div>
-                        </div>
+                    <div class="sectionDescription">
+                        Your GameHub library
                     </div>
 
-                    <div class="gameCard" onclick="openGame('https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html','Dublix')">
-                        <div class="gameArt blue">
-                            <div class="gameLogo">DUBLIX</div>
-                        </div>
-                        <div class="gameInfo">
-                            <div class="gameName">Dublix</div>
-                            <div class="gameMeta">Online · Multiplayer</div>
-                        </div>
-                    </div>
-
-                    <div class="gameCard" onclick="openHelios()">
-                        <div class="gameArt green">
-                            <div class="gameLogo">HELIOS</div>
-                        </div>
-                        <div class="gameInfo">
-                            <div class="gameName">Helios</div>
-                            <div class="gameMeta">Search · Offline</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- GAMES -->
-            <div class="page" id="page-games">
-
-                <div class="sectionHead">
-                    <h2>All Games</h2>
-                    <span>Your GameHub library</span>
                 </div>
 
                 <div class="gameGrid">
 
-                    <div class="gameCard" onclick="openGame('FNAF-1.html','FNAF 1')">
-                        <div class="gameArt red">
-                            <div class="gameLogo">FNAF 1</div>
+                    <!-- FNAF -->
+
+                    <div
+                        class="gameCard"
+                        onclick="
+                            openGame(
+                                'FNAF-1.html',
+                                'FNAF 1'
+                            )
+                        "
+                    >
+
+                        <div class="gameImage red">
+
+                            <div class="gameTag">
+                                HORROR
+                            </div>
+
+                            <div class="gameLogo">
+                                FNAF
+                            </div>
+
                         </div>
+
                         <div class="gameInfo">
-                            <div class="gameName">FNAF 1</div>
-                            <div class="gameMeta">Horror</div>
+
+                            <div class="gameName">
+                                Five Nights at Freddy's
+                            </div>
+
+                            <div class="gameMeta">
+                                Horror · Singleplayer
+                            </div>
+
+                            <button class="gamePlay">
+                                PLAY NOW
+                            </button>
+
                         </div>
+
                     </div>
 
-                    <div class="gameCard" onclick="openGame('Crazy-Cattle3d.html','Crazy Cattle 3D')">
-                        <div class="gameArt purple">
-                            <div class="gameLogo">CATTLE</div>
+                    <!-- CATTLE -->
+
+                    <div
+                        class="gameCard"
+                        onclick="
+                            openGame(
+                                'Crazy-Cattle3d.html',
+                                'Crazy Cattle 3D'
+                            )
+                        "
+                    >
+
+                        <div class="gameImage purple">
+
+                            <div class="gameTag">
+                                3D
+                            </div>
+
+                            <div class="gameLogo">
+                                CATTLE
+                            </div>
+
                         </div>
+
                         <div class="gameInfo">
-                            <div class="gameName">Crazy Cattle 3D</div>
-                            <div class="gameMeta">Funny · 3D</div>
+
+                            <div class="gameName">
+                                Crazy Cattle 3D
+                            </div>
+
+                            <div class="gameMeta">
+                                Chaos · Multiplayer-ish
+                            </div>
+
+                            <button class="gamePlay">
+                                PLAY NOW
+                            </button>
+
                         </div>
+
                     </div>
 
-                    <div class="gameCard" onclick="openGame('https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html','Dublix')">
-                        <div class="gameArt blue">
-                            <div class="gameLogo">DUBLIX</div>
+                    <!-- DUBLIX -->
+
+                    <div
+                        class="gameCard"
+                        onclick="
+                            openGame(
+                                'https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html',
+                                'Dublix'
+                            )
+                        "
+                    >
+
+                        <div class="gameImage blue">
+
+                            <div class="gameTag">
+                                ONLINE
+                            </div>
+
+                            <div class="gameLogo">
+                                DUBLIX
+                            </div>
+
                         </div>
+
                         <div class="gameInfo">
-                            <div class="gameName">Dublix</div>
-                            <div class="gameMeta">Online</div>
+
+                            <div class="gameName">
+                                Dublix
+                            </div>
+
+                            <div class="gameMeta">
+                                Online · Multiplayer
+                            </div>
+
+                            <button class="gamePlay">
+                                PLAY NOW
+                            </button>
+
                         </div>
+
                     </div>
 
-                    <div class="gameCard" onclick="openHelios()">
-                        <div class="gameArt green">
-                            <div class="gameLogo">HELIOS</div>
+                    <!-- HELIOS -->
+
+                    <div
+                        class="gameCard"
+                        onclick="openHelios()"
+                    >
+
+                        <div class="gameImage green">
+
+                            <div class="gameTag">
+                                TOOL
+                            </div>
+
+                            <div class="gameLogo">
+                                HELIOS
+                            </div>
+
                         </div>
+
                         <div class="gameInfo">
-                            <div class="gameName">Helios</div>
-                            <div class="gameMeta">Search</div>
+
+                            <div class="gameName">
+                                Helios
+                            </div>
+
+                            <div class="gameMeta">
+                                Search · Offline
+                            </div>
+
+                            <button class="gamePlay">
+                                OPEN HELIOS
+                            </button>
+
                         </div>
+
+                    </div>
+
+                </div>
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        GameHub
+                    </div>
+
+                    <div class="sectionDescription">
+                        Everything in one place
+                    </div>
+
+                </div>
+
+                <div class="quickGrid">
+
+                    <div
+                        class="quickCard"
+                        onclick="showPage('friends')"
+                    >
+
+                        <div class="quickIcon">
+                            ♙
+                        </div>
+
+                        <div class="quickTitle">
+                            Friends
+                        </div>
+
+                        <div class="quickText">
+                            See who's online and call
+                            your friends.
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="quickCard"
+                        onclick="showPage('servers')"
+                    >
+
+                        <div class="quickIcon">
+                            ◈
+                        </div>
+
+                        <div class="quickTitle">
+                            Servers
+                        </div>
+
+                        <div class="quickText">
+                            Find GameHub rooms and
+                            jump into a server.
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="quickCard"
+                        onclick="showPage('messages')"
+                    >
+
+                        <div class="quickIcon">
+                            ◌
+                        </div>
+
+                        <div class="quickTitle">
+                            Messages
+                        </div>
+
+                        <div class="quickText">
+                            Chat with people connected
+                            to GameHub.
+                        </div>
+
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- SERVERS -->
-            <div class="page" id="page-servers">
+            <!-- =================================================
+                 GAMES
+            ================================================= -->
 
-                <div class="sectionHead">
-                    <h2>Servers</h2>
-                    <span>Live GameHub rooms</span>
+            <div
+                class="page"
+                id="page-games"
+            >
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        Game Library
+                    </div>
+
+                    <div class="sectionDescription">
+                        Games available on GameHub
+                    </div>
+
+                </div>
+
+                <div class="gameGrid">
+
+                    <div
+                        class="gameCard"
+                        onclick="
+                            openGame(
+                                'FNAF-1.html',
+                                'FNAF 1'
+                            )
+                        "
+                    >
+
+                        <div class="gameImage red">
+                            <div class="gameLogo">
+                                FNAF 1
+                            </div>
+                        </div>
+
+                        <div class="gameInfo">
+
+                            <div class="gameName">
+                                FNAF 1
+                            </div>
+
+                            <div class="gameMeta">
+                                Horror
+                            </div>
+
+                            <button class="gamePlay">
+                                PLAY
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="gameCard"
+                        onclick="
+                            openGame(
+                                'Crazy-Cattle3d.html',
+                                'Crazy Cattle 3D'
+                            )
+                        "
+                    >
+
+                        <div class="gameImage purple">
+                            <div class="gameLogo">
+                                CATTLE
+                            </div>
+                        </div>
+
+                        <div class="gameInfo">
+
+                            <div class="gameName">
+                                Crazy Cattle 3D
+                            </div>
+
+                            <div class="gameMeta">
+                                3D · Chaos
+                            </div>
+
+                            <button class="gamePlay">
+                                PLAY
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="gameCard"
+                        onclick="
+                            openGame(
+                                'https://cloud.onlinegames.io/games/2025/unity4/dublix/game-og.html',
+                                'Dublix'
+                            )
+                        "
+                    >
+
+                        <div class="gameImage blue">
+                            <div class="gameLogo">
+                                DUBLIX
+                            </div>
+                        </div>
+
+                        <div class="gameInfo">
+
+                            <div class="gameName">
+                                Dublix
+                            </div>
+
+                            <div class="gameMeta">
+                                Multiplayer
+                            </div>
+
+                            <button class="gamePlay">
+                                PLAY
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="gameCard"
+                        onclick="openHelios()"
+                    >
+
+                        <div class="gameImage green">
+                            <div class="gameLogo">
+                                HELIOS
+                            </div>
+                        </div>
+
+                        <div class="gameInfo">
+
+                            <div class="gameName">
+                                Helios
+                            </div>
+
+                            <div class="gameMeta">
+                                Search
+                            </div>
+
+                            <button class="gamePlay">
+                                OPEN
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =================================================
+                 SERVERS
+            ================================================= -->
+
+            <div
+                class="page"
+                id="page-servers"
+            >
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        Server Browser
+                    </div>
+
+                    <div class="sectionDescription">
+                        Live GameHub rooms
+                    </div>
+
                 </div>
 
                 <div class="serverGrid">
 
-                    <div class="server">
+                    <div class="serverCard">
+
                         <div class="serverTop">
-                            <div class="serverName">Main Lobby</div>
-                            <div class="serverPing">ONLINE</div>
-                        </div>
 
-                        <div class="serverBar">
-                            <div class="serverFill"></div>
-                        </div>
-
-                        <div class="serverBottom">
-                            <span id="mainPlayers">Connecting...</span>
-                            <span>Low ping</span>
-                        </div>
-                    </div>
-
-                    <div class="server">
-                        <div class="serverTop">
-                            <div class="serverName">Crazy Cattle</div>
-                            <div class="serverPing">ONLINE</div>
-                        </div>
-
-                        <div class="serverBar">
-                            <div class="serverFill" style="width:35%"></div>
-                        </div>
-
-                        <div class="serverBottom">
-                            <span>12 / 32 players</span>
-                            <span>28ms</span>
-                        </div>
-                    </div>
-
-                    <div class="server">
-                        <div class="serverTop">
-                            <div class="serverName">FNAF Nightshift</div>
-                            <div class="serverPing">ONLINE</div>
-                        </div>
-
-                        <div class="serverBar">
-                            <div class="serverFill" style="width:70%"></div>
-                        </div>
-
-                        <div class="serverBottom">
-                            <span>21 / 30 players</span>
-                            <span>41ms</span>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- FRIENDS -->
-            <div class="page" id="page-friends">
-
-                <div class="sectionHead">
-                    <h2>Friends</h2>
-                    <span id="friendCount">0 online</span>
-                </div>
-
-                <div class="panel">
-                    <div class="list" id="friendsList">
-
-                        <div class="row">
-                            <div class="avatar">G</div>
-
-                            <div class="rowInfo">
-                                <div class="rowName">GameHub Friend</div>
-                                <div class="rowSub">
-                                    <span class="onlineDot"></span>
-                                    Online
-                                </div>
+                            <div class="serverIcon">
+                                ◈
                             </div>
 
-                            <button
-                                class="rowAction call"
-                                onclick="startCall('GameHub Friend')"
-                            >
-                                📞 Call
-                            </button>
+                            <div class="serverInfo">
+
+                                <div class="serverName">
+                                    Main Lobby
+                                </div>
+
+                                <div class="serverGame">
+                                    GameHub
+                                </div>
+
+                            </div>
+
+                            <div class="serverOnline">
+                                ONLINE
+                            </div>
+
+                        </div>
+
+                        <div class="serverBar">
+                            <div
+                                class="serverFill"
+                                id="mainServerFill"
+                                style="width:20%"
+                            ></div>
+                        </div>
+
+                        <div class="serverBottom">
+
+                            <span id="mainServerPlayers">
+                                Connecting...
+                            </span>
+
+                            <span>
+                                LIVE
+                            </span>
+
                         </div>
 
                     </div>
+
+                    <div class="serverCard">
+
+                        <div class="serverTop">
+
+                            <div class="serverIcon">
+                                🐑
+                            </div>
+
+                            <div class="serverInfo">
+
+                                <div class="serverName">
+                                    Crazy Cattle
+                                </div>
+
+                                <div class="serverGame">
+                                    Crazy Cattle 3D
+                                </div>
+
+                            </div>
+
+                            <div class="serverOnline">
+                                ONLINE
+                            </div>
+
+                        </div>
+
+                        <div class="serverBar">
+                            <div
+                                class="serverFill"
+                                style="width:42%"
+                            ></div>
+                        </div>
+
+                        <div class="serverBottom">
+
+                            <span>
+                                14 / 32 players
+                            </span>
+
+                            <span>
+                                31ms
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="serverCard">
+
+                        <div class="serverTop">
+
+                            <div class="serverIcon">
+                                👻
+                            </div>
+
+                            <div class="serverInfo">
+
+                                <div class="serverName">
+                                    Nightshift
+                                </div>
+
+                                <div class="serverGame">
+                                    FNAF
+                                </div>
+
+                            </div>
+
+                            <div class="serverOnline">
+                                ONLINE
+                            </div>
+
+                        </div>
+
+                        <div class="serverBar">
+                            <div
+                                class="serverFill"
+                                style="width:71%"
+                            ></div>
+                        </div>
+
+                        <div class="serverBottom">
+
+                            <span>
+                                21 / 30 players
+                            </span>
+
+                            <span>
+                                42ms
+                            </span>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
 
-            <!-- MESSAGES -->
-            <div class="page" id="page-messages">
+            <!-- =================================================
+                 FRIENDS
+            ================================================= -->
 
-                <div class="sectionHead">
-                    <h2>Messages</h2>
-                    <span>Real-time GameHub chat</span>
+            <div
+                class="page"
+                id="page-friends"
+            >
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        Friends
+                    </div>
+
+                    <div
+                        class="sectionDescription"
+                        id="friendCount"
+                    >
+                        0 online
+                    </div>
+
                 </div>
 
                 <div class="panel">
 
                     <div
-                        id="chatMessages"
-                        style="
-                            height:360px;
-                            overflow:auto;
-                            display:flex;
-                            flex-direction:column;
-                            gap:9px;
-                            margin-bottom:14px;
-                        "
+                        class="list"
+                        id="friendsList"
                     >
-                        <div class="row">
-                            <div class="avatar">G</div>
-                            <div class="rowInfo">
-                                <div class="rowName">GameHub</div>
-                                <div class="rowSub">
-                                    Connect to the server to start chatting.
-                                </div>
+
+                        <div class="listRow">
+
+                            <div class="avatar">
+                                G
                             </div>
+
+                            <div class="listInfo">
+
+                                <div class="listName">
+                                    GameHub
+                                </div>
+
+                                <div class="listSub">
+                                    Waiting for friends...
+                                </div>
+
+                            </div>
+
+                            <button
+                                class="actionButton"
+                                onclick="toast('Friends','Your real friend list will be connected to accounts next.')"
+                            >
+                                ADD
+                            </button>
+
                         </div>
-                    </div>
 
-                    <div style="display:flex;gap:8px">
-                        <input
-                            id="chatInput"
-                            placeholder="Type a message..."
-                            style="
-                                flex:1;
-                                background:#151823;
-                                border:1px solid var(--border);
-                                color:#fff;
-                                padding:12px;
-                                border-radius:10px;
-                                outline:none;
-                            "
-                            onkeydown="if(event.key==='Enter')sendChat()"
-                        >
-
-                        <button
-                            class="primary"
-                            onclick="sendChat()"
-                        >
-                            Send
-                        </button>
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- NOTIFICATIONS -->
-            <div class="page" id="page-notifications">
+            <!-- =================================================
+                 MESSAGES
+            ================================================= -->
 
-                <div class="sectionHead">
-                    <h2>Notifications</h2>
-                    <span>Updates and activity</span>
+            <div
+                class="page"
+                id="page-messages"
+            >
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        Messages
+                    </div>
+
+                    <div class="sectionDescription">
+                        Real-time GameHub chat
+                    </div>
+
+                </div>
+
+                <div class="chat">
+
+                    <div class="chatUsers">
+
+                        <div class="chatTitle">
+                            Conversations
+                        </div>
+
+                        <div class="chatUser selected">
+
+                            <div class="avatar">
+                                G
+                            </div>
+
+                            <div class="chatUserInfo">
+
+                                <div class="chatUserName">
+                                    GameHub Lobby
+                                </div>
+
+                                <div class="chatUserStatus">
+                                    ● Online
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="chatWindow">
+
+                        <div class="chatHeader">
+
+                            <div class="avatar">
+                                G
+                            </div>
+
+                            <div class="chatHeaderInfo">
+
+                                <div class="chatHeaderName">
+                                    GameHub Lobby
+                                </div>
+
+                                <div
+                                    class="chatHeaderStatus"
+                                    id="chatConnection"
+                                >
+                                    Connecting...
+                                </div>
+
+                            </div>
+
+                            <button
+                                class="actionButton call"
+                                onclick="callFirstOnlinePlayer()"
+                            >
+                                📞 CALL
+                            </button>
+
+                        </div>
+
+                        <div
+                            class="chatMessages"
+                            id="chatMessages"
+                        >
+
+                            <div class="message">
+
+                                <div class="messageName">
+                                    GameHub
+                                </div>
+
+                                <div class="messageText">
+                                    Welcome to the new GameHub.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="chatInput">
+
+                            <input
+                                id="chatInput"
+                                placeholder="Send a message..."
+                                onkeydown="
+                                    if(event.key==='Enter')
+                                        sendChat()
+                                "
+                            >
+
+                            <button
+                                class="primaryButton"
+                                onclick="sendChat()"
+                            >
+                                Send
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =================================================
+                 NOTIFICATIONS
+            ================================================= -->
+
+            <div
+                class="page"
+                id="page-notifications"
+            >
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        Notifications
+                    </div>
+
+                    <div class="sectionDescription">
+                        GameHub activity
+                    </div>
+
                 </div>
 
                 <div class="panel">
 
                     <div class="list">
 
-                        <div class="row">
-                            <div class="avatar">!</div>
-                            <div class="rowInfo">
-                                <div class="rowName">Welcome to GameHub</div>
-                                <div class="rowSub">
-                                    Your new GameHub experience is ready.
-                                </div>
+                        <div class="listRow">
+
+                            <div class="avatar">
+                                !
                             </div>
+
+                            <div class="listInfo">
+
+                                <div class="listName">
+                                    Welcome to GameHub
+                                </div>
+
+                                <div class="listSub">
+                                    The new GameHub experience
+                                    is online.
+                                </div>
+
+                            </div>
+
                         </div>
 
-                        <div class="row">
-                            <div class="avatar">↗</div>
-                            <div class="rowInfo">
-                                <div class="rowName">Calling is coming</div>
-                                <div class="rowSub">
-                                    Voice and video calls are being connected.
-                                </div>
+                        <div class="listRow">
+
+                            <div class="avatar">
+                                📞
                             </div>
+
+                            <div class="listInfo">
+
+                                <div class="listName">
+                                    Calling
+                                </div>
+
+                                <div class="listSub">
+                                    Voice and video calling
+                                    is being connected.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="listRow">
+
+                            <div class="avatar">
+                                H
+                            </div>
+
+                            <div class="listInfo">
+
+                                <div class="listName">
+                                    Helios
+                                </div>
+
+                                <div class="listSub">
+                                    Helios is available from
+                                    the GameHub sidebar.
+                                </div>
+
+                            </div>
+
                         </div>
 
                     </div>
@@ -1443,80 +2865,146 @@ body{
 
             </div>
 
-            <!-- SEARCH -->
-            <div class="page" id="page-searchPage">
+            <!-- =================================================
+                 SEARCH
+            ================================================= -->
 
-                <div class="sectionHead">
-                    <h2>Search</h2>
-                    <span>Search the web through GameHub</span>
+            <div
+                class="page"
+                id="page-search"
+            >
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        Search
+                    </div>
+
+                    <div class="sectionDescription">
+                        Search the web
+                    </div>
+
                 </div>
 
-                <div class="panel">
+                <div class="searchPanel">
 
-                    <div class="searchBig">
+                    <div class="bigSearch">
+
                         <input
                             id="searchInput"
-                            placeholder="Search the web..."
-                            onkeydown="if(event.key==='Enter')performSearch()"
+                            placeholder="What are you looking for?"
+                            onkeydown="
+                                if(event.key==='Enter')
+                                    performSearch()
+                            "
                         >
 
                         <button
-                            class="primary"
+                            class="primaryButton"
                             onclick="performSearch()"
                         >
                             Search
                         </button>
+
                     </div>
 
                     <div
                         style="
-                            margin-top:22px;
-                            color:#666d80;
-                            font-size:12px;
-                            line-height:1.6;
+                            margin-top:15px;
+                            color:#656c7d;
+                            font-size:9px;
                         "
                     >
-                        Search results will open through the GameHub search
-                        system.
+                        GameHub search
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- SETTINGS -->
-            <div class="page" id="page-settings">
+            <!-- =================================================
+                 SETTINGS
+            ================================================= -->
 
-                <div class="sectionHead">
-                    <h2>Settings</h2>
-                    <span>GameHub preferences</span>
+            <div
+                class="page"
+                id="page-settings"
+            >
+
+                <div class="sectionHeader">
+
+                    <div class="sectionTitle">
+                        Settings
+                    </div>
+
+                    <div class="sectionDescription">
+                        GameHub preferences
+                    </div>
+
                 </div>
 
                 <div class="panel">
 
-                    <div class="row">
-                        <div class="rowInfo">
-                            <div class="rowName">Browser Notifications</div>
-                            <div class="rowSub">
-                                Allow GameHub to notify you.
+                    <div class="setting">
+
+                        <div class="settingInfo">
+
+                            <div class="settingName">
+                                Browser Notifications
                             </div>
+
+                            <div class="settingDesc">
+                                Get GameHub notifications.
+                            </div>
+
                         </div>
 
-                        <button
-                            class="rowAction"
-                            onclick="requestNotifications()"
-                        >
-                            Enable
-                        </button>
+                        <div
+                            class="toggle"
+                            id="notificationToggle"
+                            onclick="toggleNotifications()"
+                        ></div>
+
                     </div>
 
-                    <div class="row">
-                        <div class="rowInfo">
-                            <div class="rowName">Connection</div>
-                            <div class="rowSub" id="connectionStatus">
+                    <div class="setting">
+
+                        <div class="settingInfo">
+
+                            <div class="settingName">
+                                Sound Effects
+                            </div>
+
+                            <div class="settingDesc">
+                                Interface sounds.
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="toggle on"
+                            onclick="this.classList.toggle('on')"
+                        ></div>
+
+                    </div>
+
+                    <div class="setting">
+
+                        <div class="settingInfo">
+
+                            <div class="settingName">
+                                Connection
+                            </div>
+
+                            <div
+                                class="settingDesc"
+                                id="connectionStatus"
+                            >
                                 Connecting...
                             </div>
+
                         </div>
+
                     </div>
 
                 </div>
@@ -1529,73 +3017,121 @@ body{
 
 </div>
 
-<!-- GAME WINDOW -->
-<div class="modal" id="gameModal">
+<!-- =====================================================
+     GAME WINDOW
+===================================================== -->
+
+<div id="gameModal">
 
     <div class="gameWindow">
 
-        <div class="windowBar">
-            <div class="windowTitle" id="windowTitle">
+        <div class="gameWindowBar">
+
+            <div class="windowDots">
+
+                <div class="windowDot"></div>
+                <div class="windowDot"></div>
+                <div class="windowDot"></div>
+
+            </div>
+
+            <div
+                class="windowTitle"
+                id="gameWindowTitle"
+            >
                 GameHub
             </div>
 
             <button
-                class="windowClose"
+                class="closeGame"
                 onclick="closeGame()"
             >
                 ×
             </button>
+
         </div>
 
         <iframe
             id="gameFrame"
-            class="gameFrame"
-            allow="fullscreen; autoplay; gamepad; microphone; camera"
+            allow="
+                fullscreen;
+                autoplay;
+                gamepad;
+                microphone;
+                camera
+            "
         ></iframe>
 
     </div>
 
 </div>
 
-<!-- CALL WINDOW -->
-<div class="callOverlay" id="callOverlay">
+<!-- =====================================================
+     CALL WINDOW
+===================================================== -->
 
-    <div class="callBox">
+<div id="callLayer">
 
-        <div class="callHeader">
+    <div class="callWindow">
 
-            <div class="callTitle" id="callTitle">
-                GameHub Call
-            </div>
+        <div class="callTop">
 
-            <div class="callStatus" id="callStatus">
-                Connecting...
+            <div class="callPerson">
+
+                <div
+                    class="avatar"
+                    id="callAvatar"
+                >
+                    G
+                </div>
+
+                <div class="callPersonInfo">
+
+                    <div
+                        class="callPersonName"
+                        id="callPersonName"
+                    >
+                        GameHub
+                    </div>
+
+                    <div
+                        class="callState"
+                        id="callState"
+                    >
+                        Connecting...
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
-        <div class="videoArea">
+        <div class="callVideo">
 
             <video
                 id="remoteVideo"
-                class="remoteVideo"
                 autoplay
                 playsinline
             ></video>
 
             <video
                 id="localVideo"
-                class="localVideo"
                 autoplay
                 muted
                 playsinline
             ></video>
 
             <div
-                class="callAvatar"
-                id="callAvatar"
+                class="callPlaceholder"
+                id="callPlaceholder"
             >
-                G
+                <div
+                    class="callBigAvatar"
+                    id="callBigAvatar"
+                >
+                    G
+                </div>
             </div>
 
         </div>
@@ -1603,23 +3139,23 @@ body{
         <div class="callControls">
 
             <button
-                class="callBtn"
-                id="muteBtn"
+                class="callButton"
+                id="muteButton"
                 onclick="toggleMute()"
             >
                 🎤
             </button>
 
             <button
-                class="callBtn"
-                id="cameraBtn"
+                class="callButton"
+                id="cameraButton"
                 onclick="toggleCamera()"
             >
                 📷
             </button>
 
             <button
-                class="callBtn end"
+                class="callButton end"
                 onclick="endCall()"
             >
                 ☎
@@ -1631,12 +3167,52 @@ body{
 
 </div>
 
-<div class="toastArea" id="toastArea"></div>
+<!-- =====================================================
+     INCOMING CALL
+===================================================== -->
+
+<div
+    class="incoming"
+    id="incomingCall"
+>
+
+    <div class="incomingTitle">
+        Incoming call
+    </div>
+
+    <div
+        class="incomingText"
+        id="incomingText"
+    >
+        Someone is calling you.
+    </div>
+
+    <div class="incomingActions">
+
+        <button
+            class="acceptCall"
+            onclick="acceptIncomingCall()"
+        >
+            ANSWER
+        </button>
+
+        <button
+            class="declineCall"
+            onclick="declineIncomingCall()"
+        >
+            DECLINE
+        </button>
+
+    </div>
+
+</div>
+
+<div id="toastArea"></div>
 
 <script>
-/* =========================================
-   GAMEHUB CONFIG
-========================================= */
+/* =========================================================
+   CONFIG
+========================================================= */
 
 const BACKEND =
     "https://gamehub.s2reetyt.workers.dev";
@@ -1644,71 +3220,87 @@ const BACKEND =
 const WS_URL =
     "wss://gamehub.s2reetyt.workers.dev/ws";
 
-/* =========================================
+/*
+    IMPORTANT:
+
+    Your actual Helios filename is:
+
+    Helios-Offline.html
+*/
+
+/* =========================================================
    USER
-========================================= */
+========================================================= */
 
 let username =
     localStorage.getItem("gamehub_username") ||
     "Player";
 
-document.getElementById("profileName").textContent =
+document.getElementById("userName").textContent =
     username;
 
-document.getElementById("avatar").textContent =
+document.getElementById("userAvatar").textContent =
     username.charAt(0).toUpperCase();
 
-/* =========================================
-   PAGE NAVIGATION
-========================================= */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function showPage(page){
 
-    document.querySelectorAll(".page")
-        .forEach(p => p.classList.remove("active"));
+    document
+        .querySelectorAll(".page")
+        .forEach(p =>
+            p.classList.remove("active")
+        );
 
     const target =
-        document.getElementById("page-" + page);
+        document.getElementById(
+            "page-" + page
+        );
 
     if(target){
         target.classList.add("active");
     }
 
-    document.querySelectorAll(".nav button")
-        .forEach(btn => {
+    document
+        .querySelectorAll(".nav button[data-page]")
+        .forEach(button => {
 
-            btn.classList.toggle(
+            button.classList.toggle(
                 "active",
-                btn.dataset.page === page
+                button.dataset.page === page
             );
 
         });
 }
 
-document.querySelectorAll(".nav button[data-page]")
-    .forEach(btn => {
+document
+    .querySelectorAll(".nav button[data-page]")
+    .forEach(button => {
 
-        btn.addEventListener("click", () => {
-            showPage(btn.dataset.page);
-        });
+        button.addEventListener(
+            "click",
+            () => showPage(button.dataset.page)
+        );
 
     });
 
-/* =========================================
+/* =========================================================
    STARTUP
-========================================= */
+========================================================= */
 
 setTimeout(() => {
 
-    document.getElementById("bootText")
+    document.getElementById("bootStatus")
         .textContent =
-        "Loading games...";
+        "Loading your games...";
 
 },700);
 
 setTimeout(() => {
 
-    document.getElementById("bootText")
+    document.getElementById("bootStatus")
         .textContent =
         "Connecting to GameHub...";
 
@@ -1716,136 +3308,122 @@ setTimeout(() => {
 
 setTimeout(() => {
 
-    document.getElementById("startup")
-        .classList.add("hidden");
+    document
+        .getElementById("startup")
+        .classList.add("hide");
 
-},2800);
+},2700);
 
-/* =========================================
-   GAME LAUNCHER
-========================================= */
+/* =========================================================
+   GAME LAUNCHING
+========================================================= */
 
 function openGame(url,title){
 
-    document.getElementById("windowTitle")
-        .textContent = title;
+    document.getElementById(
+        "gameWindowTitle"
+    ).textContent = title;
 
-    document.getElementById("gameFrame")
-        .src = url;
+    document.getElementById(
+        "gameFrame"
+    ).src = url;
 
-    document.getElementById("gameModal")
+    document
+        .getElementById("gameModal")
         .classList.add("open");
 }
 
 function closeGame(){
 
-    document.getElementById("gameModal")
+    document
+        .getElementById("gameModal")
         .classList.remove("open");
 
-    document.getElementById("gameFrame")
-        .src = "about:blank";
+    document.getElementById(
+        "gameFrame"
+    ).src = "about:blank";
 }
 
-/* HELIOS FIX */
+/* =========================================================
+   HELIOS
+========================================================= */
 
 function openHelios(){
 
+    /*
+        EXACT FILE:
+
+        Helios-Offline.html
+    */
+
     openGame(
-        "Helios-Offline(1).html",
+        "Helios-Offline.html",
         "Helios"
     );
 }
 
-/* =========================================
+/* =========================================================
    SEARCH
-========================================= */
+========================================================= */
 
 function performSearch(){
 
     const input =
         document.getElementById("searchInput");
 
-    const q =
+    const query =
         input.value.trim();
 
-    if(!q) return;
+    if(!query){
+        toast(
+            "Search",
+            "Type something to search for."
+        );
+        return;
+    }
 
     window.open(
         BACKEND +
         "/api/search?q=" +
-        encodeURIComponent(q),
+        encodeURIComponent(query),
         "_blank"
     );
 }
 
 document
     .getElementById("topSearch")
-    .addEventListener("keydown", e => {
+    .addEventListener(
+        "keydown",
+        event => {
 
-        if(e.key === "Enter"){
+            if(event.key !== "Enter")
+                return;
 
-            document
-                .getElementById("searchInput")
-                .value = e.target.value;
+            document.getElementById(
+                "searchInput"
+            ).value =
+                event.target.value;
 
-            showPage("searchPage");
+            showPage("search");
 
             performSearch();
+
         }
+    );
 
-    });
-
-/* =========================================
-   NOTIFICATIONS
-========================================= */
-
-async function requestNotifications(){
-
-    if(!("Notification" in window)){
-
-        toast(
-            "Notifications",
-            "This browser does not support notifications."
-        );
-
-        return;
-    }
-
-    const permission =
-        await Notification.requestPermission();
-
-    if(permission === "granted"){
-
-        new Notification(
-            "GameHub",
-            {
-                body:"Notifications are enabled!"
-            }
-        );
-
-        toast(
-            "Notifications enabled",
-            "GameHub can now notify you."
-        );
-
-    }else{
-
-        toast(
-            "Notifications blocked",
-            "You can enable them in browser settings."
-        );
-    }
-}
-
-/* =========================================
+/* =========================================================
    WEBSOCKET
-========================================= */
+========================================================= */
 
 let socket = null;
 let mySocketId = null;
 let onlinePlayers = [];
 
 function connectSocket(){
+
+    setConnection(
+        "Connecting..."
+    );
 
     try{
 
@@ -1857,205 +3435,413 @@ function connectSocket(){
 
     }catch(error){
 
-        setConnection("Offline");
+        setConnection(
+            "Offline"
+        );
+
         return;
     }
 
-    socket.addEventListener("open", () => {
+    socket.addEventListener(
+        "open",
+        () => {
 
-        setConnection("Connected");
+            setConnection(
+                "Connected"
+            );
 
-        toast(
-            "Connected",
-            "GameHub real-time services are online."
-        );
+            document.getElementById(
+                "chatConnection"
+            ).textContent =
+                "● Connected";
 
-    });
+            toast(
+                "GameHub Online",
+                "Real-time services connected."
+            );
 
-    socket.addEventListener("close", () => {
-
-        setConnection("Disconnected");
-
-        setTimeout(
-            connectSocket,
-            4000
-        );
-
-    });
-
-    socket.addEventListener("error", () => {
-
-        setConnection("Connection error");
-
-    });
-
-    socket.addEventListener("message", event => {
-
-        let data;
-
-        try{
-            data = JSON.parse(event.data);
-        }catch{
-            return;
         }
+    );
 
-        handleSocketMessage(data);
+    socket.addEventListener(
+        "close",
+        () => {
 
-    });
+            setConnection(
+                "Disconnected"
+            );
+
+            document.getElementById(
+                "chatConnection"
+            ).textContent =
+                "Disconnected";
+
+            setTimeout(
+                connectSocket,
+                4000
+            );
+
+        }
+    );
+
+    socket.addEventListener(
+        "error",
+        () => {
+
+            setConnection(
+                "Connection error"
+            );
+
+        }
+    );
+
+    socket.addEventListener(
+        "message",
+        event => {
+
+            let data;
+
+            try{
+                data =
+                    JSON.parse(
+                        event.data
+                    );
+            }catch{
+                return;
+            }
+
+            handleSocketMessage(data);
+
+        }
+    );
 }
 
 function setConnection(text){
 
     document.getElementById(
         "connectionStatus"
-    ).textContent = text;
+    ).textContent =
+        text;
 }
 
 function handleSocketMessage(data){
 
+    /* Connected */
+
     if(data.type === "connected"){
 
-        mySocketId = data.id;
+        mySocketId =
+            data.id;
+
         return;
     }
+
+    /* Online players */
 
     if(data.type === "online"){
 
         onlinePlayers =
             data.players || [];
 
-        updatePlayers();
+        updateOnlinePlayers();
 
         return;
     }
+
+    /* Player joined / left */
 
     if(data.type === "presence"){
 
-        if(data.action === "join"){
+        if(
+            data.action === "join" &&
+            data.name !== username
+        ){
 
             toast(
-                "Friend online",
-                data.name + " joined GameHub."
+                "Player online",
+                data.name +
+                " joined GameHub."
             );
 
         }
 
-        if(data.action === "leave"){
+        if(
+            data.action === "leave"
+        ){
 
             toast(
                 "Player offline",
-                data.name + " left GameHub."
+                data.name +
+                " left GameHub."
             );
 
         }
+
+        refreshFriends();
 
         return;
     }
 
+    /* Chat */
+
     if(data.type === "chat"){
 
-        addChatMessage(
+        addMessage(
             data.sender,
-            data.text
+            data.text,
+            data.senderId === mySocketId
         );
 
         if(
             data.senderId !== mySocketId &&
-            Notification.permission === "granted"
+            "Notification" in window &&
+            Notification.permission ===
+                "granted"
         ){
 
-            new Notification(
-                data.sender,
-                {
-                    body:data.text
-                }
-            );
+            try{
+
+                new Notification(
+                    data.sender,
+                    {
+                        body:data.text
+                    }
+                );
+
+            }catch{}
 
         }
 
         return;
     }
 
-    /* =====================================
-       CALL SIGNALING
-    ===================================== */
+    /* CALL */
 
     if(data.type === "call-offer"){
 
-        receiveCall(data);
+        incomingOffer =
+            data;
+
+        showIncomingCall(
+            data.senderName ||
+            "Player"
+        );
+
         return;
     }
 
     if(data.type === "call-answer"){
 
-        receiveAnswer(data);
+        receiveAnswer(
+            data
+        );
+
         return;
     }
 
     if(data.type === "ice-candidate"){
 
-        receiveIce(data);
+        receiveIce(
+            data
+        );
+
         return;
     }
 
     if(data.type === "call-end"){
 
         endCall(false);
+
         return;
     }
 
     if(data.type === "call-error"){
 
         toast(
-            "Call failed",
-            data.error || "Unable to connect."
+            "Call error",
+            data.error ||
+            "The call could not connect."
         );
 
         endCall(false);
+
+        return;
     }
 }
 
-/* =========================================
-   PLAYERS
-========================================= */
+/* =========================================================
+   ONLINE PLAYERS
+========================================================= */
 
-function updatePlayers(){
+function updateOnlinePlayers(){
 
-    const count =
-        onlinePlayers.length;
+    const others =
+        onlinePlayers.filter(
+            p => p.id !== mySocketId
+        );
 
     document.getElementById(
         "friendCount"
     ).textContent =
-        Math.max(0,count - 1) +
+        others.length +
+        (
+            others.length === 1
+                ? " online"
+                : " online"
+        );
+
+    document.getElementById(
+        "mainServerPlayers"
+    ).textContent =
+        onlinePlayers.length +
         " online";
 
     document.getElementById(
-        "mainPlayers"
-    ).textContent =
-        count +
-        " players online";
+        "mainServerFill"
+    ).style.width =
+        Math.min(
+            100,
+            Math.max(
+                8,
+                onlinePlayers.length * 8
+            )
+        ) + "%";
+
+    const badge =
+        document.getElementById(
+            "friendBadge"
+        );
+
+    if(others.length){
+
+        badge.style.display =
+            "grid";
+
+        badge.textContent =
+            others.length;
+
+    }else{
+
+        badge.style.display =
+            "none";
+    }
+
+    refreshFriends();
 }
 
-/* =========================================
+function refreshFriends(){
+
+    const list =
+        document.getElementById(
+            "friendsList"
+        );
+
+    const others =
+        onlinePlayers.filter(
+            p => p.id !== mySocketId
+        );
+
+    if(!others.length){
+
+        list.innerHTML = `
+            <div class="listRow">
+                <div class="avatar">G</div>
+
+                <div class="listInfo">
+
+                    <div class="listName">
+                        No friends online
+                    </div>
+
+                    <div class="listSub">
+                        When another GameHub player
+                        connects, they'll appear here.
+                    </div>
+
+                </div>
+            </div>
+        `;
+
+        return;
+    }
+
+    list.innerHTML =
+        others.map(player => `
+
+            <div class="listRow">
+
+                <div class="avatar">
+                    ${escapeHtml(
+                        player.name
+                            .charAt(0)
+                            .toUpperCase()
+                    )}
+                </div>
+
+                <div class="listInfo">
+
+                    <div class="listName">
+                        ${escapeHtml(
+                            player.name
+                        )}
+                    </div>
+
+                    <div class="listSub">
+                        <span
+                            class="statusDot"
+                        ></span>
+                        Online
+                    </div>
+
+                </div>
+
+                <button
+                    class="actionButton call"
+                    onclick="
+                        startCall(
+                            '${escapeAttribute(
+                                player.id
+                            )}',
+                            '${escapeAttribute(
+                                player.name
+                            )}'
+                        )
+                    "
+                >
+                    📞 CALL
+                </button>
+
+            </div>
+
+        `).join("");
+}
+
+/* =========================================================
    CHAT
-========================================= */
+========================================================= */
 
 function sendChat(){
 
     const input =
-        document.getElementById("chatInput");
+        document.getElementById(
+            "chatInput"
+        );
 
     const text =
         input.value.trim();
 
-    if(!text) return;
+    if(!text)
+        return;
 
-    if(!socket || socket.readyState !== WebSocket.OPEN){
+    if(
+        !socket ||
+        socket.readyState !==
+        WebSocket.OPEN
+    ){
 
         toast(
             "Offline",
-            "GameHub chat is not connected."
+            "GameHub isn't connected."
         );
 
         return;
@@ -2064,92 +3850,154 @@ function sendChat(){
     socket.send(
         JSON.stringify({
             type:"chat",
-            text
+            text:text
         })
     );
 
     input.value = "";
 }
 
-function addChatMessage(sender,text){
+function addMessage(
+    sender,
+    text,
+    mine
+){
 
     const area =
-        document.getElementById("chatMessages");
+        document.getElementById(
+            "chatMessages"
+        );
 
-    const row =
-        document.createElement("div");
+    const message =
+        document.createElement(
+            "div"
+        );
 
-    row.className = "row";
+    message.className =
+        "message" +
+        (
+            mine
+                ? " mine"
+                : ""
+        );
 
-    row.innerHTML = `
-        <div class="avatar">
-            ${escapeHtml(
-                sender.charAt(0).toUpperCase()
-            )}
+    message.innerHTML = `
+
+        <div class="messageName">
+            ${escapeHtml(sender)}
         </div>
 
-        <div class="rowInfo">
-            <div class="rowName">
-                ${escapeHtml(sender)}
-            </div>
-
-            <div class="rowSub">
-                ${escapeHtml(text)}
-            </div>
+        <div class="messageText">
+            ${escapeHtml(text)}
         </div>
+
     `;
 
-    area.appendChild(row);
+    area.appendChild(
+        message
+    );
 
     area.scrollTop =
         area.scrollHeight;
 }
 
-/* =========================================
+/* =========================================================
    CALLING
-========================================= */
+========================================================= */
 
 let peer = null;
 let localStream = null;
 let remoteStream = null;
+
 let currentCallTarget = null;
 let currentCallName = null;
-let pendingIce = [];
+
+let incomingOffer = null;
+let pendingCandidates = [];
 
 const rtcConfig = {
 
     iceServers:[
         {
-            urls:"stun:stun.l.google.com:19302"
+            urls:
+                "stun:stun.l.google.com:19302"
         }
     ]
 
 };
 
-async function startCall(name){
+/* Find first online player */
 
-    if(!socket ||
-       socket.readyState !== WebSocket.OPEN){
+function callFirstOnlinePlayer(){
+
+    const player =
+        onlinePlayers.find(
+            p => p.id !== mySocketId
+        );
+
+    if(!player){
 
         toast(
-            "Can't call",
-            "GameHub is not connected yet."
+            "Nobody online",
+            "You need another GameHub player online to call."
         );
 
         return;
     }
 
-    currentCallName = name;
+    startCall(
+        player.id,
+        player.name
+    );
+}
 
-    showCallUI(
-        name,
+/* Start */
+
+async function startCall(
+    targetId,
+    targetName
+){
+
+    if(
+        !socket ||
+        socket.readyState !==
+        WebSocket.OPEN
+    ){
+
+        toast(
+            "Offline",
+            "GameHub isn't connected."
+        );
+
+        return;
+    }
+
+    if(!targetId){
+
+        toast(
+            "Can't call",
+            "That player doesn't have a connection ID."
+        );
+
+        return;
+    }
+
+    currentCallTarget =
+        targetId;
+
+    currentCallName =
+        targetName;
+
+    showCallWindow(
+        targetName,
         "Calling..."
     );
 
     try{
 
         localStream =
-            await navigator.mediaDevices
+            await navigator
+                .mediaDevices
                 .getUserMedia({
                     audio:true,
                     video:true
@@ -2172,23 +4020,28 @@ async function startCall(name){
         socket.send(
             JSON.stringify({
                 type:"call-offer",
-                target:findPlayerId(name),
-                offer
+                target:targetId,
+                offer:offer
             })
         );
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Call error:",
+            error
+        );
 
         toast(
-            "Camera/microphone error",
-            "Allow camera and microphone access to call."
+            "Camera / microphone",
+            "Allow access when your browser asks."
         );
 
         endCall(false);
     }
 }
+
+/* Peer */
 
 function createPeer(){
 
@@ -2220,71 +4073,153 @@ function createPeer(){
 
     }
 
-    peer.ontrack = event => {
+    peer.ontrack =
+        event => {
 
-        event.streams[0]
-            .getTracks()
-            .forEach(track => {
-
-                remoteStream.addTrack(track);
-
-            });
-
-        document.getElementById(
-            "callStatus"
-        ).textContent =
-            "Connected";
-    };
-
-    peer.onicecandidate = event => {
-
-        if(
-            event.candidate &&
-            socket &&
-            currentCallTarget
-        ){
-
-            socket.send(
-                JSON.stringify({
-                    type:"ice-candidate",
-                    target:currentCallTarget,
-                    candidate:event.candidate
-                })
-            );
-        }
-
-    };
-
-    peer.onconnectionstatechange = () => {
-
-        const state =
-            peer.connectionState;
-
-        if(state === "connected"){
+            event.streams[0]
+                .getTracks()
+                .forEach(
+                    track =>
+                        remoteStream
+                            .addTrack(track)
+                );
 
             document.getElementById(
-                "callStatus"
+                "callPlaceholder"
+            ).style.display =
+                "none";
+
+            document.getElementById(
+                "callState"
             ).textContent =
                 "Connected";
 
-        }
+        };
 
-        if(
-            state === "failed" ||
-            state === "disconnected"
-        ){
+    peer.onicecandidate =
+        event => {
 
-            toast(
-                "Call disconnected",
-                "The connection was lost."
+            if(
+                !event.candidate ||
+                !socket ||
+                !currentCallTarget
+            )
+                return;
+
+            socket.send(
+                JSON.stringify({
+
+                    type:
+                        "ice-candidate",
+
+                    target:
+                        currentCallTarget,
+
+                    candidate:
+                        event.candidate
+
+                })
             );
 
-        }
+        };
 
-    };
+    peer.onconnectionstatechange =
+        () => {
+
+            if(!peer)
+                return;
+
+            const state =
+                peer.connectionState;
+
+            if(state === "connected"){
+
+                document.getElementById(
+                    "callState"
+                ).textContent =
+                    "Connected";
+
+            }
+
+            if(state === "connecting"){
+
+                document.getElementById(
+                    "callState"
+                ).textContent =
+                    "Connecting...";
+            }
+
+            if(
+                state === "failed" ||
+                state === "disconnected"
+            ){
+
+                toast(
+                    "Call disconnected",
+                    "The connection was lost."
+                );
+
+            }
+
+        };
 }
 
-async function receiveCall(data){
+/* Incoming */
+
+function showIncomingCall(name){
+
+    document.getElementById(
+        "incomingText"
+    ).textContent =
+        name +
+        " is calling you.";
+
+    document.getElementById(
+        "incomingCall"
+    ).classList.add(
+        "show"
+    );
+
+    if(
+        "Notification" in window &&
+        Notification.permission ===
+        "granted"
+    ){
+
+        try{
+
+            new Notification(
+                "Incoming GameHub call",
+                {
+                    body:
+                        name +
+                        " is calling you."
+                }
+            );
+
+        }catch{}
+
+    }
+}
+
+/* Accept */
+
+async function acceptIncomingCall(){
+
+    document.getElementById(
+        "incomingCall"
+    ).classList.remove(
+        "show"
+    );
+
+    if(!incomingOffer)
+        return;
+
+    const data =
+        incomingOffer;
+
+    incomingOffer =
+        null;
 
     currentCallTarget =
         data.sender;
@@ -2293,38 +4228,16 @@ async function receiveCall(data){
         data.senderName ||
         "Player";
 
-    showCallUI(
+    showCallWindow(
         currentCallName,
-        "Incoming call..."
+        "Connecting..."
     );
-
-    const answer =
-        confirm(
-            currentCallName +
-            " is calling you.\n\nPress OK to answer."
-        );
-
-    if(!answer){
-
-        if(socket){
-
-            socket.send(
-                JSON.stringify({
-                    type:"call-end",
-                    target:data.sender
-                })
-            );
-
-        }
-
-        endCall(false);
-        return;
-    }
 
     try{
 
         localStream =
-            await navigator.mediaDevices
+            await navigator
+                .mediaDevices
                 .getUserMedia({
                     audio:true,
                     video:true
@@ -2341,25 +4254,45 @@ async function receiveCall(data){
             data.offer
         );
 
-        const answerOffer =
+        for(
+            const candidate
+            of pendingCandidates
+        ){
+
+            try{
+
+                await peer
+                    .addIceCandidate(
+                        candidate
+                    );
+
+            }catch{}
+
+        }
+
+        pendingCandidates = [];
+
+        const answer =
             await peer.createAnswer();
 
         await peer.setLocalDescription(
-            answerOffer
+            answer
         );
 
         socket.send(
             JSON.stringify({
-                type:"call-answer",
-                target:data.sender,
-                answer:answerOffer
+
+                type:
+                    "call-answer",
+
+                target:
+                    data.sender,
+
+                answer:
+                    answer
+
             })
         );
-
-        document.getElementById(
-            "callStatus"
-        ).textContent =
-            "Connecting...";
 
     }catch(error){
 
@@ -2367,16 +4300,53 @@ async function receiveCall(data){
 
         toast(
             "Call failed",
-            "Could not access camera or microphone."
+            "Camera or microphone access was denied."
         );
 
         endCall(false);
     }
 }
 
+/* Decline */
+
+function declineIncomingCall(){
+
+    if(
+        incomingOffer &&
+        socket &&
+        socket.readyState ===
+        WebSocket.OPEN
+    ){
+
+        socket.send(
+            JSON.stringify({
+
+                type:
+                    "call-end",
+
+                target:
+                    incomingOffer.sender
+
+            })
+        );
+
+    }
+
+    incomingOffer = null;
+
+    document.getElementById(
+        "incomingCall"
+    ).classList.remove(
+        "show"
+    );
+}
+
+/* Answer */
+
 async function receiveAnswer(data){
 
-    if(!peer) return;
+    if(!peer)
+        return;
 
     try{
 
@@ -2384,15 +4354,43 @@ async function receiveAnswer(data){
             data.answer
         );
 
+        for(
+            const candidate
+            of pendingCandidates
+        ){
+
+            try{
+
+                await peer
+                    .addIceCandidate(
+                        candidate
+                    );
+
+            }catch{}
+
+        }
+
+        pendingCandidates = [];
+
     }catch(error){
 
         console.error(error);
+
     }
 }
 
+/* Candidate */
+
 async function receiveIce(data){
 
-    if(!peer) return;
+    if(!peer){
+
+        pendingCandidates.push(
+            data.candidate
+        );
+
+        return;
+    }
 
     try{
 
@@ -2400,13 +4398,14 @@ async function receiveIce(data){
             peer.remoteDescription
         ){
 
-            await peer.addIceCandidate(
-                data.candidate
-            );
+            await peer
+                .addIceCandidate(
+                    data.candidate
+                );
 
         }else{
 
-            pendingIce.push(
+            pendingCandidates.push(
                 data.candidate
             );
 
@@ -2418,110 +4417,138 @@ async function receiveIce(data){
     }
 }
 
-function findPlayerId(name){
+/* Call window */
 
-    const player =
-        onlinePlayers.find(
-            p => p.name === name
-        );
-
-    if(player){
-
-        currentCallTarget =
-            player.id;
-
-        return player.id;
-    }
-
-    /*
-       Demo fallback.
-
-       Real friend/account IDs will replace
-       this when the account system is added.
-    */
-
-    return null;
-}
-
-function showCallUI(name,status){
+function showCallWindow(
+    name,
+    state
+){
 
     document.getElementById(
-        "callTitle"
+        "callPersonName"
     ).textContent =
         name;
 
     document.getElementById(
-        "callStatus"
+        "callState"
     ).textContent =
-        status;
+        state;
+
+    const initial =
+        name
+            .charAt(0)
+            .toUpperCase();
 
     document.getElementById(
         "callAvatar"
     ).textContent =
-        name.charAt(0).toUpperCase();
+        initial;
 
     document.getElementById(
-        "callOverlay"
-    ).classList.add("show");
+        "callBigAvatar"
+    ).textContent =
+        initial;
+
+    document.getElementById(
+        "callPlaceholder"
+    ).style.display =
+        "grid";
+
+    document.getElementById(
+        "callLayer"
+    ).classList.add(
+        "show"
+    );
 }
+
+/* Mute */
 
 function toggleMute(){
 
-    if(!localStream) return;
+    if(!localStream)
+        return;
 
     const tracks =
-        localStream.getAudioTracks();
+        localStream
+            .getAudioTracks();
+
+    if(!tracks.length)
+        return;
+
+    const enabled =
+        tracks[0].enabled;
 
     tracks.forEach(
         track =>
             track.enabled =
-                !track.enabled
+                !enabled
     );
 
     document.getElementById(
-        "muteBtn"
+        "muteButton"
     ).textContent =
-        tracks[0]?.enabled
-            ? "🎤"
-            : "🔇";
+        enabled
+            ? "🔇"
+            : "🎤";
 }
+
+/* Camera */
 
 function toggleCamera(){
 
-    if(!localStream) return;
+    if(!localStream)
+        return;
 
     const tracks =
-        localStream.getVideoTracks();
+        localStream
+            .getVideoTracks();
+
+    if(!tracks.length)
+        return;
+
+    const enabled =
+        tracks[0].enabled;
 
     tracks.forEach(
         track =>
             track.enabled =
-                !track.enabled
+                !enabled
     );
 
     document.getElementById(
-        "cameraBtn"
+        "cameraButton"
     ).textContent =
-        tracks[0]?.enabled
-            ? "📷"
-            : "🚫";
+        enabled
+            ? "🚫"
+            : "📷";
 }
 
-function endCall(sendSignal=true){
+/* End */
+
+function endCall(
+    sendSignal = true
+){
 
     if(
         sendSignal &&
         socket &&
-        socket.readyState === WebSocket.OPEN &&
+        socket.readyState ===
+        WebSocket.OPEN &&
         currentCallTarget
     ){
 
         socket.send(
             JSON.stringify({
-                type:"call-end",
-                target:currentCallTarget
+
+                type:
+                    "call-end",
+
+                target:
+                    currentCallTarget
+
             })
         );
+
     }
 
     if(peer){
@@ -2538,7 +4565,8 @@ function endCall(sendSignal=true){
         localStream
             .getTracks()
             .forEach(
-                track => track.stop()
+                track =>
+                    track.stop()
             );
 
         localStream = null;
@@ -2548,36 +4576,110 @@ function endCall(sendSignal=true){
 
     document.getElementById(
         "localVideo"
-    ).srcObject = null;
+    ).srcObject =
+        null;
 
     document.getElementById(
         "remoteVideo"
-    ).srcObject = null;
+    ).srcObject =
+        null;
 
     document.getElementById(
-        "callOverlay"
-    ).classList.remove("show");
+        "callLayer"
+    ).classList.remove(
+        "show"
+    );
 
     currentCallTarget = null;
     currentCallName = null;
-    pendingIce = [];
+
+    pendingCandidates = [];
 }
 
-/* =========================================
-   TOAST
-========================================= */
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
 
-function toast(title,text){
+async function toggleNotifications(){
+
+    if(
+        !("Notification" in window)
+    ){
+
+        toast(
+            "Notifications",
+            "Your browser does not support them."
+        );
+
+        return;
+    }
+
+    const permission =
+        await Notification
+            .requestPermission();
+
+    const toggle =
+        document.getElementById(
+            "notificationToggle"
+        );
+
+    if(permission === "granted"){
+
+        toggle.classList.add(
+            "on"
+        );
+
+        try{
+
+            new Notification(
+                "GameHub",
+                {
+                    body:
+                        "Notifications are enabled."
+                }
+            );
+
+        }catch{}
+
+        toast(
+            "Notifications enabled",
+            "GameHub can now notify you."
+        );
+
+    }else{
+
+        toast(
+            "Notifications blocked",
+            "You can change this in browser settings."
+        );
+
+    }
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function toast(
+    title,
+    text
+){
 
     const area =
-        document.getElementById("toastArea");
+        document.getElementById(
+            "toastArea"
+        );
 
     const item =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
-    item.className = "toast";
+    item.className =
+        "toast";
 
     item.innerHTML = `
+
         <div class="toastTitle">
             ${escapeHtml(title)}
         </div>
@@ -2585,48 +4687,78 @@ function toast(title,text){
         <div class="toastText">
             ${escapeHtml(text)}
         </div>
+
     `;
 
-    area.appendChild(item);
-
-    setTimeout(() => {
-
-        item.style.opacity = "0";
-        item.style.transform =
-            "translateX(20px)";
-
-        setTimeout(
-            () => item.remove(),
-            300
-        );
-
-    },3500);
-}
-
-function escapeHtml(text){
-
-    return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
-
-/* =========================================
-   START
-========================================= */
-
-if(
-    "Notification" in window &&
-    Notification.permission === "default"
-){
+    area.appendChild(
+        item
+    );
 
     setTimeout(
-        requestNotifications,
+        () => {
+
+            item.style.opacity =
+                "0";
+
+            item.style.transform =
+                "translateX(15px)";
+
+            setTimeout(
+                () =>
+                    item.remove(),
+                250
+            );
+
+        },
         3500
     );
 }
+
+/* =========================================================
+   SECURITY HELPERS
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+}
+
+function escapeAttribute(value){
+
+    return String(value)
+        .replaceAll(
+            "\\",
+            "\\\\"
+        )
+        .replaceAll(
+            "'",
+            "\\'"
+        );
+}
+
+/* =========================================================
+   START
+========================================================= */
 
 connectSocket();
 
