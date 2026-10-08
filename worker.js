@@ -1,1830 +1,1535 @@
+import { DurableObject } from "cloudflare:workers";
+
 const ALLOWED_ORIGIN = "https://s2reetyt-png.github.io";
+
+function corsHeaders(origin = ALLOWED_ORIGIN) {
+  const allowed =
+    origin === ALLOWED_ORIGIN ||
+    origin === "http://localhost:3000" ||
+    origin === "http://localhost:5173" ||
+    origin === "http://127.0.0.1:3000" ||
+    origin === "http://127.0.0.1:5173";
+
+  return {
+    "Access-Control-Allow-Origin": allowed ? origin : ALLOWED_ORIGIN,
+    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Max-Age": "86400"
+  };
+}
+
+function json(data, status = 200, origin = ALLOWED_ORIGIN) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      ...corsHeaders(origin),
+      "Content-Type": "application/json; charset=utf-8"
+    }
+  });
+}
+
+function getOrigin(request) {
+  return request.headers.get("Origin") || ALLOWED_ORIGIN;
+}
+
+function cleanName(name) {
+  return String(name || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, 24);
+}
+
+function cleanId(id) {
+  return String(id || "")
+    .trim()
+    .slice(0, 100);
+}
+
+function randomId(prefix = "") {
+  return prefix + crypto.randomUUID();
+}
+
+async function readJson(request) {
+  try {
+    return await request.json();
+  } catch {
+    return null;
+  }
+}
+
+function normalizeUser(user) {
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    createdAt: user.createdAt || null,
+    lastSeen: user.lastSeen || null
+  };
+}
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-
-    // -----------------------------
-    // CORS
-    // -----------------------------
+    const origin = getOrigin(request);
 
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
-        headers: corsHeaders()
+        headers: corsHeaders(origin)
       });
     }
 
-    // -----------------------------
-    // HEALTH
-    // -----------------------------
-
-    if (url.pathname === "/api/health") {
-      return json({
-        ok: true,
-        service: "GameHub Backend",
-        version: "friends-and-calls",
-        time: new Date().toISOString()
-      });
-    }
-
-    // -----------------------------
-    // CREATE GUEST SESSION
-    // -----------------------------
-
-    if (
-      url.pathname === "/api/session" &&
-      request.method === "POST"
-    ) {
-      const id = crypto.randomUUID();
-
-      const guestNumber =
-        Math.floor(1000 + Math.random() * 9000);
-
-      const name = "Guest-" + guestNumber;
-
-      return json({
-        ok: true,
-        player: {
-          id,
-          name
-        }
-      });
-    }
-
-    // -----------------------------
-    // SOCIAL API
-    // -----------------------------
-
-    if (url.pathname.startsWith("/api/social/")) {
-      const id =
-        env.GAMEHUB_ROOM.idFromName("main");
-
-      const stub =
-        env.GAMEHUB_ROOM.get(id);
-
-      const socialUrl =
-        new URL(request.url);
-
-      socialUrl.pathname =
-        socialUrl.pathname.replace(
-          "/api/social",
-          "/social"
-        );
-
-      return stub.fetch(
-        new Request(
-          socialUrl,
-          request
-        )
-      );
-    }
-
-    // -----------------------------
-    // WEBSOCKET
-    // -----------------------------
-
+    /*
+     * WebSocket endpoint
+     *
+     * /ws
+     */
     if (url.pathname === "/ws") {
-      if (
-        request.headers.get("Upgrade") !==
-        "websocket"
-      ) {
+      if (request.headers.get("Upgrade")?.toLowerCase() !== "websocket") {
         return json(
           {
             ok: false,
-            error:
-              "WebSocket connection required"
+            error: "WebSocket upgrade required."
           },
-          400
+          426,
+          origin
         );
       }
 
-      const room =
-        url.searchParams.get("room") ||
-        "main";
+      const roomId = env.GAMEHUB_ROOM.idFromName("main");
+      const room = env.GAMEHUB_ROOM.get(roomId);
 
-      let name =
-        url.searchParams.get("name");
+      return room.fetch(request);
+    }
 
-      let playerId =
-        url.searchParams.get("playerId");
-
-      // Create a guest if no identity exists.
-      if (
-        !name ||
-        !name.trim()
-      ) {
-        name =
-          "Guest-" +
-          Math.floor(
-            1000 +
-            Math.random() * 9000
-          );
-      }
-
-      if (
-        !playerId ||
-        !playerId.trim()
-      ) {
-        playerId =
-          crypto.randomUUID();
-      }
-
-      name =
-        name
-          .trim()
-          .slice(0, 24);
-
-      playerId =
-        playerId
-          .trim()
-          .slice(0, 100);
-
-      const id =
-        env.GAMEHUB_ROOM.idFromName(room);
-
-      const stub =
-        env.GAMEHUB_ROOM.get(id);
-
-      const newUrl =
-        new URL(request.url);
-
-      newUrl.searchParams.set(
-        "playerName",
-        name
-      );
-
-      newUrl.searchParams.set(
-        "playerId",
-        playerId
-      );
-
-      return stub.fetch(
-        new Request(
-          newUrl,
-          request
-        )
+    /*
+     * Session endpoint.
+     */
+    if (url.pathname === "/api/session") {
+      return json(
+        {
+          ok: true,
+          server: "GameHub",
+          online: true,
+          time: Date.now()
+        },
+        200,
+        origin
       );
     }
 
-    // -----------------------------
-    // SEARCH API
-    // -----------------------------
+    /*
+     * All social/account-style API calls are handled by
+     * the same Durable Object so the data stays centralized.
+     */
+    if (url.pathname.startsWith("/api/social/")) {
+      const roomId = env.GAMEHUB_ROOM.idFromName("main");
+      const room = env.GAMEHUB_ROOM.get(roomId);
 
-    if (url.pathname === "/api/search") {
-      const query =
-        url.searchParams.get("q");
+      const forwarded = new URL(request.url);
 
-      if (!query) {
-        return json(
-          {
-            ok: false,
-            error:
-              "Missing search query"
-          },
-          400
-        );
-      }
+      forwarded.pathname = forwarded.pathname.replace(
+        "/api/social",
+        "/social"
+      );
 
-      return Response.redirect(
-        "https://duckduckgo.com/?q=" +
-        encodeURIComponent(query),
-        302
+      return room.fetch(
+        new Request(forwarded.toString(), request)
       );
     }
 
-    // -----------------------------
-    // STATIC FILES
-    // -----------------------------
-
-    if (env.ASSETS) {
-      return env.ASSETS.fetch(request);
-    }
-
-    return new Response(
-      "GameHub backend is running.",
-      {
-        status: 200,
-        headers: {
-          "content-type":
-            "text/plain"
-        }
-      }
-    );
+    /*
+     * Everything else is served by Cloudflare Assets.
+     */
+    return env.ASSETS.fetch(request);
   }
 };
 
-export class GameHubRoom {
-  constructor(state) {
-    this.state = state;
 
-    // Active WebSocket connections.
-    //
-    // connectionId -> {
-    //   socket,
-    //   playerId,
-    //   name
-    // }
-    this.clients = new Map();
+export class GameHubRoom extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+
+    this.env = env;
+
+    /*
+     * Rebuild our connection information after hibernation.
+     *
+     * Each WebSocket has a serialized attachment containing:
+     * - connectionId
+     * - playerId
+     * - name
+     */
+    this.connections = new Map();
+
+    for (const ws of this.ctx.getWebSockets()) {
+      const attachment = ws.deserializeAttachment();
+
+      if (attachment?.connectionId) {
+        this.connections.set(ws, attachment);
+      }
+    }
+
+    /*
+     * Ping/pong can happen without waking the Durable Object.
+     */
+    try {
+      this.ctx.setWebSocketAutoResponse(
+        new WebSocketRequestResponsePair("ping", "pong")
+      );
+    } catch {
+      // Older/local runtimes may not support this.
+    }
   }
 
-  // =========================================================
-  // MAIN REQUEST HANDLER
-  // =========================================================
+  /*
+   * ---------------------------------------------------------
+   * HTTP
+   * ---------------------------------------------------------
+   */
 
   async fetch(request) {
-    const url =
-      new URL(request.url);
+    const url = new URL(request.url);
 
-    // -----------------------------
-    // SOCIAL HTTP API
-    // -----------------------------
+    if (url.pathname === "/social/register") {
+      return this.registerPlayer(request);
+    }
+
+    if (url.pathname === "/social/search") {
+      return this.searchPlayers(request);
+    }
+
+    if (url.pathname === "/social/friends") {
+      return this.getFriends(request);
+    }
+
+    if (url.pathname === "/social/requests") {
+      return this.getRequests(request);
+    }
+
+    if (url.pathname === "/social/friend-request") {
+      return this.friendRequest(request);
+    }
+
+    if (url.pathname === "/social/friend-accept") {
+      return this.friendAccept(request);
+    }
+
+    if (url.pathname === "/social/friend-decline") {
+      return this.friendDecline(request);
+    }
+
+    if (url.pathname === "/social/friend-remove") {
+      return this.friendRemove(request);
+    }
 
     if (
-      url.pathname.startsWith("/social/")
+      request.headers.get("Upgrade")?.toLowerCase() === "websocket"
     ) {
-      return this.handleSocial(
-        request,
-        url
-      );
-    }
-
-    // -----------------------------
-    // WEBSOCKET
-    // -----------------------------
-
-    const upgrade =
-      request.headers.get("Upgrade");
-
-    if (
-      upgrade !== "websocket"
-    ) {
-      return new Response(
-        "GameHub Room Online",
-        {
-          status: 200
-        }
-      );
-    }
-
-    return this.handleWebSocket(
-      request,
-      url
-    );
-  }
-
-  // =========================================================
-  // WEBSOCKET CONNECTION
-  // =========================================================
-
-  async handleWebSocket(
-    request,
-    url
-  ) {
-    const pair =
-      new WebSocketPair();
-
-    const client =
-      pair[0];
-
-    const server =
-      pair[1];
-
-    const playerName =
-      url.searchParams.get(
-        "playerName"
-      ) ||
-      "Guest-" +
-        Math.floor(
-          1000 +
-          Math.random() * 9000
-        );
-
-    const playerId =
-      url.searchParams.get(
-        "playerId"
-      ) ||
-      crypto.randomUUID();
-
-    const connectionId =
-      crypto.randomUUID();
-
-    server.accept();
-
-    this.clients.set(
-      connectionId,
-      {
-        socket: server,
-        playerId,
-        name: playerName
-      }
-    );
-
-    // Persist the player.
-    await this.savePlayer(
-      playerId,
-      playerName,
-      true
-    );
-
-    // Tell the new client who they are.
-    this.send(
-      server,
-      {
-        type: "connected",
-        id: connectionId,
-        playerId,
-        name: playerName
-      }
-    );
-
-    // Tell everyone else.
-    this.broadcast(
-      {
-        type: "presence",
-        action: "join",
-        id: connectionId,
-        playerId,
-        name: playerName
-      },
-      connectionId
-    );
-
-    // Give this client the current online list.
-    this.send(
-      server,
-      {
-        type: "online",
-        players:
-          this.getPlayers()
-      }
-    );
-
-    // Send pending friend requests.
-    const requests =
-      await this.getRequests(
-        playerId
-      );
-
-    this.send(
-      server,
-      {
-        type:
-          "friend-requests",
-        requests
-      }
-    );
-
-    server.addEventListener(
-      "message",
-      event => {
-        this.handleMessage(
-          connectionId,
-          playerId,
-          playerName,
-          event.data
-        );
-      }
-    );
-
-    server.addEventListener(
-      "close",
-      () => {
-        this.removePlayer(
-          connectionId
-        );
-      }
-    );
-
-    server.addEventListener(
-      "error",
-      () => {
-        this.removePlayer(
-          connectionId
-        );
-      }
-    );
-
-    return new Response(
-      null,
-      {
-        status: 101,
-        webSocket: client
-      }
-    );
-  }
-
-  // =========================================================
-  // REMOVE CONNECTION
-  // =========================================================
-
-  async removePlayer(
-    connectionId
-  ) {
-    const client =
-      this.clients.get(
-        connectionId
-      );
-
-    if (!client) {
-      return;
-    }
-
-    this.clients.delete(
-      connectionId
-    );
-
-    // Only mark offline if they have
-    // no other active connections.
-    const stillOnline =
-      this.getConnectionsForPlayer(
-        client.playerId
-      ).length > 0;
-
-    if (!stillOnline) {
-      await this.savePlayer(
-        client.playerId,
-        client.name,
-        false
-      );
-    }
-
-    this.broadcast({
-      type: "presence",
-      action:
-        stillOnline
-          ? "update"
-          : "leave",
-      id:
-        connectionId,
-      playerId:
-        client.playerId,
-      name:
-        client.name
-    });
-  }
-
-  // =========================================================
-  // WEBSOCKET MESSAGE HANDLER
-  // =========================================================
-
-  async handleMessage(
-    connectionId,
-    playerId,
-    playerName,
-    raw
-  ) {
-    let data;
-
-    try {
-      data =
-        JSON.parse(raw);
-    } catch {
-      return;
-    }
-
-    // -----------------------------
-    // CHAT
-    // -----------------------------
-
-    if (
-      data.type === "chat"
-    ) {
-      const message = {
-        type: "chat",
-
-        id:
-          crypto.randomUUID(),
-
-        senderId:
-          playerId,
-
-        sender:
-          playerName,
-
-        text:
-          String(
-            data.text || ""
-          ).slice(
-            0,
-            2000
-          ),
-
-        time:
-          Date.now()
-      };
-
-      if (
-        !message.text.trim()
-      ) {
-        return;
-      }
-
-      this.broadcast(
-        message
-      );
-
-      return;
-    }
-
-    // -----------------------------
-    // TYPING
-    // -----------------------------
-
-    if (
-      data.type === "typing"
-    ) {
-      this.broadcast(
-        {
-          type: "typing",
-
-          senderId:
-            playerId,
-
-          sender:
-            playerName,
-
-          active:
-            Boolean(
-              data.active
-            )
-        },
-        connectionId
-      );
-
-      return;
-    }
-
-    // -----------------------------
-    // FRIEND REQUEST
-    // -----------------------------
-
-    if (
-      data.type ===
-      "friend-request"
-    ) {
-      await this.createFriendRequest(
-        playerId,
-        playerName,
-        String(
-          data.targetPlayerId || ""
-        )
-      );
-
-      return;
-    }
-
-    // -----------------------------
-    // FRIEND ACCEPT
-    // -----------------------------
-
-    if (
-      data.type ===
-      "friend-accept"
-    ) {
-      await this.acceptFriendRequest(
-        playerId,
-        String(
-          data.targetPlayerId || ""
-        )
-      );
-
-      return;
-    }
-
-    // -----------------------------
-    // FRIEND DECLINE
-    // -----------------------------
-
-    if (
-      data.type ===
-      "friend-decline"
-    ) {
-      await this.declineFriendRequest(
-        playerId,
-        String(
-          data.targetPlayerId || ""
-        )
-      );
-
-      return;
-    }
-
-    // -----------------------------
-    // FRIEND REMOVE
-    // -----------------------------
-
-    if (
-      data.type ===
-      "friend-remove"
-    ) {
-      await this.removeFriend(
-        playerId,
-        String(
-          data.targetPlayerId || ""
-        )
-      );
-
-      return;
-    }
-
-    // -----------------------------
-    // CALL SIGNALING
-    // -----------------------------
-
-    if (
-      data.type ===
-        "call-offer" ||
-      data.type ===
-        "call-answer" ||
-      data.type ===
-        "ice-candidate" ||
-      data.type ===
-        "call-end"
-    ) {
-      const target =
-        this.clients.get(
-          data.target
-        );
-
-      if (!target) {
-        this.send(
-          this.clients.get(
-            connectionId
-          )?.socket,
-          {
-            type:
-              "call-error",
-            error:
-              "That player is no longer online."
-          }
-        );
-
-        return;
-      }
-
-      this.send(
-        target.socket,
-        {
-          ...data,
-
-          sender:
-            connectionId,
-
-          senderPlayerId:
-            playerId,
-
-          senderName:
-            playerName
-        }
-      );
-
-      return;
-    }
-
-    // -----------------------------
-    // PING
-    // -----------------------------
-
-    if (
-      data.type === "ping"
-    ) {
-      this.send(
-        this.clients.get(
-          connectionId
-        )?.socket,
-        {
-          type: "pong",
-          time:
-            Date.now()
-        }
-      );
-
-      return;
-    }
-  }
-
-  // =========================================================
-  // SOCIAL API
-  // =========================================================
-
-  async handleSocial(
-    request,
-    url
-  ) {
-    const path =
-      url.pathname;
-
-    // -----------------------------
-    // REGISTER / UPDATE PLAYER
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/register" &&
-      request.method ===
-        "POST"
-    ) {
-      const body =
-        await readJson(
-          request
-        );
-
-      const playerId =
-        String(
-          body.playerId || ""
-        ).trim();
-
-      const name =
-        String(
-          body.name || ""
-        )
-          .trim()
-          .slice(0, 24);
-
-      if (
-        !playerId ||
-        !name
-      ) {
-        return json(
-          {
-            ok: false,
-            error:
-              "Player ID and name are required."
-          },
-          400
-        );
-      }
-
-      await this.savePlayer(
-        playerId,
-        name,
-        this.isPlayerOnline(
-          playerId
-        )
-      );
-
-      return json({
-        ok: true,
-        player: {
-          id: playerId,
-          name
-        }
-      });
-    }
-
-    // -----------------------------
-    // SEARCH PLAYERS
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/search" &&
-      request.method ===
-        "GET"
-    ) {
-      const query =
-        String(
-          url.searchParams.get(
-            "q"
-          ) || ""
-        )
-          .trim()
-          .toLowerCase();
-
-      const currentId =
-        String(
-          url.searchParams.get(
-            "playerId"
-          ) || ""
-        );
-
-      if (
-        query.length < 1
-      ) {
-        return json({
-          ok: true,
-          players: []
-        });
-      }
-
-      const entries =
-        await this.state.storage.list(
-          {
-            prefix: "player:"
-          }
-        );
-
-      const players = [];
-
-      for (
-        const [
-          key,
-          player
-        ] of entries
-      ) {
-        if (
-          !player ||
-          player.id === currentId
-        ) {
-          continue;
-        }
-
-        const lower =
-          String(
-            player.name || ""
-          ).toLowerCase();
-
-        if (
-          lower.includes(query)
-        ) {
-          players.push({
-            id:
-              player.id,
-            name:
-              player.name,
-            online:
-              Boolean(
-                player.online
-              )
-          });
-        }
-
-        if (
-          players.length >= 20
-        ) {
-          break;
-        }
-      }
-
-      return json({
-        ok: true,
-        players
-      });
-    }
-
-    // -----------------------------
-    // GET FRIENDS
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/friends" &&
-      request.method ===
-        "GET"
-    ) {
-      const playerId =
-        String(
-          url.searchParams.get(
-            "playerId"
-          ) || ""
-        );
-
-      const friends =
-        await this.getFriends(
-          playerId
-        );
-
-      return json({
-        ok: true,
-        friends
-      });
-    }
-
-    // -----------------------------
-    // GET REQUESTS
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/requests" &&
-      request.method ===
-        "GET"
-    ) {
-      const playerId =
-        String(
-          url.searchParams.get(
-            "playerId"
-          ) || ""
-        );
-
-      const requests =
-        await this.getRequests(
-          playerId
-        );
-
-      return json({
-        ok: true,
-        requests
-      });
-    }
-
-    // -----------------------------
-    // SEND FRIEND REQUEST
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/friend-request" &&
-      request.method ===
-        "POST"
-    ) {
-      const body =
-        await readJson(
-          request
-        );
-
-      const result =
-        await this.createFriendRequest(
-          String(
-            body.fromId || ""
-          ),
-          String(
-            body.fromName || ""
-          ),
-          String(
-            body.toId || ""
-          )
-        );
-
-      return json(
-        result,
-        result.ok ? 200 : 400
-      );
-    }
-
-    // -----------------------------
-    // ACCEPT FRIEND REQUEST
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/friend-accept" &&
-      request.method ===
-        "POST"
-    ) {
-      const body =
-        await readJson(
-          request
-        );
-
-      const result =
-        await this.acceptFriendRequest(
-          String(
-            body.playerId || ""
-          ),
-          String(
-            body.fromId || ""
-          )
-        );
-
-      return json(
-        result,
-        result.ok ? 200 : 400
-      );
-    }
-
-    // -----------------------------
-    // DECLINE REQUEST
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/friend-decline" &&
-      request.method ===
-        "POST"
-    ) {
-      const body =
-        await readJson(
-          request
-        );
-
-      const result =
-        await this.declineFriendRequest(
-          String(
-            body.playerId || ""
-          ),
-          String(
-            body.fromId || ""
-          )
-        );
-
-      return json(
-        result,
-        result.ok ? 200 : 400
-      );
-    }
-
-    // -----------------------------
-    // REMOVE FRIEND
-    // -----------------------------
-
-    if (
-      path ===
-        "/social/friend-remove" &&
-      request.method ===
-        "POST"
-    ) {
-      const body =
-        await readJson(
-          request
-        );
-
-      const result =
-        await this.removeFriend(
-          String(
-            body.playerId || ""
-          ),
-          String(
-            body.friendId || ""
-          )
-        );
-
-      return json(
-        result,
-        result.ok ? 200 : 400
-      );
+      return this.openWebSocket(request);
     }
 
     return json(
       {
         ok: false,
-        error:
-          "Unknown social endpoint."
+        error: "GameHub endpoint not found."
       },
-      404
+      404,
+      request.headers.get("Origin") || ALLOWED_ORIGIN
     );
   }
 
-  // =========================================================
-  // SAVE PLAYER
-  // =========================================================
+  /*
+   * ---------------------------------------------------------
+   * PLAYER STORAGE
+   * ---------------------------------------------------------
+   */
 
-  async savePlayer(
-    playerId,
-    name,
-    online
-  ) {
-    if (!playerId) {
-      return;
-    }
+  async registerPlayer(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const body = await readJson(request);
 
-    const existing =
-      await this.state.storage.get(
-        "player:" +
-          playerId
+    const name = cleanName(body?.name);
+    let playerId = cleanId(body?.playerId);
+
+    if (!name) {
+      return json(
+        {
+          ok: false,
+          error: "A player name is required."
+        },
+        400,
+        origin
       );
+    }
 
-    await this.state.storage.put(
-      "player:" +
-        playerId,
+    if (!playerId) {
+      playerId = randomId("player_");
+    }
+
+    const existing = await this.ctx.storage.get(`player:${playerId}`);
+
+    const player = {
+      id: playerId,
+      name,
+      createdAt: existing?.createdAt || Date.now(),
+      lastSeen: Date.now()
+    };
+
+    await this.ctx.storage.put(`player:${playerId}`, player);
+
+    /*
+     * Make sure the player has a friends list and request list.
+     */
+    if (!(await this.ctx.storage.get(`friends:${playerId}`))) {
+      await this.ctx.storage.put(`friends:${playerId}`, []);
+    }
+
+    if (!(await this.ctx.storage.get(`requests:${playerId}`))) {
+      await this.ctx.storage.put(`requests:${playerId}`, []);
+    }
+
+    return json(
       {
-        id:
-          playerId,
-
-        name:
-          name ||
-          existing?.name ||
-          "Guest",
-
-        online:
-          Boolean(
-            online
-          ),
-
-        lastSeen:
-          Date.now()
-      }
+        ok: true,
+        player: normalizeUser(player)
+      },
+      200,
+      origin
     );
   }
 
-  // =========================================================
-  // GET PLAYER
-  // =========================================================
+  async getPlayer(playerId) {
+    if (!playerId) return null;
 
-  async getPlayer(
-    playerId
-  ) {
-    if (!playerId) {
-      return null;
-    }
-
-    return (
-      await this.state.storage.get(
-        "player:" +
-          playerId
-      )
-    ) || null;
+    return await this.ctx.storage.get(`player:${playerId}`);
   }
 
-  // =========================================================
-  // GET FRIENDS
-  // =========================================================
+  async searchPlayers(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const url = new URL(request.url);
 
-  async getFriends(
-    playerId
-  ) {
-    if (!playerId) {
-      return [];
+    const q = String(url.searchParams.get("q") || "")
+      .trim()
+      .toLowerCase()
+      .slice(0, 40);
+
+    const exclude = cleanId(
+      url.searchParams.get("exclude") || ""
+    );
+
+    if (!q) {
+      return json(
+        {
+          ok: true,
+          players: []
+        },
+        200,
+        origin
+      );
     }
 
-    const ids =
-      (
-        await this.state.storage.get(
-          "friends:" +
-            playerId
-        )
-      ) || [];
+    const list = await this.ctx.storage.list({
+      prefix: "player:"
+    });
 
-    const result = [];
+    const players = [];
 
-    for (
-      const friendId of ids
-    ) {
-      const friend =
-        await this.getPlayer(
-          friendId
-        );
+    for (const [, value] of list) {
+      if (!value) continue;
 
-      if (!friend) {
+      if (exclude && value.id === exclude) {
         continue;
       }
 
-      result.push({
-        id:
-          friend.id,
-
-        name:
-          friend.name,
-
-        online:
-          this.isPlayerOnline(
-            friend.id
-          ),
-
-        lastSeen:
-          friend.lastSeen ||
-          null
-      });
-    }
-
-    return result;
-  }
-
-  // =========================================================
-  // GET FRIEND REQUESTS
-  // =========================================================
-
-  async getRequests(
-    playerId
-  ) {
-    if (!playerId) {
-      return [];
-    }
-
-    return (
-      await this.state.storage.get(
-        "requests:" +
-          playerId
-      )
-    ) || [];
-  }
-
-  // =========================================================
-  // CREATE FRIEND REQUEST
-  // =========================================================
-
-  async createFriendRequest(
-    fromId,
-    fromName,
-    toId
-  ) {
-    if (
-      !fromId ||
-      !toId
-    ) {
-      return {
-        ok: false,
-        error:
-          "Missing player information."
-      };
-    }
-
-    if (
-      fromId === toId
-    ) {
-      return {
-        ok: false,
-        error:
-          "You cannot add yourself."
-      };
-    }
-
-    const from =
-      await this.getPlayer(
-        fromId
-      );
-
-    const to =
-      await this.getPlayer(
-        toId
-      );
-
-    if (!to) {
-      return {
-        ok: false,
-        error:
-          "Player not found."
-      };
-    }
-
-    const existingFriends =
-      await this.getFriendIds(
-        fromId
-      );
-
-    if (
-      existingFriends.includes(
-        toId
-      )
-    ) {
-      return {
-        ok: false,
-        error:
-          "You are already friends."
-      };
-    }
-
-    const requests =
-      await this.getRequests(
-        toId
-      );
-
-    const alreadyRequested =
-      requests.some(
-        request =>
-          request.fromId ===
-          fromId
-      );
-
-    if (
-      alreadyRequested
-    ) {
-      return {
-        ok: false,
-        error:
-          "Friend request already sent."
-      };
-    }
-
-    const request = {
-      id:
-        crypto.randomUUID(),
-
-      fromId,
-
-      fromName:
-        from?.name ||
-        fromName ||
-        "Guest",
-
-      createdAt:
-        Date.now()
-    };
-
-    requests.push(
-      request
-    );
-
-    await this.state.storage.put(
-      "requests:" +
-        toId,
-      requests
-    );
-
-    // Notify recipient instantly.
-    this.sendToPlayer(
-      toId,
-      {
-        type:
-          "friend-request",
-        request
-      }
-    );
-
-    return {
-      ok: true,
-      request
-    };
-  }
-
-  // =========================================================
-  // ACCEPT FRIEND REQUEST
-  // =========================================================
-
-  async acceptFriendRequest(
-    playerId,
-    fromId
-  ) {
-    if (
-      !playerId ||
-      !fromId
-    ) {
-      return {
-        ok: false,
-        error:
-          "Missing player information."
-      };
-    }
-
-    const requests =
-      await this.getRequests(
-        playerId
-      );
-
-    const request =
-      requests.find(
-        item =>
-          item.fromId ===
-          fromId
-      );
-
-    if (!request) {
-      return {
-        ok: false,
-        error:
-          "Friend request not found."
-      };
-    }
-
-    const player =
-      await this.getPlayer(
-        playerId
-      );
-
-    const friend =
-      await this.getPlayer(
-        fromId
-      );
-
-    if (!friend) {
-      return {
-        ok: false,
-        error:
-          "That player no longer exists."
-      };
-    }
-
-    // Remove request.
-    const remaining =
-      requests.filter(
-        item =>
-          item.fromId !==
-          fromId
-      );
-
-    await this.state.storage.put(
-      "requests:" +
-        playerId,
-      remaining
-    );
-
-    // Add both directions.
-    await this.addFriendId(
-      playerId,
-      fromId
-    );
-
-    await this.addFriendId(
-      fromId,
-      playerId
-    );
-
-    // Tell both players.
-    this.sendToPlayer(
-      playerId,
-      {
-        type:
-          "friend-accepted",
-
-        friend: {
-          id:
-            friend.id,
-
-          name:
-            friend.name,
-
-          online:
-            this.isPlayerOnline(
-              friend.id
-            )
-        }
-      }
-    );
-
-    this.sendToPlayer(
-      fromId,
-      {
-        type:
-          "friend-accepted",
-
-        friend: {
-          id:
-            player?.id,
-
-          name:
-            player?.name ||
-            "Guest",
-
-          online:
-            this.isPlayerOnline(
-              playerId
-            )
-        }
-      }
-    );
-
-    return {
-      ok: true
-    };
-  }
-
-  // =========================================================
-  // DECLINE FRIEND REQUEST
-  // =========================================================
-
-  async declineFriendRequest(
-    playerId,
-    fromId
-  ) {
-    if (
-      !playerId ||
-      !fromId
-    ) {
-      return {
-        ok: false,
-        error:
-          "Missing player information."
-      };
-    }
-
-    const requests =
-      await this.getRequests(
-        playerId
-      );
-
-    const remaining =
-      requests.filter(
-        item =>
-          item.fromId !==
-          fromId
-      );
-
-    await this.state.storage.put(
-      "requests:" +
-        playerId,
-      remaining
-    );
-
-    this.sendToPlayer(
-      fromId,
-      {
-        type:
-          "friend-declined",
-        playerId
-      }
-    );
-
-    return {
-      ok: true
-    };
-  }
-
-  // =========================================================
-  // REMOVE FRIEND
-  // =========================================================
-
-  async removeFriend(
-    playerId,
-    friendId
-  ) {
-    if (
-      !playerId ||
-      !friendId
-    ) {
-      return {
-        ok: false,
-        error:
-          "Missing player information."
-      };
-    }
-
-    await this.removeFriendId(
-      playerId,
-      friendId
-    );
-
-    await this.removeFriendId(
-      friendId,
-      playerId
-    );
-
-    this.sendToPlayer(
-      friendId,
-      {
-        type:
-          "friend-removed",
-        playerId
-      }
-    );
-
-    return {
-      ok: true
-    };
-  }
-
-  // =========================================================
-  // FRIEND ID STORAGE
-  // =========================================================
-
-  async getFriendIds(
-    playerId
-  ) {
-    return (
-      await this.state.storage.get(
-        "friends:" +
-          playerId
-      )
-    ) || [];
-  }
-
-  async addFriendId(
-    playerId,
-    friendId
-  ) {
-    const friends =
-      await this.getFriendIds(
-        playerId
-      );
-
-    if (
-      !friends.includes(
-        friendId
-      )
-    ) {
-      friends.push(
-        friendId
-      );
-    }
-
-    await this.state.storage.put(
-      "friends:" +
-        playerId,
-      friends
-    );
-  }
-
-  async removeFriendId(
-    playerId,
-    friendId
-  ) {
-    const friends =
-      await this.getFriendIds(
-        playerId
-      );
-
-    const remaining =
-      friends.filter(
-        id =>
-          id !==
-          friendId
-      );
-
-    await this.state.storage.put(
-      "friends:" +
-        playerId,
-      remaining
-    );
-  }
-
-  // =========================================================
-  // ONLINE CHECK
-  // =========================================================
-
-  isPlayerOnline(
-    playerId
-  ) {
-    return (
-      this.getConnectionsForPlayer(
-        playerId
-      ).length > 0
-    );
-  }
-
-  // =========================================================
-  // GET CONNECTIONS FOR PLAYER
-  // =========================================================
-
-  getConnectionsForPlayer(
-    playerId
-  ) {
-    const results = [];
-
-    for (
-      const [
-        connectionId,
-        client
-      ] of this.clients
-    ) {
       if (
-        client.playerId ===
-        playerId
+        String(value.name || "")
+          .toLowerCase()
+          .includes(q)
       ) {
-        results.push({
-          connectionId,
-          socket:
-            client.socket,
-          playerId:
-            client.playerId,
-          name:
-            client.name
+        players.push(normalizeUser(value));
+      }
+
+      if (players.length >= 25) {
+        break;
+      }
+    }
+
+    return json(
+      {
+        ok: true,
+        players
+      },
+      200,
+      origin
+    );
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * FRIENDS
+   * ---------------------------------------------------------
+   */
+
+  async getFriends(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const url = new URL(request.url);
+
+    const playerId = cleanId(
+      url.searchParams.get("playerId")
+    );
+
+    if (!playerId) {
+      return json(
+        {
+          ok: false,
+          error: "playerId is required."
+        },
+        400,
+        origin
+      );
+    }
+
+    const friendIds =
+      (await this.ctx.storage.get(`friends:${playerId}`)) || [];
+
+    const friends = [];
+
+    for (const friendId of friendIds) {
+      const friend = await this.getPlayer(friendId);
+
+      if (friend) {
+        friends.push({
+          ...normalizeUser(friend),
+          online: this.isPlayerOnline(friend.id)
         });
       }
     }
 
-    return results;
+    return json(
+      {
+        ok: true,
+        friends
+      },
+      200,
+      origin
+    );
   }
 
-  // =========================================================
-  // SEND TO PLAYER
-  // =========================================================
+  async getRequests(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const url = new URL(request.url);
 
-  sendToPlayer(
-    playerId,
-    data
-  ) {
-    const connections =
-      this.getConnectionsForPlayer(
-        playerId
-      );
+    const playerId = cleanId(
+      url.searchParams.get("playerId")
+    );
 
-    for (
-      const connection of
-        connections
-    ) {
-      this.send(
-        connection.socket,
-        data
+    if (!playerId) {
+      return json(
+        {
+          ok: false,
+          error: "playerId is required."
+        },
+        400,
+        origin
       );
     }
+
+    const requestIds =
+      (await this.ctx.storage.get(`requests:${playerId}`)) || [];
+
+    const requests = [];
+
+    for (const requesterId of requestIds) {
+      const requester = await this.getPlayer(requesterId);
+
+      if (requester) {
+        requests.push({
+          ...normalizeUser(requester),
+          online: this.isPlayerOnline(requester.id)
+        });
+      }
+    }
+
+    return json(
+      {
+        ok: true,
+        requests
+      },
+      200,
+      origin
+    );
   }
 
-  // =========================================================
-  // SEND
-  // =========================================================
+  async friendRequest(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const body = await readJson(request);
 
-  send(
-    socket,
-    data
-  ) {
-    if (!socket) {
+    const fromId = cleanId(body?.fromId);
+    const toId = cleanId(body?.toId);
+
+    if (!fromId || !toId) {
+      return json(
+        {
+          ok: false,
+          error: "Both fromId and toId are required."
+        },
+        400,
+        origin
+      );
+    }
+
+    if (fromId === toId) {
+      return json(
+        {
+          ok: false,
+          error: "You cannot add yourself."
+        },
+        400,
+        origin
+      );
+    }
+
+    const from = await this.getPlayer(fromId);
+    const to = await this.getPlayer(toId);
+
+    if (!from || !to) {
+      return json(
+        {
+          ok: false,
+          error: "Player not found."
+        },
+        404,
+        origin
+      );
+    }
+
+    const fromFriends =
+      (await this.ctx.storage.get(`friends:${fromId}`)) || [];
+
+    const toFriends =
+      (await this.ctx.storage.get(`friends:${toId}`)) || [];
+
+    if (
+      fromFriends.includes(toId) ||
+      toFriends.includes(fromId)
+    ) {
+      return json(
+        {
+          ok: false,
+          error: "You are already friends."
+        },
+        409,
+        origin
+      );
+    }
+
+    const requests =
+      (await this.ctx.storage.get(`requests:${toId}`)) || [];
+
+    if (requests.includes(fromId)) {
+      return json(
+        {
+          ok: false,
+          error: "Friend request already sent."
+        },
+        409,
+        origin
+      );
+    }
+
+    requests.push(fromId);
+
+    await this.ctx.storage.put(
+      `requests:${toId}`,
+      [...new Set(requests)]
+    );
+
+    /*
+     * Immediately notify the target if they are online.
+     */
+    this.sendToPlayer(toId, {
+      type: "friend-request",
+      from: normalizeUser(from)
+    });
+
+    return json(
+      {
+        ok: true
+      },
+      200,
+      origin
+    );
+  }
+
+  async friendAccept(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const body = await readJson(request);
+
+    const playerId = cleanId(body?.playerId);
+    const requesterId = cleanId(body?.requesterId);
+
+    if (!playerId || !requesterId) {
+      return json(
+        {
+          ok: false,
+          error: "playerId and requesterId are required."
+        },
+        400,
+        origin
+      );
+    }
+
+    const player = await this.getPlayer(playerId);
+    const requester = await this.getPlayer(requesterId);
+
+    if (!player || !requester) {
+      return json(
+        {
+          ok: false,
+          error: "Player not found."
+        },
+        404,
+        origin
+      );
+    }
+
+    let requests =
+      (await this.ctx.storage.get(`requests:${playerId}`)) || [];
+
+    requests = requests.filter(
+      id => id !== requesterId
+    );
+
+    await this.ctx.storage.put(
+      `requests:${playerId}`,
+      requests
+    );
+
+    const playerFriends =
+      (await this.ctx.storage.get(`friends:${playerId}`)) || [];
+
+    const requesterFriends =
+      (await this.ctx.storage.get(`friends:${requesterId}`)) || [];
+
+    if (!playerFriends.includes(requesterId)) {
+      playerFriends.push(requesterId);
+    }
+
+    if (!requesterFriends.includes(playerId)) {
+      requesterFriends.push(playerId);
+    }
+
+    await this.ctx.storage.put(
+      `friends:${playerId}`,
+      [...new Set(playerFriends)]
+    );
+
+    await this.ctx.storage.put(
+      `friends:${requesterId}`,
+      [...new Set(requesterFriends)]
+    );
+
+    this.sendToPlayer(requesterId, {
+      type: "friend-accepted",
+      friend: normalizeUser(player)
+    });
+
+    this.sendToPlayer(playerId, {
+      type: "friend-accepted",
+      friend: normalizeUser(requester)
+    });
+
+    return json(
+      {
+        ok: true
+      },
+      200,
+      origin
+    );
+  }
+
+  async friendDecline(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const body = await readJson(request);
+
+    const playerId = cleanId(body?.playerId);
+    const requesterId = cleanId(body?.requesterId);
+
+    if (!playerId || !requesterId) {
+      return json(
+        {
+          ok: false,
+          error: "playerId and requesterId are required."
+        },
+        400,
+        origin
+      );
+    }
+
+    let requests =
+      (await this.ctx.storage.get(`requests:${playerId}`)) || [];
+
+    requests = requests.filter(
+      id => id !== requesterId
+    );
+
+    await this.ctx.storage.put(
+      `requests:${playerId}`,
+      requests
+    );
+
+    this.sendToPlayer(requesterId, {
+      type: "friend-declined",
+      playerId
+    });
+
+    return json(
+      {
+        ok: true
+      },
+      200,
+      origin
+    );
+  }
+
+  async friendRemove(request) {
+    const origin = request.headers.get("Origin") || ALLOWED_ORIGIN;
+    const body = await readJson(request);
+
+    const playerId = cleanId(body?.playerId);
+    const friendId = cleanId(body?.friendId);
+
+    if (!playerId || !friendId) {
+      return json(
+        {
+          ok: false,
+          error: "playerId and friendId are required."
+        },
+        400,
+        origin
+      );
+    }
+
+    let friends =
+      (await this.ctx.storage.get(`friends:${playerId}`)) || [];
+
+    friends = friends.filter(
+      id => id !== friendId
+    );
+
+    await this.ctx.storage.put(
+      `friends:${playerId}`,
+      friends
+    );
+
+    let otherFriends =
+      (await this.ctx.storage.get(`friends:${friendId}`)) || [];
+
+    otherFriends = otherFriends.filter(
+      id => id !== playerId
+    );
+
+    await this.ctx.storage.put(
+      `friends:${friendId}`,
+      otherFriends
+    );
+
+    this.sendToPlayer(friendId, {
+      type: "friend-removed",
+      playerId
+    });
+
+    return json(
+      {
+        ok: true
+      },
+      200,
+      origin
+    );
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * WEBSOCKET CONNECTIONS
+   * ---------------------------------------------------------
+   */
+
+  async openWebSocket(request) {
+    const url = new URL(request.url);
+
+    let playerId = cleanId(
+      url.searchParams.get("playerId")
+    );
+
+    let name = cleanName(
+      url.searchParams.get("name")
+    );
+
+    if (!playerId) {
+      playerId = randomId("player_");
+    }
+
+    if (!name) {
+      name = "Guest";
+    }
+
+    /*
+     * Save/update player information.
+     */
+    const existing = await this.getPlayer(playerId);
+
+    const player = {
+      id: playerId,
+      name,
+      createdAt: existing?.createdAt || Date.now(),
+      lastSeen: Date.now()
+    };
+
+    await this.ctx.storage.put(
+      `player:${playerId}`,
+      player
+    );
+
+    /*
+     * Create WebSocket pair.
+     */
+    const pair = new WebSocketPair();
+
+    const client = pair[0];
+    const server = pair[1];
+
+    const connectionId = randomId("connection_");
+
+    const attachment = {
+      connectionId,
+      playerId,
+      name
+    };
+
+    /*
+     * Hibernation-compatible WebSocket.
+     */
+    this.ctx.acceptWebSocket(server);
+
+    server.serializeAttachment(attachment);
+
+    this.connections.set(server, attachment);
+
+    /*
+     * Tell the new player who they are.
+     */
+    this.safeSend(server, {
+      type: "connected",
+      player: {
+        id: playerId,
+        name
+      },
+      connectionId
+    });
+
+    /*
+     * Send current online players.
+     */
+    this.sendOnlineListTo(server);
+
+    /*
+     * Tell everyone else that this player joined.
+     */
+    this.broadcast(
+      {
+        type: "presence",
+        action: "online",
+        player: {
+          id: playerId,
+          name
+        },
+        connectionId
+      },
+      server
+    );
+
+    return new Response(null, {
+      status: 101,
+      webSocket: client
+    });
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * WEBSOCKET MESSAGE HANDLER
+   * ---------------------------------------------------------
+   */
+
+  async webSocketMessage(ws, message) {
+    const info = this.getConnectionInfo(ws);
+
+    if (!info) {
+      this.safeSend(ws, {
+        type: "error",
+        message: "Connection information was lost."
+      });
+
       return;
     }
 
+    let data;
+
     try {
-      socket.send(
-        JSON.stringify(
-          data
-        )
-      );
+      data =
+        typeof message === "string"
+          ? JSON.parse(message)
+          : JSON.parse(new TextDecoder().decode(message));
     } catch {
-      // Socket closed.
+      this.safeSend(ws, {
+        type: "error",
+        message: "Invalid message."
+      });
+
+      return;
+    }
+
+    if (!data || typeof data !== "object") {
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * PING
+     * -------------------------------------------------------
+     */
+
+    if (data.type === "ping") {
+      this.safeSend(ws, {
+        type: "pong",
+        time: Date.now()
+      });
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * PROFILE UPDATE
+     * -------------------------------------------------------
+     */
+
+    if (data.type === "set-profile") {
+      const name = cleanName(data.name);
+
+      if (!name) return;
+
+      const player = await this.getPlayer(info.playerId);
+
+      const updated = {
+        id: info.playerId,
+        name,
+        createdAt: player?.createdAt || Date.now(),
+        lastSeen: Date.now()
+      };
+
+      await this.ctx.storage.put(
+        `player:${info.playerId}`,
+        updated
+      );
+
+      info.name = name;
+
+      ws.serializeAttachment(info);
+
+      this.safeSend(ws, {
+        type: "profile-updated",
+        player: normalizeUser(updated)
+      });
+
+      this.broadcast({
+        type: "profile-updated",
+        player: normalizeUser(updated)
+      });
+
+      this.sendOnlineListToAll();
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * GLOBAL CHAT
+     * -------------------------------------------------------
+     */
+
+    if (
+      data.type === "chat" ||
+      data.type === "global-chat"
+    ) {
+      const text = String(data.message || "")
+        .trim()
+        .slice(0, 1000);
+
+      if (!text) return;
+
+      const payload = {
+        type: "chat",
+        message: text,
+        from: {
+          id: info.playerId,
+          name: info.name
+        },
+        time: Date.now()
+      };
+
+      this.broadcast(payload);
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * PRIVATE MESSAGE
+     * -------------------------------------------------------
+     */
+
+    if (
+      data.type === "message" ||
+      data.type === "private-message"
+    ) {
+      const text = String(data.message || "")
+        .trim()
+        .slice(0, 4000);
+
+      const targetPlayerId = cleanId(
+        data.targetPlayerId ||
+        data.to ||
+        data.target
+      );
+
+      if (!text || !targetPlayerId) return;
+
+      const targetWs =
+        this.findSocketByPlayerId(targetPlayerId);
+
+      if (!targetWs) {
+        this.safeSend(ws, {
+          type: "message-failed",
+          reason: "offline",
+          targetPlayerId
+        });
+
+        return;
+      }
+
+      const messagePayload = {
+        type: "message",
+        message: text,
+        from: {
+          id: info.playerId,
+          name: info.name
+        },
+        to: targetPlayerId,
+        time: Date.now()
+      };
+
+      this.safeSend(targetWs, messagePayload);
+
+      /*
+       * Echo the message back to the sender so the sender's
+       * UI can immediately display it.
+       */
+      this.safeSend(ws, {
+        ...messagePayload,
+        own: true
+      });
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * CALL REQUEST
+     *
+     * The frontend can use a stable playerId.
+     *
+     * The server finds the current live WebSocket automatically.
+     * -------------------------------------------------------
+     */
+
+    if (
+      data.type === "call-request" ||
+      data.type === "call-invite"
+    ) {
+      const targetPlayerId = cleanId(
+        data.targetPlayerId ||
+        data.target
+      );
+
+      if (!targetPlayerId) return;
+
+      const targetWs =
+        this.findSocketByPlayerId(targetPlayerId);
+
+      if (!targetWs) {
+        this.safeSend(ws, {
+          type: "call-failed",
+          reason: "offline",
+          targetPlayerId
+        });
+
+        return;
+      }
+
+      this.safeSend(targetWs, {
+        type: "incoming-call",
+        from: {
+          id: info.playerId,
+          name: info.name
+        },
+        callerPlayerId: info.playerId,
+        targetPlayerId,
+        callId: data.callId || randomId("call_"),
+        mode: data.mode === "video" ? "video" : "audio"
+      });
+
+      this.safeSend(ws, {
+        type: "call-request-sent",
+        targetPlayerId
+      });
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * WEBRTC OFFER
+     * -------------------------------------------------------
+     *
+     * IMPORTANT:
+     * The frontend sends targetPlayerId.
+     * It does NOT need to know the temporary WebSocket
+     * connection ID.
+     */
+
+    if (data.type === "call-offer") {
+      await this.relayCallMessage(
+        ws,
+        info,
+        data,
+        "call-offer"
+      );
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * WEBRTC ANSWER
+     * -------------------------------------------------------
+     */
+
+    if (data.type === "call-answer") {
+      await this.relayCallMessage(
+        ws,
+        info,
+        data,
+        "call-answer"
+      );
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * WEBRTC CANDIDATE
+     * -------------------------------------------------------
+     */
+
+    if (
+      data.type === "ice-candidate" ||
+      data.type === "candidate"
+    ) {
+      await this.relayCallMessage(
+        ws,
+        info,
+        data,
+        "ice-candidate"
+      );
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * CALL ACCEPTED
+     * -------------------------------------------------------
+     */
+
+    if (data.type === "call-accepted") {
+      await this.relayCallMessage(
+        ws,
+        info,
+        data,
+        "call-accepted"
+      );
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * CALL DECLINED
+     * -------------------------------------------------------
+     */
+
+    if (data.type === "call-declined") {
+      await this.relayCallMessage(
+        ws,
+        info,
+        data,
+        "call-declined"
+      );
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * CALL ENDED
+     * -------------------------------------------------------
+     */
+
+    if (
+      data.type === "call-end" ||
+      data.type === "call-ended"
+    ) {
+      await this.relayCallMessage(
+        ws,
+        info,
+        data,
+        "call-ended"
+      );
+
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * REQUEST CURRENT ONLINE LIST
+     * -------------------------------------------------------
+     */
+
+    if (
+      data.type === "get-online" ||
+      data.type === "get-presence"
+    ) {
+      this.sendOnlineListTo(ws);
+      return;
+    }
+
+    /*
+     * -------------------------------------------------------
+     * SERVER / GAME EVENT
+     * -------------------------------------------------------
+     */
+
+    if (data.type === "server-event") {
+      const payload = {
+        type: "server-event",
+        event: String(data.event || "").slice(0, 100),
+        data: data.data || {},
+        from: {
+          id: info.playerId,
+          name: info.name
+        },
+        time: Date.now()
+      };
+
+      this.broadcast(payload);
+
+      return;
     }
   }
 
-  // =========================================================
-  // BROADCAST
-  // =========================================================
+  /*
+   * ---------------------------------------------------------
+   * CALL RELAY
+   * ---------------------------------------------------------
+   */
 
-  broadcast(
-    data,
-    exceptId = null
-  ) {
-    for (
-      const [
-        id,
-        client
-      ] of this.clients
-    ) {
+  async relayCallMessage(ws, info, data, type) {
+    const targetPlayerId = cleanId(
+      data.targetPlayerId ||
+      data.targetPlayer ||
+      data.target
+    );
+
+    if (!targetPlayerId) {
+      this.safeSend(ws, {
+        type: "call-failed",
+        reason: "missing-target"
+      });
+
+      return;
+    }
+
+    if (targetPlayerId === info.playerId) {
+      this.safeSend(ws, {
+        type: "call-failed",
+        reason: "self"
+      });
+
+      return;
+    }
+
+    const targetWs =
+      this.findSocketByPlayerId(targetPlayerId);
+
+    if (!targetWs) {
+      this.safeSend(ws, {
+        type: "call-failed",
+        reason: "offline",
+        targetPlayerId
+      });
+
+      return;
+    }
+
+    /*
+     * Never forward internal connection IDs to the client.
+     *
+     * The receiver only needs to know who sent the signal.
+     */
+    const payload = {
+      ...data,
+      type,
+      fromPlayerId: info.playerId,
+      from: {
+        id: info.playerId,
+        name: info.name
+      },
+      targetPlayerId,
+      time: Date.now()
+    };
+
+    delete payload.target;
+
+    this.safeSend(targetWs, payload);
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * CONNECTION LOOKUPS
+   * ---------------------------------------------------------
+   */
+
+  getConnectionInfo(ws) {
+    let info = this.connections.get(ws);
+
+    if (info) {
+      return info;
+    }
+
+    try {
+      info = ws.deserializeAttachment();
+
+      if (info?.connectionId) {
+        this.connections.set(ws, info);
+        return info;
+      }
+    } catch {
+      // Ignore malformed attachment.
+    }
+
+    return null;
+  }
+
+  findSocketByPlayerId(playerId) {
+    const wanted = cleanId(playerId);
+
+    if (!wanted) return null;
+
+    for (const [ws, info] of this.connections.entries()) {
       if (
-        id === exceptId
+        info?.playerId === wanted &&
+        ws.readyState === WebSocket.OPEN
+      ) {
+        return ws;
+      }
+    }
+
+    /*
+     * If this object woke from hibernation, rebuild the map.
+     */
+    for (const ws of this.ctx.getWebSockets()) {
+      const info = ws.deserializeAttachment();
+
+      if (
+        info?.playerId === wanted &&
+        ws.readyState === WebSocket.OPEN
+      ) {
+        this.connections.set(ws, info);
+        return ws;
+      }
+    }
+
+    return null;
+  }
+
+  isPlayerOnline(playerId) {
+    return !!this.findSocketByPlayerId(playerId);
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * ONLINE PLAYER LIST
+   * ---------------------------------------------------------
+   */
+
+  getOnlinePlayers() {
+    const players = [];
+
+    /*
+     * First rebuild any connections that aren't currently
+     * represented in the in-memory Map.
+     */
+    for (const ws of this.ctx.getWebSockets()) {
+      const info = ws.deserializeAttachment();
+
+      if (!info?.playerId) continue;
+
+      this.connections.set(ws, info);
+
+      if (ws.readyState !== WebSocket.OPEN) {
+        continue;
+      }
+
+      players.push({
+        id: info.playerId,
+        playerId: info.playerId,
+        name: info.name,
+        connectionId: info.connectionId,
+        online: true
+      });
+    }
+
+    return players;
+  }
+
+  sendOnlineListTo(ws) {
+    this.safeSend(ws, {
+      type: "online",
+      players: this.getOnlinePlayers()
+    });
+  }
+
+  sendOnlineListToAll() {
+    const players = this.getOnlinePlayers();
+
+    this.broadcast({
+      type: "online",
+      players
+    });
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * SEND / BROADCAST
+   * ---------------------------------------------------------
+   */
+
+  safeSend(ws, payload) {
+    try {
+      if (
+        ws &&
+        ws.readyState === WebSocket.OPEN
+      ) {
+        ws.send(JSON.stringify(payload));
+        return true;
+      }
+    } catch {
+      // Connection disappeared.
+    }
+
+    return false;
+  }
+
+  broadcast(payload, exceptWs = null) {
+    const serialized = JSON.stringify(payload);
+
+    for (const ws of this.ctx.getWebSockets()) {
+      if (
+        ws === exceptWs ||
+        ws.readyState !== WebSocket.OPEN
       ) {
         continue;
       }
 
-      this.send(
-        client.socket,
-        data
-      );
+      try {
+        ws.send(serialized);
+      } catch {
+        // Ignore dead connection.
+      }
     }
   }
 
-  // =========================================================
-  // ONLINE PLAYERS
-  // =========================================================
+  sendToPlayer(playerId, payload) {
+    const ws = this.findSocketByPlayerId(playerId);
 
-  getPlayers() {
-    const unique =
-      new Map();
+    if (!ws) {
+      return false;
+    }
 
-    for (
-      const [
-        connectionId,
-        client
-      ] of this.clients
-    ) {
-      if (
-        !unique.has(
-          client.playerId
-        )
-      ) {
-        unique.set(
-          client.playerId,
-          {
-            id:
-              connectionId,
+    return this.safeSend(ws, payload);
+  }
 
-            playerId:
-              client.playerId,
+  /*
+   * ---------------------------------------------------------
+   * WEBSOCKET CLOSE
+   * ---------------------------------------------------------
+   */
 
-            name:
-              client.name,
+  async webSocketClose(ws, code, reason, wasClean) {
+    const info = this.getConnectionInfo(ws);
 
-            online:
-              true
-          }
+    this.connections.delete(ws);
+
+    if (!info) {
+      return;
+    }
+
+    /*
+     * Only announce offline if that player doesn't have
+     * another active connection.
+     */
+    const stillOnline =
+      !!this.findSocketByPlayerId(info.playerId);
+
+    if (!stillOnline) {
+      const player = await this.getPlayer(info.playerId);
+
+      if (player) {
+        player.lastSeen = Date.now();
+
+        await this.ctx.storage.put(
+          `player:${info.playerId}`,
+          player
         );
       }
+
+      this.broadcast({
+        type: "presence",
+        action: "offline",
+        player: {
+          id: info.playerId,
+          name: info.name
+        }
+      });
     }
 
-    return [
-      ...unique.values()
-    ];
+    this.sendOnlineListToAll();
   }
-}
 
-// =========================================================
-// HELPERS
-// =========================================================
-
-function corsHeaders() {
-  return {
-    "Access-Control-Allow-Origin":
-      ALLOWED_ORIGIN,
-
-    "Access-Control-Allow-Methods":
-      "GET, POST, OPTIONS",
-
-    "Access-Control-Allow-Headers":
-      "Content-Type",
-
-    "Access-Control-Max-Age":
-      "86400"
-  };
-}
-
-function json(
-  data,
-  status = 200
-) {
-  return new Response(
-    JSON.stringify(
-      data,
-      null,
-      2
-    ),
-    {
-      status,
-
-      headers: {
-        "content-type":
-          "application/json; charset=utf-8",
-
-        "cache-control":
-          "no-store",
-
-        ...corsHeaders()
-      }
-    }
-  );
-}
-
-async function readJson(
-  request
-) {
-  try {
-    return await request.json();
-  } catch {
-    return {};
+  webSocketError(ws, error) {
+    this.connections.delete(ws);
   }
 }
