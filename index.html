@@ -3,4070 +3,2268 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GAMEHUB</title>
-<meta name="theme-color" content="#08090d">
-<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#07080d">
+<title>GameHub</title>
 
 <style>
-*{
-    box-sizing:border-box;
-}
-
+*{box-sizing:border-box}
 :root{
-    --bg:#07080c;
-    --bg2:#0d1017;
-    --panel:#11151e;
-    --panel2:#171c27;
-    --panel3:#1d2330;
-    --text:#f4f7fb;
-    --muted:#8e98aa;
-    --line:rgba(255,255,255,.08);
-    --accent:#7c5cff;
-    --accent2:#a78bfa;
-    --green:#38d996;
-    --red:#ff5263;
-    --yellow:#ffc857;
-    --radius:18px;
+  --bg:#07080d;
+  --panel:#0d0f17;
+  --panel2:#11141e;
+  --line:#202532;
+  --text:#f4f6fb;
+  --muted:#858da0;
+  --accent:#8b5cf6;
+  --accent2:#22d3ee;
+  --green:#36e39b;
+  --red:#ff526d;
 }
-
-html,
-body{
-    margin:0;
-    min-height:100%;
-    background:var(--bg);
-    color:var(--text);
-    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
 }
-
-body{
-    overflow-x:hidden;
+body{overflow-x:hidden}
+button,input{
+  font:inherit;
 }
+button{cursor:pointer}
 
-button,
-input{
-    font:inherit;
+#boot{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#05060a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.7s ease;
 }
-
-button{
-    border:0;
+#boot.hide{
+  opacity:0;
+  pointer-events:none;
 }
-
-button,
-.game-card,
-.server,
-.friend,
-.nav-item{
-    -webkit-tap-highlight-color:transparent;
+.boot-box{
+  width:min(620px,90vw);
+  text-align:left;
 }
-
-button:focus-visible,
-input:focus-visible{
-    outline:2px solid var(--accent2);
-    outline-offset:2px;
-}
-
-/* =========================
-   STARTUP
-========================= */
-
-#startup{
-    position:fixed;
-    inset:0;
-    z-index:99999;
-    background:
-        radial-gradient(circle at 50% 35%,rgba(124,92,255,.18),transparent 30%),
-        #05060a;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:opacity .6s ease,visibility .6s ease;
-}
-
-#startup.hide{
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-}
-
-.boot{
-    width:min(720px,88vw);
-}
-
-.boot-top{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin-bottom:28px;
-}
-
 .boot-logo{
-    width:46px;
-    height:46px;
-    border-radius:14px;
-    display:grid;
-    place-items:center;
-    background:linear-gradient(135deg,#8b6cff,#5436dc);
-    box-shadow:0 0 40px rgba(124,92,255,.35);
-    font-size:22px;
+  font-size:52px;
+  font-weight:900;
+  letter-spacing:-3px;
+  margin-bottom:8px;
 }
-
-.boot-title{
-    font-size:17px;
-    font-weight:800;
-    letter-spacing:.18em;
-}
-
-.boot-sub{
-    color:#687284;
-    font-size:11px;
-    letter-spacing:.16em;
-    margin-top:3px;
-}
-
-.boot-line{
-    height:1px;
-    background:rgba(255,255,255,.1);
-    position:relative;
-    overflow:hidden;
-}
-
-.boot-line::after{
-    content:"";
-    position:absolute;
-    left:-30%;
-    top:0;
-    width:30%;
-    height:100%;
-    background:var(--accent);
-    animation:bootLine 1.7s infinite;
-}
-
-@keyframes bootLine{
-    from{left:-30%}
-    to{left:100%}
-}
-
+.boot-logo span{color:var(--accent)}
 .boot-status{
-    margin-top:17px;
-    color:#7e8798;
-    font-family:monospace;
-    font-size:12px;
+  color:#8b93a6;
+  font-family:monospace;
+  font-size:13px;
+  margin-bottom:22px;
 }
-
-.boot-status span{
-    color:#a78bfa;
+.boot-bar{
+  height:4px;
+  background:#171a23;
+  overflow:hidden;
 }
-
-/* =========================
-   APP
-========================= */
-
-#app{
-    min-height:100vh;
-    display:flex;
-    opacity:0;
-    transform:translateY(8px);
-    transition:opacity .6s ease,transform .6s ease;
+.boot-fill{
+  width:0;
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  animation:boot 1.5s ease forwards;
 }
+@keyframes boot{to{width:100%}}
 
-#app.ready{
-    opacity:1;
-    transform:none;
+.app{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:78px 1fr;
 }
-
-/* =========================
-   SIDEBAR
-========================= */
-
 .sidebar{
-    position:fixed;
-    left:0;
-    top:0;
-    bottom:0;
-    width:245px;
-    background:
-        linear-gradient(180deg,rgba(18,21,29,.98),rgba(8,10,14,.98));
-    border-right:1px solid var(--line);
-    padding:20px 14px;
-    z-index:100;
-    display:flex;
-    flex-direction:column;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:78px;
+  z-index:100;
+  background:rgba(8,9,14,.94);
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:17px 10px;
+  backdrop-filter:blur(20px);
 }
-
 .brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:5px 10px 22px;
+  width:48px;
+  height:48px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  font-weight:950;
+  background:linear-gradient(145deg,#8b5cf6,#22d3ee);
+  color:white;
+  box-shadow:0 8px 30px #8b5cf633;
+  margin-bottom:30px;
 }
-
-.brand-icon{
-    width:40px;
-    height:40px;
-    border-radius:13px;
-    display:grid;
-    place-items:center;
-    background:linear-gradient(135deg,#8061ff,#4c31d7);
-    font-weight:900;
-    box-shadow:0 12px 35px rgba(91,61,230,.25);
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  width:100%;
 }
-
-.brand-name{
-    font-weight:900;
-    letter-spacing:.08em;
+.nav button{
+  width:100%;
+  height:48px;
+  border:0;
+  border-radius:14px;
+  color:#727a8d;
+  background:transparent;
+  font-size:20px;
+  transition:.2s;
 }
-
-.brand-version{
-    color:#697386;
-    font-size:10px;
-    margin-top:2px;
+.nav button:hover,
+.nav button.active{
+  background:#171a25;
+  color:white;
 }
-
-.nav-title{
-    color:#555f71;
-    font-size:10px;
-    font-weight:800;
-    letter-spacing:.14em;
-    padding:17px 12px 8px;
+.nav button.active{
+  box-shadow:inset 3px 0 var(--accent);
 }
-
-.nav-item{
-    width:100%;
-    padding:11px 12px;
-    border-radius:11px;
-    background:transparent;
-    color:#929bac;
-    text-align:left;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    cursor:pointer;
-    transition:.18s ease;
-    margin-bottom:3px;
-}
-
-.nav-item:hover{
-    background:rgba(255,255,255,.045);
-    color:white;
-}
-
-.nav-item.active{
-    background:rgba(124,92,255,.14);
-    color:white;
-}
-
-.nav-icon{
-    width:20px;
-    text-align:center;
-    font-size:16px;
-}
-
-.nav-badge{
-    margin-left:auto;
-    min-width:20px;
-    height:20px;
-    padding:0 6px;
-    border-radius:20px;
-    background:#ef476f;
-    color:white;
-    font-size:10px;
-    font-weight:800;
-    display:grid;
-    place-items:center;
-}
-
 .sidebar-bottom{
-    margin-top:auto;
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  width:100%;
+}
+.status-dot{
+  position:absolute;
+  right:5px;
+  top:5px;
+  width:8px;
+  height:8px;
+  background:var(--green);
+  border-radius:50%;
+  box-shadow:0 0 10px var(--green);
 }
 
-.user-mini{
-    padding:11px;
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.025);
-    border-radius:15px;
-    display:flex;
-    align-items:center;
-    gap:10px;
+main{
+  grid-column:2;
+  min-width:0;
 }
-
-.avatar{
-    width:34px;
-    height:34px;
-    border-radius:11px;
-    display:grid;
-    place-items:center;
-    background:linear-gradient(135deg,#343a49,#1f2430);
-    font-size:14px;
-    font-weight:800;
-}
-
-.user-name{
-    font-size:12px;
-    font-weight:800;
-}
-
-.user-status{
-    font-size:10px;
-    color:var(--green);
-    margin-top:2px;
-}
-
-/* =========================
-   MAIN
-========================= */
-
-.main{
-    margin-left:245px;
-    width:calc(100% - 245px);
-    min-height:100vh;
-}
-
 .topbar{
-    height:72px;
-    border-bottom:1px solid var(--line);
-    display:flex;
-    align-items:center;
-    padding:0 30px;
-    gap:16px;
-    background:rgba(7,8,12,.72);
-    backdrop-filter:blur(18px);
-    position:sticky;
-    top:0;
-    z-index:90;
+  height:72px;
+  position:sticky;
+  top:0;
+  z-index:80;
+  background:rgba(7,8,13,.78);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  backdrop-filter:blur(22px);
+  display:flex;
+  align-items:center;
+  padding:0 32px;
+  gap:20px;
 }
-
 .search{
-    width:min(500px,45vw);
-    position:relative;
+  flex:1;
+  max-width:600px;
+  position:relative;
 }
-
 .search input{
-    width:100%;
-    border:1px solid var(--line);
-    background:#11141b;
-    color:white;
-    border-radius:12px;
-    padding:11px 15px 11px 40px;
-    outline:none;
-    transition:.2s;
+  width:100%;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#10121a;
+  color:white;
+  outline:none;
+  padding:0 16px 0 42px;
 }
-
 .search input:focus{
-    border-color:rgba(124,92,255,.65);
-    background:#151925;
+  border-color:#6d4bc5;
 }
-
-.search-icon{
-    position:absolute;
-    left:14px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#697386;
+.search span{
+  position:absolute;
+  left:15px;
+  top:10px;
+  color:#737b8c;
 }
-
-.top-actions{
-    margin-left:auto;
-    display:flex;
-    gap:8px;
+.top-right{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
-
-.top-btn{
-    width:40px;
-    height:40px;
-    border-radius:11px;
-    background:#12161e;
-    color:#9ba5b6;
-    cursor:pointer;
-    border:1px solid var(--line);
-    position:relative;
+.icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:#10121a;
+  color:#c6ccda;
+  border:1px solid var(--line);
+  position:relative;
 }
-
-.top-btn:hover{
-    color:white;
-    background:#191e28;
+.icon-btn:hover{background:#171a24;color:white}
+.badge{
+  position:absolute;
+  right:-4px;
+  top:-4px;
+  min-width:17px;
+  height:17px;
+  border-radius:10px;
+  background:var(--red);
+  color:white;
+  font-size:10px;
+  display:grid;
+  place-items:center;
+  padding:0 4px;
 }
-
-.notification-dot{
-    position:absolute;
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:#ff4d6d;
-    right:8px;
-    top:7px;
+.user-pill{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:5px 12px 5px 5px;
+  background:#10121a;
+  border:1px solid var(--line);
+  border-radius:14px;
+  cursor:pointer;
 }
-
-/* =========================
-   PAGE
-========================= */
+.avatar{
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  font-weight:800;
+  color:white;
+  background:linear-gradient(135deg,#8b5cf6,#22d3ee);
+}
+.user-name{
+  font-size:13px;
+  font-weight:700;
+  max-width:130px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
 
 .page{
-    padding:30px;
-    max-width:1700px;
-    margin:auto;
+  padding:30px 34px 70px;
+  max-width:1500px;
+  margin:auto;
 }
-
-.view{
-    display:none;
-}
-
-.view.active{
-    display:block;
-}
-
-/* =========================
-   HERO
-========================= */
+.view{display:none}
+.view.active{display:block}
 
 .hero{
-    min-height:360px;
-    border:1px solid var(--line);
-    border-radius:25px;
-    overflow:hidden;
-    position:relative;
-    background:
-        radial-gradient(circle at 75% 20%,rgba(124,92,255,.33),transparent 30%),
-        radial-gradient(circle at 90% 80%,rgba(0,207,255,.12),transparent 30%),
-        linear-gradient(120deg,#141827,#0c0f16 60%,#111426);
-    display:flex;
-    align-items:flex-end;
-    padding:38px;
-    box-shadow:0 25px 80px rgba(0,0,0,.22);
+  min-height:390px;
+  border:1px solid var(--line);
+  border-radius:26px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+  padding:42px;
+  background:
+    radial-gradient(circle at 80% 20%,#693bd655,transparent 30%),
+    radial-gradient(circle at 60% 90%,#22d3ee20,transparent 35%),
+    linear-gradient(120deg,#111426,#090a0f 65%);
 }
-
-.hero::before{
-    content:"";
-    position:absolute;
-    width:460px;
-    height:460px;
-    right:-80px;
-    top:-140px;
-    border-radius:50%;
-    border:1px solid rgba(167,139,250,.16);
-    box-shadow:
-        0 0 0 55px rgba(167,139,250,.025),
-        0 0 0 110px rgba(167,139,250,.02);
+.hero:before{
+  content:"";
+  position:absolute;
+  width:420px;
+  height:420px;
+  border-radius:50%;
+  right:-130px;
+  top:-150px;
+  border:1px solid #ffffff10;
+  box-shadow:0 0 100px #8b5cf622;
 }
-
-.hero-grid{
-    position:absolute;
-    inset:0;
-    opacity:.18;
-    background-image:
-        linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
-    background-size:42px 42px;
-    mask-image:linear-gradient(to right,black,transparent 80%);
+.hero-content{position:relative;z-index:2;max-width:670px}
+.eyebrow{
+  color:#a995e8;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
 }
-
-.hero-content{
-    position:relative;
-    z-index:2;
-    max-width:650px;
-}
-
-.hero-kicker{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    color:#a99aff;
-    background:rgba(124,92,255,.1);
-    border:1px solid rgba(124,92,255,.2);
-    border-radius:30px;
-    padding:7px 11px;
-    font-size:10px;
-    font-weight:900;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-}
-
 .hero h1{
-    font-size:clamp(38px,5vw,68px);
-    line-height:.95;
-    letter-spacing:-.055em;
-    margin:17px 0 14px;
+  font-size:clamp(42px,6vw,82px);
+  line-height:.92;
+  letter-spacing:-5px;
+  margin:12px 0 20px;
 }
-
 .hero h1 span{
-    color:#a895ff;
+  background:linear-gradient(90deg,#fff,#a78bfa,#67e8f9);
+  -webkit-background-clip:text;
+  color:transparent;
 }
-
 .hero p{
-    color:#8f98aa;
-    max-width:560px;
-    line-height:1.6;
-    font-size:14px;
-    margin:0 0 23px;
+  color:#969daf;
+  font-size:16px;
+  line-height:1.6;
+  max-width:550px;
 }
-
-.hero-buttons{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
+.hero-actions{
+  display:flex;
+  gap:10px;
+  margin-top:25px;
 }
-
 .primary{
-    background:white;
-    color:#08090c;
-    border-radius:11px;
-    padding:11px 18px;
-    font-weight:900;
-    cursor:pointer;
-    transition:.2s;
+  border:0;
+  color:white;
+  background:linear-gradient(135deg,#7c3aed,#06b6d4);
+  padding:13px 19px;
+  border-radius:12px;
+  font-weight:800;
+  box-shadow:0 10px 35px #7c3aed30;
 }
-
-.primary:hover{
-    transform:translateY(-2px);
-    box-shadow:0 12px 30px rgba(255,255,255,.12);
-}
-
 .secondary{
-    background:rgba(255,255,255,.055);
-    color:white;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:11px;
-    padding:11px 18px;
-    font-weight:800;
-    cursor:pointer;
+  border:1px solid var(--line);
+  color:#dce1eb;
+  background:#11141c;
+  padding:13px 19px;
+  border-radius:12px;
+  font-weight:700;
 }
-
-.secondary:hover{
-    background:rgba(255,255,255,.09);
-}
-
-/* =========================
-   SECTION HEADERS
-========================= */
-
-.section{
-    margin-top:30px;
-}
+.primary:hover,.secondary:hover{transform:translateY(-1px)}
 
 .section-head{
-    display:flex;
-    align-items:end;
-    justify-content:space-between;
-    margin-bottom:15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:38px 0 16px;
 }
-
-.section-title{
-    font-size:19px;
-    font-weight:900;
-    letter-spacing:-.025em;
+.section-head h2{
+  margin:0;
+  font-size:21px;
+  letter-spacing:-.5px;
 }
+.section-head small{color:var(--muted)}
 
-.section-sub{
-    color:#687284;
-    font-size:11px;
-    margin-top:4px;
+.filters{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding-bottom:4px;
 }
-
-.section-link{
-    color:#8d7cff;
-    font-size:11px;
-    cursor:pointer;
-    font-weight:800;
-}
-
-/* =========================
-   GAMES
-========================= */
-
-.game-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:15px;
-}
-
-.game-card{
-    position:relative;
-    min-height:205px;
-    border-radius:17px;
-    overflow:hidden;
-    border:1px solid var(--line);
-    cursor:pointer;
-    background:#11151d;
-    transition:.25s ease;
-}
-
-.game-card:hover{
-    transform:translateY(-5px);
-    border-color:rgba(167,139,250,.3);
-    box-shadow:0 18px 45px rgba(0,0,0,.32);
-}
-
-.game-art{
-    position:absolute;
-    inset:0;
-    background:
-        radial-gradient(circle at 75% 25%,var(--glow),transparent 28%),
-        linear-gradient(145deg,var(--c1),var(--c2));
-}
-
-.game-art::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-        linear-gradient(to bottom,transparent 25%,rgba(0,0,0,.2) 48%,rgba(0,0,0,.95) 100%);
-}
-
-.game-pattern{
-    position:absolute;
-    inset:0;
-    opacity:.2;
-    background-image:
-        linear-gradient(45deg,rgba(255,255,255,.08) 1px,transparent 1px);
-    background-size:18px 18px;
-}
-
-.game-number{
-    position:absolute;
-    top:15px;
-    right:15px;
-    z-index:2;
-    color:rgba(255,255,255,.55);
-    font-size:10px;
-    font-weight:900;
-}
-
-.game-info{
-    position:absolute;
-    left:17px;
-    right:17px;
-    bottom:15px;
-    z-index:3;
-}
-
-.game-name{
-    font-weight:900;
-    font-size:17px;
-    letter-spacing:-.02em;
-}
-
-.game-meta{
-    color:#a4aaba;
-    font-size:10px;
-    margin-top:4px;
-}
-
-.game-tag{
-    display:inline-block;
-    margin-top:8px;
-    padding:4px 7px;
-    border-radius:6px;
-    background:rgba(255,255,255,.09);
-    color:#d5d9e2;
-    font-size:8px;
-    font-weight:900;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-}
-
-/* =========================
-   LIBRARY
-========================= */
-
-.library-tools{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-bottom:18px;
-}
-
 .filter{
-    padding:8px 12px;
-    border-radius:9px;
-    background:#11151d;
-    border:1px solid var(--line);
-    color:#8993a5;
-    cursor:pointer;
-    font-size:11px;
-    font-weight:800;
+  white-space:nowrap;
+  border:1px solid var(--line);
+  color:#8e96a7;
+  background:#0e1017;
+  padding:8px 13px;
+  border-radius:10px;
+}
+.filter.active{
+  color:white;
+  background:#19162a;
+  border-color:#6547a9;
 }
 
-.filter.active,
-.filter:hover{
-    color:white;
-    background:#1a1f2a;
-    border-color:rgba(124,92,255,.4);
+.games{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+}
+.game{
+  min-height:220px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+  background:#0d0f16;
+  transition:.25s;
+}
+.game:hover{
+  transform:translateY(-5px);
+  border-color:#555d70;
+}
+.game-art{
+  height:145px;
+  padding:17px;
+  display:flex;
+  align-items:flex-end;
+  position:relative;
+  overflow:hidden;
+}
+.game-art:before{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  border-radius:50%;
+  right:-55px;
+  top:-65px;
+  background:var(--glow);
+  opacity:.18;
+  filter:blur(10px);
+}
+.game-letter{
+  position:absolute;
+  right:17px;
+  bottom:5px;
+  font-size:65px;
+  font-weight:950;
+  opacity:.13;
+}
+.tag{
+  position:relative;
+  z-index:2;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1.5px;
+  padding:5px 7px;
+  border-radius:6px;
+  background:#0008;
+  color:#fff;
+}
+.game-info{
+  padding:14px 16px 16px;
+  background:#0d0f16;
+}
+.game-info h3{
+  margin:0 0 5px;
+  font-size:15px;
+}
+.game-info p{
+  margin:0;
+  color:#777f91;
+  font-size:12px;
+}
+.empty{
+  padding:40px;
+  text-align:center;
+  color:#70788a;
+  border:1px dashed #272c38;
+  border-radius:15px;
+  grid-column:1/-1;
 }
 
-/* =========================
-   PANELS
-========================= */
-
-.panel-grid{
-    display:grid;
-    grid-template-columns:1.35fr .8fr;
-    gap:18px;
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
 }
-
-.panel{
-    background:#10141b;
-    border:1px solid var(--line);
-    border-radius:18px;
-    overflow:hidden;
+.card{
+  background:#0d0f16;
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:18px;
 }
-
-.panel-head{
-    padding:18px 19px;
-    border-bottom:1px solid var(--line);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+.card h3{margin:0 0 10px}
+.card p{color:#858d9e;font-size:13px;line-height:1.5}
+.online{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #181c25;
 }
-
-.panel-head strong{
-    font-size:14px;
+.online:last-child{border-bottom:0}
+.online-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--green);
 }
-
-.panel-head span{
-    color:#677184;
-    font-size:10px;
-}
+.offline .online-dot{background:#555}
+.player-name{font-size:13px;font-weight:700}
+.player-id{font-size:10px;color:#656d7d}
 
 .server{
-    padding:15px 18px;
-    display:flex;
-    align-items:center;
-    gap:13px;
-    border-bottom:1px solid rgba(255,255,255,.045);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:15px;
+  background:#0d0f16;
+  border:1px solid var(--line);
+  border-radius:15px;
+  margin-bottom:9px;
 }
-
-.server:last-child{
-    border-bottom:0;
-}
-
 .server-icon{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    display:grid;
-    place-items:center;
-    background:#191e29;
-    font-size:17px;
+  width:45px;height:45px;border-radius:12px;
+  display:grid;place-items:center;
+  background:#181c28;
 }
-
-.server-info{
-    flex:1;
-}
-
-.server-name{
-    font-weight:800;
-    font-size:12px;
-}
-
-.server-detail{
-    color:#687386;
-    font-size:10px;
-    margin-top:3px;
-}
-
-.server-count{
-    color:#9ba5b7;
-    font-size:10px;
-}
-
-.join{
-    padding:7px 11px;
-    border-radius:8px;
-    background:#1d2330;
-    color:white;
-    cursor:pointer;
-    font-size:10px;
-    font-weight:800;
-}
-
-.join:hover{
-    background:#2b3343;
-}
-
-/* =========================
-   FRIENDS
-========================= */
-
-.friend{
-    display:flex;
-    align-items:center;
-    gap:11px;
-    padding:13px 18px;
-    border-bottom:1px solid rgba(255,255,255,.045);
-}
-
-.friend:last-child{
-    border-bottom:0;
-}
-
-.friend .avatar{
-    position:relative;
-}
-
-.online-dot{
-    position:absolute;
-    width:9px;
-    height:9px;
-    right:-2px;
-    bottom:-1px;
-    border-radius:50%;
-    background:var(--green);
-    border:2px solid #10141b;
-}
-
-.friend-info{
-    flex:1;
-}
-
-.friend-name{
-    font-size:12px;
-    font-weight:800;
-}
-
-.friend-state{
-    color:#687386;
-    font-size:9px;
-    margin-top:2px;
-}
-
-.call-btn{
-    width:31px;
-    height:31px;
-    border-radius:9px;
-    background:#1a2030;
-    color:#a99aff;
-    cursor:pointer;
-}
-
-.call-btn:hover{
-    background:#2a3042;
-}
-
-/* =========================
-   MESSAGES
-========================= */
-
-.chat-layout{
-    height:calc(100vh - 132px);
-    min-height:520px;
-    display:grid;
-    grid-template-columns:260px 1fr;
-    background:#10141b;
-    border:1px solid var(--line);
-    border-radius:18px;
-    overflow:hidden;
-}
-
-.chat-list{
-    border-right:1px solid var(--line);
-    overflow:auto;
-}
-
-.chat-person{
-    padding:13px 15px;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    cursor:pointer;
-}
-
-.chat-person:hover,
-.chat-person.active{
-    background:#181d27;
-}
-
-.chat-content{
-    display:flex;
-    flex-direction:column;
-    min-width:0;
-}
-
-.chat-head{
-    height:65px;
-    border-bottom:1px solid var(--line);
-    display:flex;
-    align-items:center;
-    padding:0 18px;
-    gap:11px;
-}
-
-.chat-head-name{
-    font-size:13px;
-    font-weight:900;
-}
-
-.chat-head-state{
-    color:var(--green);
-    font-size:9px;
-    margin-top:2px;
-}
-
-.chat-actions{
-    margin-left:auto;
-    display:flex;
-    gap:7px;
-}
-
-.messages{
-    flex:1;
-    overflow:auto;
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.message{
-    max-width:min(600px,75%);
-    padding:10px 13px;
-    border-radius:12px;
-    background:#191e28;
-    color:#d9dde5;
-    font-size:12px;
-    line-height:1.5;
-    align-self:flex-start;
-}
-
-.message.mine{
-    background:#6049d8;
-    color:white;
-    align-self:flex-end;
-}
-
-.message-time{
-    color:rgba(255,255,255,.4);
-    font-size:8px;
-    margin-top:4px;
-}
-
-.chat-input{
-    border-top:1px solid var(--line);
-    padding:12px;
-    display:flex;
-    gap:8px;
-}
-
-.chat-input input{
-    flex:1;
-    background:#0c0f15;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:11px;
-    color:white;
-    outline:none;
-}
-
-/* =========================
-   NOTIFICATIONS
-========================= */
-
-.notification-list{
-    display:flex;
-    flex-direction:column;
-    gap:9px;
-}
-
-.notification{
-    background:#10141b;
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:15px;
-    display:flex;
-    gap:13px;
-    align-items:flex-start;
-}
-
-.notification-icon{
-    width:37px;
-    height:37px;
-    border-radius:10px;
-    display:grid;
-    place-items:center;
-    background:#1c2030;
-}
-
-.notification-title{
-    font-weight:800;
-    font-size:12px;
-}
-
-.notification-text{
-    color:#778195;
-    font-size:10px;
-    margin-top:4px;
-    line-height:1.5;
-}
-
-.notification-time{
-    margin-left:auto;
-    color:#50596a;
-    font-size:9px;
-}
-
-/* =========================
-   PROFILE
-========================= */
+.server-info{flex:1}
+.server-info strong{display:block}
+.server-info small{color:#747d8f}
+.server-count{color:#36e39b;font-size:12px}
 
 .profile{
-    max-width:900px;
+  max-width:800px;
 }
-
-.profile-cover{
-    height:190px;
-    border-radius:20px 20px 0 0;
-    background:
-        radial-gradient(circle at 20% 30%,rgba(124,92,255,.5),transparent 25%),
-        radial-gradient(circle at 80% 70%,rgba(38,211,255,.18),transparent 30%),
-        linear-gradient(130deg,#181a2a,#0d1119);
-    border:1px solid var(--line);
-    position:relative;
+.profile-head{
+  padding:28px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:linear-gradient(135deg,#111522,#0c0e14);
+  display:flex;
+  align-items:center;
+  gap:18px;
 }
-
-.profile-card{
-    margin-top:-45px;
-    position:relative;
-    margin-left:25px;
-    margin-right:25px;
-    padding:0 0 20px;
-}
-
 .profile-avatar{
-    width:90px;
-    height:90px;
-    border-radius:25px;
-    display:grid;
-    place-items:center;
-    background:linear-gradient(135deg,#8061ff,#4930c9);
-    border:5px solid #10141b;
-    font-size:28px;
-    font-weight:900;
+  width:76px;height:76px;border-radius:22px;
+  display:grid;place-items:center;
+  font-size:28px;font-weight:900;
+  background:linear-gradient(135deg,#8b5cf6,#22d3ee);
+}
+.profile-head h1{margin:0 0 5px}
+.profile-head p{margin:0;color:#7f8798}
+
+.message-layout{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  height:600px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
+}
+.message-list{
+  background:#0b0d13;
+  border-right:1px solid var(--line);
+  padding:12px;
+}
+.conversation{
+  padding:12px;
+  border-radius:10px;
+  background:#151824;
+}
+.chat{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+.chat-head{
+  padding:16px 20px;
+  border-bottom:1px solid var(--line);
+  font-weight:800;
+}
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:20px;
+}
+.msg{
+  max-width:75%;
+  padding:10px 13px;
+  background:#151925;
+  border-radius:13px;
+  margin-bottom:9px;
+}
+.msg.mine{
+  margin-left:auto;
+  background:#392473;
+}
+.msg small{
+  display:block;
+  color:#7d8596;
+  font-size:10px;
+  margin-bottom:4px;
+}
+.chat-input{
+  display:flex;
+  gap:8px;
+  padding:12px;
+  border-top:1px solid var(--line);
+}
+.chat-input input{
+  flex:1;
+  background:#10131b;
+  border:1px solid var(--line);
+  color:white;
+  border-radius:11px;
+  padding:11px;
+  outline:none;
 }
 
-.profile-name{
-    font-size:25px;
-    font-weight:900;
-    margin-top:12px;
+.notice{
+  padding:15px;
+  border:1px solid var(--line);
+  background:#0d0f16;
+  border-radius:15px;
+  margin-bottom:9px;
 }
+.notice strong{display:block}
+.notice span{font-size:12px;color:#777f91}
 
-.profile-handle{
-    color:#717b8e;
-    font-size:11px;
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  background:#030408eF;
+  backdrop-filter:blur(15px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
 }
-
-.profile-stats{
-    display:flex;
-    gap:25px;
-    margin-top:20px;
+.modal.show{display:flex}
+.game-window{
+  width:min(1400px,96vw);
+  height:min(850px,94vh);
+  background:#07080d;
+  border:1px solid #303645;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 30px 100px #000;
+  display:flex;
+  flex-direction:column;
 }
-
-.stat strong{
-    display:block;
-    font-size:17px;
+.window-head{
+  height:54px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 14px;
+  border-bottom:1px solid var(--line);
+  background:#0d0f16;
 }
-
-.stat span{
-    color:#687386;
-    font-size:9px;
+.window-title{font-weight:800;flex:1}
+.window-head button{
+  border:0;
+  background:#171a23;
+  color:#c9ced9;
+  border-radius:9px;
+  width:34px;height:34px;
 }
-
-/* =========================
-   SETTINGS
-========================= */
-
-.settings{
-    max-width:800px;
-}
-
-.setting{
-    background:#10141b;
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:16px;
-    display:flex;
-    align-items:center;
-    gap:15px;
-    margin-bottom:10px;
-}
-
-.setting-info{
-    flex:1;
-}
-
-.setting-title{
-    font-weight:800;
-    font-size:12px;
-}
-
-.setting-desc{
-    color:#687386;
-    font-size:10px;
-    margin-top:4px;
-}
-
-.switch{
-    width:43px;
-    height:24px;
-    border-radius:30px;
-    background:#252b37;
-    padding:3px;
-    cursor:pointer;
-}
-
-.switch::after{
-    content:"";
-    display:block;
-    width:18px;
-    height:18px;
-    border-radius:50%;
-    background:#737d8f;
-    transition:.2s;
-}
-
-.switch.on{
-    background:#644ee0;
-}
-
-.switch.on::after{
-    transform:translateX(19px);
-    background:white;
-}
-
-/* =========================
-   GAME PLAYER
-========================= */
-
-#gameModal{
-    position:fixed;
-    inset:0;
-    z-index:5000;
-    background:#030407;
-    display:none;
-    flex-direction:column;
-}
-
-#gameModal.open{
-    display:flex;
-}
-
-.gamebar{
-    height:58px;
-    background:#0d1016;
-    border-bottom:1px solid var(--line);
-    display:flex;
-    align-items:center;
-    padding:0 13px;
-    gap:10px;
-}
-
-.gamebar-title{
-    font-weight:900;
-    font-size:13px;
-}
-
-.gamebar-actions{
-    margin-left:auto;
-    display:flex;
-    gap:7px;
-}
-
-.gamebar button{
-    width:36px;
-    height:34px;
-    border-radius:9px;
-    background:#181d26;
-    color:#a5adbb;
-    cursor:pointer;
-}
-
-.gamebar button:hover{
-    color:white;
-    background:#242a36;
-}
-
 #gameFrame{
-    width:100%;
-    flex:1;
-    border:0;
-    background:#000;
-}
-
-/* =========================
-   CALL
-========================= */
-
-#callModal{
-    position:fixed;
-    inset:0;
-    z-index:6000;
-    background:rgba(2,3,6,.82);
-    backdrop-filter:blur(20px);
-    display:none;
-    align-items:center;
-    justify-content:center;
-}
-
-#callModal.open{
-    display:flex;
+  flex:1;
+  width:100%;
+  border:0;
+  background:#000;
 }
 
 .call-window{
-    width:min(900px,92vw);
-    height:min(600px,85vh);
-    background:#0e1118;
-    border:1px solid var(--line);
-    border-radius:22px;
-    overflow:hidden;
-    box-shadow:0 30px 100px rgba(0,0,0,.5);
-    display:flex;
-    flex-direction:column;
+  width:min(800px,95vw);
+  background:#0c0e15;
+  border:1px solid #303545;
+  border-radius:20px;
+  overflow:hidden;
 }
-
-.call-video{
-    flex:1;
-    background:
-        radial-gradient(circle at center,rgba(124,92,255,.15),transparent 30%),
-        #07090e;
-    position:relative;
-    display:grid;
-    place-items:center;
+.call-head{
+  padding:17px 20px;
+  border-bottom:1px solid var(--line);
+  font-weight:800;
 }
-
-#remoteVideo{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:none;
+.call-body{
+  min-height:350px;
+  display:grid;
+  place-items:center;
+  background:#07090e;
 }
-
-#localVideo{
-    position:absolute;
-    right:16px;
-    bottom:16px;
-    width:190px;
-    height:125px;
-    object-fit:cover;
-    background:#12161f;
-    border:1px solid rgba(255,255,255,.15);
-    border-radius:13px;
-    display:none;
-}
-
-.call-user{
-    text-align:center;
-}
-
 .call-avatar{
-    width:90px;
-    height:90px;
-    border-radius:27px;
-    display:grid;
-    place-items:center;
-    margin:auto;
-    background:linear-gradient(135deg,#8061ff,#4730c7);
-    font-size:28px;
-    font-weight:900;
+  width:110px;height:110px;border-radius:35px;
+  display:grid;place-items:center;
+  font-size:40px;font-weight:900;
+  background:linear-gradient(135deg,#8b5cf6,#22d3ee);
 }
-
-.call-name{
-    font-size:20px;
-    font-weight:900;
-    margin-top:14px;
-}
-
-.call-state{
-    color:#7d8799;
-    font-size:11px;
-    margin-top:5px;
-}
-
 .call-controls{
-    height:85px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    border-top:1px solid var(--line);
+  padding:18px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  border-top:1px solid var(--line);
 }
-
-.call-control{
-    width:45px;
-    height:45px;
-    border-radius:50%;
-    background:#1a202b;
-    color:white;
-    cursor:pointer;
+.call-controls button{
+  width:48px;height:48px;border-radius:50%;
+  border:1px solid var(--line);
+  background:#171a23;
+  color:white;
 }
+.call-controls .hangup{background:#a72840}
 
-.call-control.end{
-    background:#e94c61;
+.incoming{
+  width:min(400px,90vw);
+  padding:25px;
+  border:1px solid #343949;
+  border-radius:20px;
+  background:#0d0f16;
+  text-align:center;
+  box-shadow:0 30px 100px #000;
 }
-
-/* =========================
-   INCOMING
-========================= */
-
-#incoming{
-    position:fixed;
-    right:22px;
-    bottom:22px;
-    z-index:7000;
-    width:330px;
-    padding:17px;
-    background:#12161e;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:17px;
-    box-shadow:0 25px 70px rgba(0,0,0,.45);
-    display:none;
+.incoming .call-avatar{
+  margin:auto auto 18px;
+  width:80px;height:80px;
+  font-size:30px;
 }
-
-#incoming.open{
-    display:block;
-    animation:incoming .25s ease;
-}
-
-@keyframes incoming{
-    from{transform:translateY(15px);opacity:0}
-    to{transform:none;opacity:1}
-}
-
-.incoming-top{
-    display:flex;
-    align-items:center;
-    gap:11px;
-}
-
-.incoming-name{
-    font-weight:900;
-    font-size:13px;
-}
-
-.incoming-type{
-    color:#778195;
-    font-size:9px;
-    margin-top:3px;
-}
-
 .incoming-actions{
-    display:flex;
-    gap:7px;
-    margin-top:15px;
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+}
+.incoming-actions button{flex:1}
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:9000;
+  padding:13px 16px;
+  background:#151923;
+  border:1px solid #343a4a;
+  border-radius:12px;
+  box-shadow:0 20px 50px #0008;
+  transform:translateY(20px);
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+}
+.toast.show{
+  transform:translateY(0);
+  opacity:1;
 }
 
-.incoming-actions button{
-    flex:1;
-    padding:10px;
-    border-radius:9px;
-    cursor:pointer;
-    font-size:10px;
-    font-weight:900;
+@media(max-width:1100px){
+  .games{grid-template-columns:repeat(3,1fr)}
 }
-
-.accept{
-    background:#38d996;
-    color:#06140e;
+@media(max-width:800px){
+  .app{grid-template-columns:1fr}
+  .sidebar{
+    width:100%;
+    height:62px;
+    top:auto;
+    bottom:0;
+    flex-direction:row;
+    padding:7px 10px;
+    border-right:0;
+    border-top:1px solid var(--line);
+  }
+  .brand,.sidebar-bottom{display:none}
+  .nav{
+    flex-direction:row;
+    justify-content:space-around;
+  }
+  .nav button{height:48px}
+  main{grid-column:1;padding-bottom:65px}
+  .topbar{padding:0 15px}
+  .user-name{display:none}
+  .page{padding:18px 15px 40px}
+  .hero{min-height:390px;padding:27px}
+  .hero h1{letter-spacing:-3px}
+  .games{grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:1fr}
+  .message-layout{grid-template-columns:1fr}
+  .message-list{display:none}
 }
-
-.decline{
-    background:#252b36;
-    color:white;
-}
-
-/* =========================
-   TOAST
-========================= */
-
-#toast{
-    position:fixed;
-    left:50%;
-    bottom:25px;
-    transform:translate(-50%,20px);
-    opacity:0;
-    pointer-events:none;
-    z-index:10000;
-    background:#171c25;
-    border:1px solid rgba(255,255,255,.1);
-    color:white;
-    padding:11px 16px;
-    border-radius:11px;
-    font-size:11px;
-    box-shadow:0 15px 40px rgba(0,0,0,.35);
-    transition:.25s;
-}
-
-#toast.show{
-    opacity:1;
-    transform:translate(-50%,0);
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-.mobile-nav{
-    display:none;
-}
-
-@media(max-width:1200px){
-    .game-grid{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-    }
-}
-
-@media(max-width:950px){
-    .sidebar{
-        width:72px;
-        padding:15px 9px;
-    }
-
-    .brand{
-        justify-content:center;
-        padding:4px 0 18px;
-    }
-
-    .brand-text,
-    .nav-title,
-    .nav-item span:not(.nav-icon),
-    .sidebar-bottom{
-        display:none;
-    }
-
-    .nav-item{
-        justify-content:center;
-        padding:12px;
-    }
-
-    .main{
-        margin-left:72px;
-        width:calc(100% - 72px);
-    }
-
-    .panel-grid{
-        grid-template-columns:1fr;
-    }
-
-    .game-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-}
-
-@media(max-width:650px){
-    .topbar{
-        padding:0 13px;
-    }
-
-    .search{
-        width:100%;
-    }
-
-    .top-actions{
-        display:none;
-    }
-
-    .page{
-        padding:15px;
-    }
-
-    .hero{
-        min-height:390px;
-        padding:25px;
-    }
-
-    .hero h1{
-        font-size:42px;
-    }
-
-    .game-grid{
-        grid-template-columns:1fr;
-    }
-
-    .chat-layout{
-        grid-template-columns:1fr;
-    }
-
-    .chat-list{
-        display:none;
-    }
-
-    .profile-stats{
-        gap:15px;
-    }
-}
-
-/* =========================
-   SCROLLBAR
-========================= */
-
-::-webkit-scrollbar{
-    width:8px;
-    height:8px;
-}
-
-::-webkit-scrollbar-track{
-    background:transparent;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#252b36;
-    border-radius:20px;
-}
-
-::-webkit-scrollbar-thumb:hover{
-    background:#353d4c;
+@media(max-width:520px){
+  .games{grid-template-columns:1fr}
+  .game-art{height:160px}
+  .hero-actions{flex-direction:column}
 }
 </style>
 </head>
 
 <body>
 
-<!-- STARTUP -->
+<div id="boot">
+  <div class="boot-box">
+    <div class="boot-logo">GAME<span>HUB</span></div>
+    <div class="boot-status" id="bootStatus">Starting GameHub...</div>
+    <div class="boot-bar"><div class="boot-fill"></div></div>
+  </div>
+</div>
 
-<div id="startup">
-    <div class="boot">
-        <div class="boot-top">
-            <div class="boot-logo">G</div>
-            <div>
-                <div class="boot-title">GAMEHUB</div>
-                <div class="boot-sub">GAME PLATFORM // ONLINE</div>
-            </div>
-        </div>
+<div class="app">
 
-        <div class="boot-line"></div>
+<aside class="sidebar">
+  <div class="brand">GH</div>
 
-        <div class="boot-status">
-            <span id="bootText">INITIALIZING GAME LIBRARY...</span>
-        </div>
+  <div class="nav">
+    <button class="active" data-view="home" title="Home">⌂</button>
+    <button data-view="games" title="Games">🎮</button>
+    <button data-view="servers" title="Servers">◈</button>
+    <button data-view="friends" title="Friends">♟</button>
+    <button data-view="messages" title="Messages">✉</button>
+    <button data-view="notifications" title="Notifications">♢</button>
+  </div>
+
+  <div class="sidebar-bottom">
+    <button class="icon-btn" data-view="profile" title="Profile">●</button>
+    <button class="icon-btn" data-view="settings" title="Settings">⚙</button>
+  </div>
+</aside>
+
+<main>
+
+<header class="topbar">
+  <div class="search">
+    <span>⌕</span>
+    <input id="search" placeholder="Search games..." autocomplete="off">
+  </div>
+
+  <div class="top-right">
+    <button class="icon-btn" id="notifyBtn" title="Notifications">
+      ♢
+      <span class="badge" id="notifyBadge" style="display:none">0</span>
+    </button>
+
+    <button class="icon-btn" id="callBtn" title="Calls">☎</button>
+
+    <div class="user-pill" id="userPill">
+      <div class="avatar" id="avatar">?</div>
+      <div class="user-name" id="topName">Connecting...</div>
     </div>
-</div>
-
-
-<!-- APP -->
-
-<div id="app">
-
-    <!-- SIDEBAR -->
-
-    <aside class="sidebar">
-
-        <div class="brand">
-            <div class="brand-icon">G</div>
-
-            <div class="brand-text">
-                <div class="brand-name">GAMEHUB</div>
-                <div class="brand-version">VERSION 2.0</div>
-            </div>
-        </div>
-
-        <div class="nav-title">MAIN</div>
-
-        <button class="nav-item active" data-view="home">
-            <span class="nav-icon">⌂</span>
-            <span>Home</span>
-        </button>
-
-        <button class="nav-item" data-view="library">
-            <span class="nav-icon">▦</span>
-            <span>Library</span>
-        </button>
-
-        <button class="nav-item" data-view="servers">
-            <span class="nav-icon">◈</span>
-            <span>Servers</span>
-        </button>
-
-        <div class="nav-title">SOCIAL</div>
-
-        <button class="nav-item" data-view="friends">
-            <span class="nav-icon">♙</span>
-            <span>Friends</span>
-        </button>
-
-        <button class="nav-item" data-view="messages">
-            <span class="nav-icon">◌</span>
-            <span>Messages</span>
-            <span class="nav-badge" id="messageBadge">2</span>
-        </button>
-
-        <button class="nav-item" data-view="notifications">
-            <span class="nav-icon">♢</span>
-            <span>Notifications</span>
-            <span class="nav-badge" id="notificationBadge">3</span>
-        </button>
-
-        <div class="nav-title">ACCOUNT</div>
-
-        <button class="nav-item" data-view="profile">
-            <span class="nav-icon">◎</span>
-            <span>Profile</span>
-        </button>
-
-        <button class="nav-item" data-view="settings">
-            <span class="nav-icon">⚙</span>
-            <span>Settings</span>
-        </button>
-
-        <div class="sidebar-bottom">
-
-            <div class="user-mini">
-                <div class="avatar">A</div>
-
-                <div>
-                    <div class="user-name" id="sidebarName">Andrew</div>
-                    <div class="user-status">● Online</div>
-                </div>
-            </div>
-
-        </div>
-
-    </aside>
-
-
-    <!-- MAIN -->
-
-    <main class="main">
-
-        <header class="topbar">
-
-            <div class="search">
-                <span class="search-icon">⌕</span>
-                <input
-                    id="globalSearch"
-                    type="text"
-                    placeholder="Search games, servers, friends..."
-                >
-            </div>
-
-            <div class="top-actions">
-
-                <button class="top-btn" onclick="openView('notifications')" title="Notifications">
-                    ♢
-                    <span class="notification-dot"></span>
-                </button>
-
-                <button class="top-btn" onclick="openView('messages')" title="Messages">
-                    ◌
-                </button>
-
-                <button class="top-btn" onclick="openView('profile')" title="Profile">
-                    A
-                </button>
-
-            </div>
-
-        </header>
-
-
-        <div class="page">
-
-            <!-- ================= HOME ================= -->
-
-            <section class="view active" id="view-home">
-
-                <div class="hero">
-
-                    <div class="hero-grid"></div>
-
-                    <div class="hero-content">
-
-                        <div class="hero-kicker">
-                            ● GAMEHUB ONLINE
-                        </div>
-
-                        <h1>
-                            PLAY.<br>
-                            CONNECT.<br>
-                            <span>EXIST.</span>
-                        </h1>
-
-                        <p>
-                            Your games. Your friends. Your servers.
-                            Everything in one place.
-                        </p>
-
-                        <div class="hero-buttons">
-
-                            <button class="primary" onclick="openView('library')">
-                                Browse Games
-                            </button>
-
-                            <button class="secondary" onclick="openView('servers')">
-                                Find a Server
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- FEATURED -->
-
-                <div class="section">
-
-                    <div class="section-head">
-
-                        <div>
-                            <div class="section-title">Featured Games</div>
-                            <div class="section-sub">
-                                Pick something and start playing.
-                            </div>
-                        </div>
-
-                        <div class="section-link" onclick="openView('library')">
-                            VIEW ALL →
-                        </div>
-
-                    </div>
-
-                    <div class="game-grid" id="featuredGames"></div>
-
-                </div>
-
-
-                <!-- LOWER -->
-
-                <div class="section">
-
-                    <div class="panel-grid">
-
-                        <div class="panel">
-
-                            <div class="panel-head">
-                                <strong>Live Servers</strong>
-                                <span>REAL-TIME</span>
-                            </div>
-
-                            <div id="homeServers"></div>
-
-                        </div>
-
-
-                        <div class="panel">
-
-                            <div class="panel-head">
-                                <strong>Friends Online</strong>
-                                <span id="onlineCount">0 ONLINE</span>
-                            </div>
-
-                            <div id="homeFriends"></div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ================= LIBRARY ================= -->
-
-            <section class="view" id="view-library">
-
-                <div class="section-head">
-
-                    <div>
-                        <div class="section-title">Game Library</div>
-                        <div class="section-sub">
-                            Every game currently installed on GameHub.
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="library-tools">
-
-                    <button class="filter active" data-filter="all">
-                        ALL
-                    </button>
-
-                    <button class="filter" data-filter="horror">
-                        HORROR
-                    </button>
-
-                    <button class="filter" data-filter="action">
-                        ACTION
-                    </button>
-
-                    <button class="filter" data-filter="casual">
-                        CASUAL
-                    </button>
-
-                    <button class="filter" data-filter="classic">
-                        CLASSIC
-                    </button>
-
-                    <button class="filter" data-filter="other">
-                        OTHER
-                    </button>
-
-                </div>
-
-                <div class="game-grid" id="libraryGames"></div>
-
-            </section>
-
-
-            <!-- ================= SERVERS ================= -->
-
-            <section class="view" id="view-servers">
-
-                <div class="section-head">
-
-                    <div>
-                        <div class="section-title">Servers</div>
-                        <div class="section-sub">
-                            Find people to play with.
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="panel">
-
-                    <div class="panel-head">
-                        <strong>GameHub Network</strong>
-                        <span id="serverStatus">CONNECTING...</span>
-                    </div>
-
-                    <div id="serverList"></div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ================= FRIENDS ================= -->
-
-            <section class="view" id="view-friends">
-
-                <div class="section-head">
-
-                    <div>
-                        <div class="section-title">Friends</div>
-                        <div class="section-sub">
-                            People you can play and call with.
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="panel">
-
-                    <div class="panel-head">
-                        <strong>Friends</strong>
-                        <span id="friendsStatus">ONLINE</span>
-                    </div>
-
-                    <div id="friendsList"></div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ================= MESSAGES ================= -->
-
-            <section class="view" id="view-messages">
-
-                <div class="chat-layout">
-
-                    <div class="chat-list">
-
-                        <div class="panel-head">
-                            <strong>Messages</strong>
-                        </div>
-
-                        <div class="chat-person active">
-                            <div class="avatar">G</div>
-
-                            <div class="friend-info">
-                                <div class="friend-name">GameHub</div>
-                                <div class="friend-state">
-                                    Welcome to GameHub
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="chat-person">
-                            <div class="avatar">S</div>
-
-                            <div class="friend-info">
-                                <div class="friend-name">Server Chat</div>
-                                <div class="friend-state">
-                                    Main lobby
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <div class="chat-content">
-
-                        <div class="chat-head">
-
-                            <div class="avatar">G</div>
-
-                            <div>
-                                <div class="chat-head-name">
-                                    GameHub
-                                </div>
-
-                                <div class="chat-head-state">
-                                    ● Online
-                                </div>
-                            </div>
-
-                            <div class="chat-actions">
-
-                                <button class="top-btn" onclick="showToast('Calling requires another online player.')">
-                                    📞
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="messages" id="messages">
-
-                            <div class="message">
-                                Welcome to GameHub.
-                                <div class="message-time">
-                                    SYSTEM
-                                </div>
-                            </div>
-
-                            <div class="message mine">
-                                This place is actually sick.
-                                <div class="message-time">
-                                    YOU
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                        <div class="chat-input">
-
-                            <input
-                                id="messageInput"
-                                placeholder="Send a message..."
-                                maxlength="2000"
-                            >
-
-                            <button
-                                class="primary"
-                                onclick="sendChatMessage()"
-                            >
-                                Send
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ================= NOTIFICATIONS ================= -->
-
-            <section class="view" id="view-notifications">
-
-                <div class="section-head">
-
-                    <div>
-                        <div class="section-title">Notifications</div>
-                        <div class="section-sub">
-                            Updates, messages and GameHub activity.
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="notification-list">
-
-                    <div class="notification">
-
-                        <div class="notification-icon">🎮</div>
-
-                        <div>
-                            <div class="notification-title">
-                                GameHub is online
-                            </div>
-
-                            <div class="notification-text">
-                                Your game library is ready.
-                            </div>
-                        </div>
-
-                        <div class="notification-time">
-                            NOW
-                        </div>
-
-                    </div>
-
-
-                    <div class="notification">
-
-                        <div class="notification-icon">⚡</div>
-
-                        <div>
-                            <div class="notification-title">
-                                Library loaded
-                            </div>
-
-                            <div class="notification-text">
-                                18 games and apps are available.
-                            </div>
-                        </div>
-
-                        <div class="notification-time">
-                            2M
-                        </div>
-
-                    </div>
-
-
-                    <div class="notification">
-
-                        <div class="notification-icon">🌐</div>
-
-                        <div>
-                            <div class="notification-title">
-                                GameHub network
-                            </div>
-
-                            <div class="notification-text">
-                                Multiplayer services are connected.
-                            </div>
-                        </div>
-
-                        <div class="notification-time">
-                            5M
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ================= PROFILE ================= -->
-
-            <section class="view" id="view-profile">
-
-                <div class="profile">
-
-                    <div class="profile-cover"></div>
-
-                    <div class="profile-card">
-
-                        <div class="profile-avatar">A</div>
-
-                        <div class="profile-name">
-                            Andrew
-                        </div>
-
-                        <div class="profile-handle">
-                            @andrew
-                        </div>
-
-                        <div class="profile-stats">
-
-                            <div class="stat">
-                                <strong>18</strong>
-                                <span>GAMES</span>
-                            </div>
-
-                            <div class="stat">
-                                <strong id="profileFriends">0</strong>
-                                <span>FRIENDS ONLINE</span>
-                            </div>
-
-                            <div class="stat">
-                                <strong>NEW</strong>
-                                <span>MEMBER</span>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ================= SETTINGS ================= -->
-
-            <section class="view" id="view-settings">
-
-                <div class="settings">
-
-                    <div class="section-head">
-
-                        <div>
-                            <div class="section-title">
-                                Settings
-                            </div>
-
-                            <div class="section-sub">
-                                Customize your GameHub experience.
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <div class="setting">
-
-                        <div class="setting-info">
-
-                            <div class="setting-title">
-                                Browser Notifications
-                            </div>
-
-                            <div class="setting-desc">
-                                Allow GameHub to notify you about activity.
-                            </div>
-
-                        </div>
-
-                        <div
-                            class="switch"
-                            id="notificationSwitch"
-                            onclick="toggleNotifications()"
-                        ></div>
-
-                    </div>
-
-
-                    <div class="setting">
-
-                        <div class="setting-info">
-
-                            <div class="setting-title">
-                                Sound Effects
-                            </div>
-
-                            <div class="setting-desc">
-                                Play interface sounds.
-                            </div>
-
-                        </div>
-
-                        <div
-                            class="switch on"
-                            onclick="this.classList.toggle('on')"
-                        ></div>
-
-                    </div>
-
-
-                    <div class="setting">
-
-                        <div class="setting-info">
-
-                            <div class="setting-title">
-                                Remember Me
-                            </div>
-
-                            <div class="setting-desc">
-                                Keep this device signed in when accounts are enabled.
-                            </div>
-
-                        </div>
-
-                        <div
-                            class="switch on"
-                            onclick="this.classList.toggle('on')"
-                        ></div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </div>
-
-    </main>
+  </div>
+</header>
+
+<div class="page">
+
+<section class="view active" id="view-home">
+
+  <div class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">GAMEHUB / ONLINE</div>
+      <h1>PLAY.<br><span>CONNECT.</span><br>EXIST.</h1>
+      <p>
+        Your games, your friends, your servers.
+        Everything in one place.
+      </p>
+
+      <div class="hero-actions">
+        <button class="primary" onclick="showView('games')">Browse Games</button>
+        <button class="secondary" onclick="showView('servers')">Find a Server</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Featured games</h2>
+    <small id="gameCount">18 games</small>
+  </div>
+
+  <div class="games" id="homeGames"></div>
+
+</section>
+
+<section class="view" id="view-games">
+  <div class="section-head">
+    <div>
+      <h2>Game Library</h2>
+      <small>Everything you've got</small>
+    </div>
+  </div>
+
+  <div class="filters" id="filters">
+    <button class="filter active" data-filter="all">All</button>
+    <button class="filter" data-filter="horror">Horror</button>
+    <button class="filter" data-filter="action">Action</button>
+    <button class="filter" data-filter="casual">Casual</button>
+    <button class="filter" data-filter="classic">Classic</button>
+    <button class="filter" data-filter="sandbox">Sandbox</button>
+    <button class="filter" data-filter="other">Other</button>
+  </div>
+
+  <div class="games" id="allGames" style="margin-top:16px"></div>
+</section>
+
+<section class="view" id="view-servers">
+  <div class="section-head">
+    <div>
+      <h2>Servers</h2>
+      <small>Players online right now</small>
+    </div>
+    <button class="primary" onclick="toast('Server creation is coming next.')">Create Server</button>
+  </div>
+
+  <div id="serverList"></div>
+</section>
+
+<section class="view" id="view-friends">
+  <div class="section-head">
+    <div>
+      <h2>Friends</h2>
+      <small id="friendStatus">Connecting...</small>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Online now</h3>
+      <div id="onlinePlayers"></div>
+    </div>
+
+    <div class="card">
+      <h3>Your profile</h3>
+      <p id="friendProfileText">Loading your GameHub identity...</p>
+      <button class="secondary" onclick="showView('profile')">Open Profile</button>
+    </div>
+
+    <div class="card">
+      <h3>Friends</h3>
+      <p>Your friend list will appear here once accounts and friend requests are enabled.</p>
+      <button class="secondary" onclick="toast('Friend requests are coming next.')">Add Friend</button>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="view-messages">
+  <div class="section-head">
+    <div>
+      <h2>Messages</h2>
+      <small>GameHub global chat</small>
+    </div>
+  </div>
+
+  <div class="message-layout">
+    <div class="message-list">
+      <div class="conversation">
+        <strong>Global Chat</strong>
+        <div style="font-size:11px;color:#737b8d;margin-top:4px">Everyone online</div>
+      </div>
+    </div>
+
+    <div class="chat">
+      <div class="chat-head">Global Chat</div>
+      <div class="messages" id="messages"></div>
+
+      <form class="chat-input" id="chatForm">
+        <input id="chatInput" placeholder="Send a message..." maxlength="2000">
+        <button class="primary">Send</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="view-notifications">
+  <div class="section-head">
+    <div>
+      <h2>Notifications</h2>
+      <small>GameHub activity</small>
+    </div>
+    <button class="secondary" onclick="clearNotifications()">Clear</button>
+  </div>
+
+  <div id="notificationList"></div>
+</section>
+
+<section class="view" id="view-profile">
+
+  <div class="section-head">
+    <div>
+      <h2>Profile</h2>
+      <small>Your GameHub identity</small>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-head">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div>
+        <h1 id="profileName">Connecting...</h1>
+        <p id="profileId">Creating your GameHub identity...</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Identity</h3>
+      <p>
+        This browser has its own GameHub guest identity.
+        Your name is not hardcoded to Andrew.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<section class="view" id="view-settings">
+
+  <div class="section-head">
+    <div>
+      <h2>Settings</h2>
+      <small>GameHub preferences</small>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:700px">
+    <h3>Browser identity</h3>
+    <p id="settingsIdentity">Loading...</p>
+
+    <button class="secondary" onclick="newGuestIdentity()">
+      Generate New Guest
+    </button>
+  </div>
+
+  <div class="card" style="max-width:700px;margin-top:12px">
+    <h3>Notifications</h3>
+    <p>Allow browser notifications for GameHub messages and activity.</p>
+    <button class="primary" onclick="requestNotifications()">Enable Notifications</button>
+  </div>
+
+</section>
 
 </div>
-
+</main>
+</div>
 
 <!-- GAME MODAL -->
-
-<div id="gameModal">
-
-    <div class="gamebar">
-
-        <button onclick="closeGame()" title="Back">
-            ←
-        </button>
-
-        <div class="gamebar-title" id="gameTitle">
-            Game
-        </div>
-
-        <div class="gamebar-actions">
-
-            <button onclick="reloadGame()" title="Reload">
-                ↻
-            </button>
-
-            <button onclick="fullscreenGame()" title="Fullscreen">
-                ⛶
-            </button>
-
-            <button onclick="closeGame()" title="Close">
-                ×
-            </button>
-
-        </div>
-
+<div class="modal" id="gameModal">
+  <div class="game-window">
+    <div class="window-head">
+      <div class="window-title" id="windowTitle">Game</div>
+      <button onclick="reloadGame()">↻</button>
+      <button onclick="closeGame()">×</button>
     </div>
-
-    <iframe
-        id="gameFrame"
-        allow="fullscreen; autoplay; gamepad; microphone; camera"
-        allowfullscreen
-    ></iframe>
-
+    <iframe id="gameFrame" allow="fullscreen; autoplay; gamepad; microphone; camera"></iframe>
+  </div>
 </div>
-
 
 <!-- CALL MODAL -->
-
-<div id="callModal">
-
-    <div class="call-window">
-
-        <div class="call-video">
-
-            <video
-                id="remoteVideo"
-                autoplay
-                playsinline
-            ></video>
-
-            <video
-                id="localVideo"
-                autoplay
-                muted
-                playsinline
-            ></video>
-
-            <div class="call-user">
-
-                <div class="call-avatar" id="callAvatar">
-                    ?
-                </div>
-
-                <div class="call-name" id="callName">
-                    Player
-                </div>
-
-                <div class="call-state" id="callState">
-                    Calling...
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="call-controls">
-
-            <button class="call-control" onclick="toggleMute()">
-                🎙
-            </button>
-
-            <button class="call-control" onclick="toggleCamera()">
-                📷
-            </button>
-
-            <button class="call-control end" onclick="endCall()">
-                ☎
-            </button>
-
-        </div>
-
+<div class="modal" id="callModal">
+  <div class="call-window">
+    <div class="call-head" id="callTitle">Call</div>
+    <div class="call-body">
+      <div>
+        <div class="call-avatar" id="callAvatar">?</div>
+        <div style="text-align:center;margin-top:14px" id="callStatus">Connecting...</div>
+      </div>
     </div>
-
+    <div class="call-controls">
+      <button id="muteBtn">🎙</button>
+      <button id="cameraBtn">▣</button>
+      <button class="hangup" onclick="endCall()">☎</button>
+    </div>
+  </div>
 </div>
-
 
 <!-- INCOMING CALL -->
-
-<div id="incoming">
-
-    <div class="incoming-top">
-
-        <div class="avatar" id="incomingAvatar">
-            ?
-        </div>
-
-        <div>
-
-            <div class="incoming-name" id="incomingName">
-                Player
-            </div>
-
-            <div class="incoming-type">
-                Incoming call
-            </div>
-
-        </div>
-
-    </div>
+<div class="modal" id="incomingModal">
+  <div class="incoming">
+    <div class="call-avatar" id="incomingAvatar">?</div>
+    <h2 id="incomingName">Incoming Call</h2>
+    <p style="color:#777f91">Someone is calling you.</p>
 
     <div class="incoming-actions">
-
-        <button
-            class="accept"
-            onclick="answerCall()"
-        >
-            Answer
-        </button>
-
-        <button
-            class="decline"
-            onclick="declineCall()"
-        >
-            Decline
-        </button>
-
+      <button class="secondary" onclick="declineCall()">Decline</button>
+      <button class="primary" onclick="answerCall()">Answer</button>
     </div>
-
+  </div>
 </div>
 
-
-<div id="toast"></div>
-
+<div class="toast" id="toast"></div>
 
 <script>
-
-/* =========================================================
-   GAME DATA
-========================================================= */
+const API = "https://gamehub.s2reetyt.workers.dev";
 
 const games = [
-
-    {
-        name:"FNAF 1",
-        file:"FNAF-1.html",
-        category:"horror",
-        tag:"HORROR",
-        description:"Survive the night.",
-        c1:"#321d32",
-        c2:"#090a0f",
-        glow:"#b43d91"
-    },
-
-    {
-        name:"FNAF 2",
-        file:"FNAF-2.html",
-        category:"horror",
-        tag:"HORROR",
-        description:"The second night begins.",
-        c1:"#27203a",
-        c2:"#090a10",
-        glow:"#7c5cff"
-    },
-
-    {
-        name:"FNAF 3",
-        file:"FNAF-3.html",
-        category:"horror",
-        tag:"HORROR",
-        description:"Something is still here.",
-        c1:"#243321",
-        c2:"#080b09",
-        glow:"#75d447"
-    },
-
-    {
-        name:"FNAF 4",
-        file:"FNAF-4.html",
-        category:"horror",
-        tag:"HORROR",
-        description:"Don't look behind you.",
-        c1:"#3a1e25",
-        c2:"#08090c",
-        glow:"#ff5263"
-    },
-
-    {
-        name:"Among Us",
-        file:"Among-Us.html",
-        category:"casual",
-        tag:"SOCIAL",
-        description:"Find the impostor.",
-        c1:"#4b1d29",
-        c2:"#11131b",
-        glow:"#ff566d"
-    },
-
-    {
-        name:"Crazy Cattle 3D",
-        file:"Crazy-Cattle3d.html",
-        category:"casual",
-        tag:"CHAOS",
-        description:"Cows. Physics. Disaster.",
-        c1:"#3c3120",
-        c2:"#11120e",
-        glow:"#ffc857"
-    },
-
-    {
-        name:"Doblox",
-        file:"Doblox.html",
-        category:"casual",
-        tag:"SANDBOX",
-        description:"Build and explore.",
-        c1:"#20394a",
-        c2:"#10151b",
-        glow:"#36b9ff"
-    },
-
-    {
-        name:"GTA Clone",
-        file:"GTA-Clone.html",
-        category:"action",
-        tag:"ACTION",
-        description:"Open-world chaos.",
-        c1:"#38271d",
-        c2:"#11100e",
-        glow:"#ff9f43"
-    },
-
-    {
-        name:"Geometry Dash",
-        file:"Geomorty-Dash.html",
-        category:"classic",
-        tag:"RHYTHM",
-        description:"Don't hit the spikes.",
-        c1:"#272052",
-        c2:"#0c0b15",
-        glow:"#a875ff"
-    },
-
-    {
-        name:"Happy Wheels",
-        file:"Happy-Wheels.html",
-        category:"classic",
-        tag:"CLASSIC",
-        description:"Probably a bad idea.",
-        c1:"#47311e",
-        c2:"#10100d",
-        glow:"#ffbe55"
-    },
-
-    {
-        name:"Helios",
-        file:"Helios-Offline.html",
-        category:"other",
-        tag:"WEB",
-        description:"Your offline search engine.",
-        c1:"#1c3550",
-        c2:"#090e16",
-        glow:"#40b9ff"
-    },
-
-    {
-        name:"Level Devil",
-        file:"Level-Devil.html",
-        category:"classic",
-        tag:"PLATFORMER",
-        description:"The level hates you.",
-        c1:"#3c1c26",
-        c2:"#0d0b10",
-        glow:"#ff476b"
-    },
-
-    {
-        name:"Melon Playground",
-        file:"Melon-Playground.html",
-        category:"sandbox",
-        tag:"SANDBOX",
-        description:"Experiment with chaos.",
-        c1:"#263d28",
-        c2:"#0c100d",
-        glow:"#6ee56e"
-    },
-
-    {
-        name:"Minecraft",
-        file:"Minecraft.html",
-        category:"classic",
-        tag:"SANDBOX",
-        description:"Build your world.",
-        c1:"#21452d",
-        c2:"#0c120e",
-        glow:"#59ce78"
-    },
-
-    {
-        name:"Mortal Kombat",
-        file:"Mortal-Kombat.html",
-        category:"action",
-        tag:"FIGHTING",
-        description:"Fight.",
-        c1:"#451d1b",
-        c2:"#0f0b0b",
-        glow:"#ff4c38"
-    },
-
-    {
-        name:"Plants vs Zombies",
-        file:"PVZ-Clone.html",
-        category:"classic",
-        tag:"STRATEGY",
-        description:"Plants versus zombies.",
-        c1:"#284329",
-        c2:"#0c100d",
-        glow:"#79e36c"
-    },
-
-    {
-        name:"Subway Surfer",
-        file:"Subway-Surfer.html",
-        category:"casual",
-        tag:"RUNNER",
-        description:"Run. Jump. Don't stop.",
-        c1:"#19394a",
-        c2:"#0b1116",
-        glow:"#35c9ff"
-    },
-
-    {
-        name:"AI",
-        file:"AI.html",
-        category:"other",
-        tag:"AI",
-        description:"Experiment with AI.",
-        c1:"#30234b",
-        c2:"#0d0b12",
-        glow:"#b477ff"
-    }
-
+  {name:"FNAF 1",file:"FNAF-1.html",category:"horror",tag:"HORROR",description:"Survive the night.",c1:"#321d32",c2:"#090a0f",glow:"#b43d91"},
+  {name:"FNAF 2",file:"FNAF-2.html",category:"horror",tag:"HORROR",description:"The second night begins.",c1:"#27203a",c2:"#090a10",glow:"#7c5cff"},
+  {name:"FNAF 3",file:"FNAF-3.html",category:"horror",tag:"HORROR",description:"Something is still here.",c1:"#243321",c2:"#080b09",glow:"#75d447"},
+  {name:"FNAF 4",file:"FNAF-4.html",category:"horror",tag:"HORROR",description:"Don't look behind you.",c1:"#3a1e25",c2:"#08090c",glow:"#ff5263"},
+  {name:"Among Us",file:"Among-Us.html",category:"casual",tag:"SOCIAL",description:"Find the impostor.",c1:"#4b1d29",c2:"#11131b",glow:"#ff566d"},
+  {name:"Crazy Cattle 3D",file:"Crazy-Cattle3d.html",category:"casual",tag:"CHAOS",description:"Cows. Physics. Disaster.",c1:"#3c3120",c2:"#11120e",glow:"#ffc857"},
+  {name:"Doblox",file:"Doblox.html",category:"casual",tag:"SANDBOX",description:"Build and explore.",c1:"#20394a",c2:"#10151b",glow:"#36b9ff"},
+  {name:"GTA Clone",file:"GTA-Clone.html",category:"action",tag:"ACTION",description:"Open-world chaos.",c1:"#38271d",c2:"#11100e",glow:"#ff9f43"},
+  {name:"Geometry Dash",file:"Geomorty-Dash.html",category:"classic",tag:"RHYTHM",description:"Don't hit the spikes.",c1:"#272052",c2:"#0c0b15",glow:"#a875ff"},
+  {name:"Happy Wheels",file:"Happy-Wheels.html",category:"classic",tag:"CLASSIC",description:"Probably a bad idea.",c1:"#47311e",c2:"#10100d",glow:"#ffbe55"},
+  {name:"Helios",file:"Helios-Offline.html",category:"other",tag:"WEB",description:"Your offline search engine.",c1:"#1c3550",c2:"#090e16",glow:"#40b9ff"},
+  {name:"Level Devil",file:"Level-Devil.html",category:"classic",tag:"PLATFORMER",description:"The level hates you.",c1:"#3c1c26",c2:"#0d0b10",glow:"#ff476b"},
+  {name:"Melon Playground",file:"Melon-Playground.html",category:"sandbox",tag:"SANDBOX",description:"Experiment with chaos.",c1:"#263d28",c2:"#0c100d",glow:"#6ee56e"},
+  {name:"Minecraft",file:"Minecraft.html",category:"classic",tag:"SANDBOX",description:"Build your world.",c1:"#21452d",c2:"#0c120e",glow:"#59ce78"},
+  {name:"Mortal Kombat",file:"Mortal-Kombat.html",category:"action",tag:"FIGHTING",description:"Fight.",c1:"#451d1b",c2:"#0f0b0b",glow:"#ff4c38"},
+  {name:"Plants vs Zombies",file:"PVZ-Clone.html",category:"classic",tag:"STRATEGY",description:"Plants versus zombies.",c1:"#284329",c2:"#0c100d",glow:"#79e36c"},
+  {name:"Subway Surfer",file:"Subway-Surfer.html",category:"casual",tag:"RUNNER",description:"Run. Jump. Don't stop.",c1:"#19394a",c2:"#0b1116",glow:"#35c9ff"},
+  {name:"AI",file:"AI.html",category:"other",tag:"AI",description:"Experiment with AI.",c1:"#30234b",c2:"#0d0b12",glow:"#b477ff"}
 ];
 
+let currentFilter = "all";
+let currentGame = null;
 
-/* =========================================================
-   SERVER DATA
-========================================================= */
+let player = {
+  id: "",
+  name: ""
+};
 
-const servers = [
+let players = new Map();
+let socket = null;
 
-    {
-        icon:"🎮",
-        name:"Main Lobby",
-        game:"GameHub",
-        players:"12 / 50"
-    },
+let notifications = JSON.parse(
+  localStorage.getItem("gamehub_notifications") || "[]"
+);
 
-    {
-        icon:"👻",
-        name:"FNAF Night Shift",
-        game:"FNAF 1",
-        players:"4 / 10"
-    },
+let peer = null;
+let localStream = null;
+let remoteStream = null;
+let currentCallTarget = null;
+let incomingOffer = null;
 
-    {
-        icon:"🐄",
-        name:"Cattle Chaos",
-        game:"Crazy Cattle 3D",
-        players:"8 / 16"
-    },
+function $(id){
+  return document.getElementById(id);
+}
 
-    {
-        icon:"🔫",
-        name:"Open World",
-        game:"GTA Clone",
-        players:"6 / 20"
-    },
+/* =========================
+   IDENTITY
+========================= */
 
-    {
-        icon:"🧱",
-        name:"Build Zone",
-        game:"Minecraft",
-        players:"9 / 30"
-    }
+function randomGuest(){
+  return "Guest-" + Math.floor(1000 + Math.random() * 9000);
+}
 
-];
-
-
-/* =========================================================
-   FRIEND DATA
-========================================================= */
-
-const friends = [
-
-    {
-        name:"Alex",
-        status:"Playing Crazy Cattle 3D",
-        online:true
-    },
-
-    {
-        name:"Sam",
-        status:"Playing FNAF 2",
-        online:true
-    },
-
-    {
-        name:"Jay",
-        status:"Online",
-        online:true
-    },
-
-    {
-        name:"Max",
-        status:"Offline",
-        online:false
-    }
-
-];
-
-
-/* =========================================================
-   STARTUP
-========================================================= */
-
-const bootMessages = [
-
-    "INITIALIZING GAME LIBRARY...",
-    "LOADING 18 GAMES...",
-    "CONNECTING TO GAMEHUB...",
-    "CHECKING SERVERS...",
-    "LOADING SOCIAL SYSTEM...",
-    "STARTING GAMEHUB..."
-
-];
-
-let bootIndex = 0;
-
-const bootInterval = setInterval(() => {
-
-    if(bootIndex < bootMessages.length){
-
-        document.getElementById("bootText").textContent =
-            bootMessages[bootIndex];
-
-        bootIndex++;
-
-    }
-
-}, 260);
-
-
-setTimeout(() => {
-
-    clearInterval(bootInterval);
-
-    document.getElementById("startup").classList.add("hide");
-
-    document.getElementById("app").classList.add("ready");
-
-    renderEverything();
-
-    connectSocket();
-
-}, 1900);
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function openView(view){
-
-    document.querySelectorAll(".view").forEach(el => {
-        el.classList.remove("active");
+async function createGuestIdentity(){
+  try{
+    const response = await fetch(API + "/api/session", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      }
     });
 
-    const target =
-        document.getElementById("view-" + view);
-
-    if(target){
-        target.classList.add("active");
+    if(!response.ok){
+      throw new Error("Session request failed");
     }
 
-    document.querySelectorAll(".nav-item").forEach(item => {
-
-        item.classList.toggle(
-            "active",
-            item.dataset.view === view
-        );
-
-    });
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-}
-
-
-/* =========================================================
-   RENDER GAME CARD
-========================================================= */
-
-function gameCard(game,index){
-
-    return `
-
-        <article
-            class="game-card"
-            data-category="${game.category}"
-            data-name="${game.name.toLowerCase()}"
-            onclick="launchGame('${escapeAttr(game.file)}','${escapeAttr(game.name)}')"
-        >
-
-            <div
-                class="game-art"
-                style="
-                    --c1:${game.c1};
-                    --c2:${game.c2};
-                    --glow:${game.glow};
-                "
-            ></div>
-
-            <div class="game-pattern"></div>
-
-            <div class="game-number">
-                ${String(index + 1).padStart(2,"0")}
-            </div>
-
-            <div class="game-info">
-
-                <div class="game-name">
-                    ${escapeHTML(game.name)}
-                </div>
-
-                <div class="game-meta">
-                    ${escapeHTML(game.description)}
-                </div>
-
-                <div class="game-tag">
-                    ${escapeHTML(game.tag)}
-                </div>
-
-            </div>
-
-        </article>
-
-    `;
-
-}
-
-
-/* =========================================================
-   RENDER EVERYTHING
-========================================================= */
-
-function renderEverything(){
-
-    const featured =
-        document.getElementById("featuredGames");
-
-    const library =
-        document.getElementById("libraryGames");
-
-    const featuredGames =
-        [
-            games[0],
-            games[5],
-            games[7],
-            games[10],
-            games[15],
-            games[16],
-            games[17],
-            games[13]
-        ];
-
-    featured.innerHTML =
-        featuredGames.map((game,i) =>
-            gameCard(game,i)
-        ).join("");
-
-    library.innerHTML =
-        games.map((game,i) =>
-            gameCard(game,i)
-        ).join("");
-
-    renderServers();
-
-    renderFriends();
-
-}
-
-
-/* =========================================================
-   SERVERS
-========================================================= */
-
-function serverHTML(server){
-
-    return `
-
-        <div class="server">
-
-            <div class="server-icon">
-                ${server.icon}
-            </div>
-
-            <div class="server-info">
-
-                <div class="server-name">
-                    ${escapeHTML(server.name)}
-                </div>
-
-                <div class="server-detail">
-                    ${escapeHTML(server.game)}
-                </div>
-
-            </div>
-
-            <div class="server-count">
-                ${escapeHTML(server.players)}
-            </div>
-
-            <button
-                class="join"
-                onclick="joinServer('${escapeAttr(server.name)}')"
-            >
-                JOIN
-            </button>
-
-        </div>
-
-    `;
-
-}
-
-
-function renderServers(){
-
-    const html =
-        servers.map(serverHTML).join("");
-
-    document.getElementById("homeServers").innerHTML =
-        html;
-
-    document.getElementById("serverList").innerHTML =
-        html;
-
-}
-
-
-/* =========================================================
-   FRIENDS
-========================================================= */
-
-function friendHTML(friend){
-
-    return `
-
-        <div class="friend">
-
-            <div class="avatar">
-
-                ${escapeHTML(friend.name[0])}
-
-                ${
-                    friend.online
-                    ? `<span class="online-dot"></span>`
-                    : ""
-                }
-
-            </div>
-
-            <div class="friend-info">
-
-                <div class="friend-name">
-                    ${escapeHTML(friend.name)}
-                </div>
-
-                <div class="friend-state">
-                    ${escapeHTML(friend.status)}
-                </div>
-
-            </div>
-
-            ${
-                friend.online
-                ?
-                `<button
-                    class="call-btn"
-                    onclick="callFriend('${escapeAttr(friend.name)}')"
-                    title="Call"
-                >
-                    📞
-                </button>`
-                :
-                ""
-            }
-
-        </div>
-
-    `;
-
-}
-
-
-function renderFriends(){
-
-    const online =
-        friends.filter(f => f.online).length;
-
-    document.getElementById("onlineCount").textContent =
-        online + " ONLINE";
-
-    document.getElementById("friendsStatus").textContent =
-        online + " ONLINE";
-
-    document.getElementById("profileFriends").textContent =
-        online;
-
-    document.getElementById("homeFriends").innerHTML =
-        friends.filter(f => f.online).map(friendHTML).join("");
-
-    document.getElementById("friendsList").innerHTML =
-        friends.map(friendHTML).join("");
-
-}
-
-
-/* =========================================================
-   LAUNCH GAME
-========================================================= */
-
-function launchGame(file,name){
-
-    const modal =
-        document.getElementById("gameModal");
-
-    const frame =
-        document.getElementById("gameFrame");
-
-    document.getElementById("gameTitle").textContent =
-        name;
-
-    /*
-       All of your game files are in the same
-       GitHub repository root as index.html.
-    */
-
-    frame.src = file;
-
-    modal.classList.add("open");
-
-    document.body.style.overflow = "hidden";
-
-}
-
-
-function closeGame(){
-
-    document.getElementById("gameModal")
-        .classList.remove("open");
-
-    document.getElementById("gameFrame").src =
-        "about:blank";
-
-    document.body.style.overflow = "";
-
-}
-
-
-function reloadGame(){
-
-    const frame =
-        document.getElementById("gameFrame");
-
-    frame.src = frame.src;
-
-}
-
-
-function fullscreenGame(){
-
-    const frame =
-        document.getElementById("gameFrame");
-
-    if(frame.requestFullscreen){
-        frame.requestFullscreen();
+    const data = await response.json();
+
+    if(
+      data &&
+      data.player &&
+      data.player.id &&
+      data.player.name
+    ){
+      player.id = data.player.id;
+      player.name = data.player.name;
+
+      localStorage.setItem(
+        "gamehub_guest_id",
+        player.id
+      );
+
+      localStorage.setItem(
+        "gamehub_guest_name",
+        player.name
+      );
+
+      // Remove old broken identity.
+      localStorage.removeItem("gamehub_name");
+
+      return;
     }
 
-}
+    throw new Error("Invalid session response");
 
+  }catch(error){
 
-/* =========================================================
-   SERVER
-========================================================= */
-
-function joinServer(name){
-
-    showToast(
-        "Joining " + name + "..."
+    console.warn(
+      "GameHub backend unavailable:",
+      error
     );
 
-    setTimeout(() => {
+    player.id =
+      localStorage.getItem("gamehub_guest_id") ||
+      crypto.randomUUID();
 
-        showToast(
-            "Server connection ready."
-        );
+    let oldName =
+      localStorage.getItem("gamehub_guest_name");
 
-    },700);
+    if(
+      !oldName ||
+      oldName.trim().toLowerCase() === "andrew"
+    ){
+      oldName = randomGuest();
+    }
 
+    player.name = oldName;
+
+    localStorage.setItem(
+      "gamehub_guest_id",
+      player.id
+    );
+
+    localStorage.setItem(
+      "gamehub_guest_name",
+      player.name
+    );
+
+    localStorage.removeItem("gamehub_name");
+  }
+
+  updateIdentityUI();
 }
 
+async function newGuestIdentity(){
+  localStorage.removeItem("gamehub_guest_id");
+  localStorage.removeItem("gamehub_guest_name");
+  localStorage.removeItem("gamehub_name");
 
-/* =========================================================
-   FILTERS
-========================================================= */
+  await createGuestIdentity();
 
-document.querySelectorAll(".filter").forEach(button => {
+  connectSocket();
 
-    button.addEventListener("click",() => {
+  toast("New guest identity created: " + player.name);
+}
 
-        document.querySelectorAll(".filter")
-            .forEach(b => b.classList.remove("active"));
+function updateIdentityUI(){
+
+  const name =
+    player.name || "Connecting...";
+
+  $("topName").textContent = name;
+  $("profileName").textContent = name;
+  $("settingsIdentity").textContent =
+    "You are signed in as " + name + ".";
+
+  $("friendProfileText").textContent =
+    "You are currently known as " + name + ".";
+
+  $("avatar").textContent =
+    name.charAt(0).toUpperCase();
+
+  $("profileAvatar").textContent =
+    name.charAt(0).toUpperCase();
+
+  $("profileId").textContent =
+    player.id
+      ? "Player ID: " + player.id
+      : "Player ID unavailable";
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showView(view){
+
+  document
+    .querySelectorAll(".view")
+    .forEach(v => v.classList.remove("active"));
+
+  const target =
+    $("view-" + view);
+
+  if(target){
+    target.classList.add("active");
+  }
+
+  document
+    .querySelectorAll(".nav button,[data-view]")
+    .forEach(btn => {
+      btn.classList.toggle(
+        "active",
+        btn.dataset.view === view
+      );
+    });
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+  if(view === "notifications"){
+    renderNotifications();
+  }
+}
+
+document
+  .querySelectorAll("[data-view]")
+  .forEach(button => {
+    button.addEventListener(
+      "click",
+      () => showView(button.dataset.view)
+    );
+  });
+
+$("userPill").onclick =
+  () => showView("profile");
+
+$("notifyBtn").onclick =
+  () => showView("notifications");
+
+/* =========================
+   GAME CARDS
+========================= */
+
+function gameCard(game){
+
+  const first =
+    game.name.charAt(0);
+
+  return `
+    <div
+      class="game"
+      onclick='openGame(${JSON.stringify(game)})'
+    >
+      <div
+        class="game-art"
+        style="
+          background:
+            linear-gradient(135deg,${game.c1},${game.c2});
+          --glow:${game.glow}
+        "
+      >
+        <div class="game-letter">${first}</div>
+        <span class="tag">${game.tag}</span>
+      </div>
+
+      <div class="game-info">
+        <h3>${escapeHtml(game.name)}</h3>
+        <p>${escapeHtml(game.description)}</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderGames(){
+
+  const query =
+    $("search").value
+      .trim()
+      .toLowerCase();
+
+  const filtered =
+    games.filter(game => {
+
+      const matchesFilter =
+        currentFilter === "all" ||
+        game.category === currentFilter;
+
+      const matchesSearch =
+        !query ||
+        game.name.toLowerCase().includes(query) ||
+        game.description.toLowerCase().includes(query) ||
+        game.tag.toLowerCase().includes(query);
+
+      return matchesFilter && matchesSearch;
+    });
+
+  $("homeGames").innerHTML =
+    games
+      .slice(0,8)
+      .map(gameCard)
+      .join("");
+
+  $("allGames").innerHTML =
+    filtered.length
+      ? filtered.map(gameCard).join("")
+      : `<div class="empty">No games found.</div>`;
+
+  $("gameCount").textContent =
+    games.length + " games";
+}
+
+$("search").addEventListener(
+  "input",
+  renderGames
+);
+
+document
+  .querySelectorAll(".filter")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        document
+          .querySelectorAll(".filter")
+          .forEach(b =>
+            b.classList.remove("active")
+          );
 
         button.classList.add("active");
 
-        const filter =
-            button.dataset.filter;
+        currentFilter =
+          button.dataset.filter;
 
-        document.querySelectorAll("#libraryGames .game-card")
-            .forEach(card => {
-
-                if(
-                    filter === "all" ||
-                    card.dataset.category === filter
-                ){
-
-                    card.style.display = "";
-
-                }else{
-
-                    card.style.display = "none";
-
-                }
-
-            });
-
-    });
-
-});
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-document.getElementById("globalSearch")
-    .addEventListener("input",function(){
-
-        const query =
-            this.value.toLowerCase().trim();
-
-        if(!query){
-
-            document.querySelectorAll(
-                "#libraryGames .game-card"
-            ).forEach(card => {
-                card.style.display = "";
-            });
-
-            return;
-
-        }
-
-        openView("library");
-
-        document.querySelectorAll(
-            "#libraryGames .game-card"
-        ).forEach(card => {
-
-            const name =
-                card.dataset.name;
-
-            card.style.display =
-                name.includes(query)
-                ? ""
-                : "none";
-
-        });
-
-    });
-
-
-/* =========================================================
-   MESSAGES
-========================================================= */
-
-const messageInput =
-    document.getElementById("messageInput");
-
-messageInput.addEventListener("keydown",event => {
-
-    if(event.key === "Enter"){
-        sendChatMessage();
-    }
-
-});
-
-
-function sendChatMessage(){
-
-    const input =
-        document.getElementById("messageInput");
-
-    const text =
-        input.value.trim();
-
-    if(!text) return;
-
-    addMessage(
-        text,
-        true
+        renderGames();
+      }
     );
+  });
 
-    input.value = "";
+function openGame(game){
 
-    if(socket && socket.readyState === WebSocket.OPEN){
+  currentGame = game;
 
-        socket.send(JSON.stringify({
+  $("windowTitle").textContent =
+    game.name;
 
-            type:"chat",
-            text:text
+  $("gameFrame").src =
+    "./" + game.file;
 
-        }));
+  $("gameModal").classList.add("show");
 
-    }
-
+  document.body.style.overflow =
+    "hidden";
 }
 
+function reloadGame(){
 
-function addMessage(text,mine=false,sender=""){
+  if(!currentGame){
+    return;
+  }
 
-    const container =
-        document.getElementById("messages");
+  $("gameFrame").src =
+    "./" + currentGame.file;
+}
 
-    const div =
-        document.createElement("div");
+function closeGame(){
 
-    div.className =
-        "message" + (mine ? " mine" : "");
+  $("gameModal").classList.remove("show");
 
-    div.innerHTML = `
+  $("gameFrame").src =
+    "about:blank";
 
-        ${sender ? `<strong>${escapeHTML(sender)}</strong><br>` : ""}
+  document.body.style.overflow =
+    "";
+}
 
-        ${escapeHTML(text)}
+/* =========================
+   SERVERS
+========================= */
 
-        <div class="message-time">
-            ${mine ? "YOU" : "NOW"}
+function renderServers(){
+
+  const online =
+    [...players.values()];
+
+  const count =
+    Math.max(1,online.length);
+
+  $("serverList").innerHTML = `
+    <div class="server">
+      <div class="server-icon">🌐</div>
+      <div class="server-info">
+        <strong>GameHub Main</strong>
+        <small>Global lobby • Open</small>
+      </div>
+      <div class="server-count">
+        ${count} online
+      </div>
+      <button
+        class="secondary"
+        onclick="showView('messages')"
+      >
+        Join
+      </button>
+    </div>
+
+    <div class="server">
+      <div class="server-icon">🎮</div>
+      <div class="server-info">
+        <strong>Game Room</strong>
+        <small>Play together</small>
+      </div>
+      <div class="server-count">Online</div>
+      <button
+        class="secondary"
+        onclick="showView('games')"
+      >
+        Browse
+      </button>
+    </div>
+  `;
+}
+
+/* =========================
+   PRESENCE
+========================= */
+
+function renderPlayers(){
+
+  const list =
+    [...players.values()];
+
+  $("friendStatus").textContent =
+    list.length +
+    " player" +
+    (list.length === 1 ? "" : "s") +
+    " online";
+
+  if(!list.length){
+
+    $("onlinePlayers").innerHTML =
+      `<p style="color:#777f91">
+        Nobody else is online yet.
+      </p>`;
+
+    return;
+  }
+
+  $("onlinePlayers").innerHTML =
+    list.map(p => `
+      <div class="online">
+        <div class="online-dot"></div>
+        <div>
+          <div class="player-name">
+            ${escapeHtml(p.name)}
+          </div>
+          <div class="player-id">
+            Online
+          </div>
         </div>
-
-    `;
-
-    container.appendChild(div);
-
-    container.scrollTop =
-        container.scrollHeight;
-
+      </div>
+    `).join("");
 }
 
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-
-async function toggleNotifications(){
-
-    const sw =
-        document.getElementById("notificationSwitch");
-
-    if(!("Notification" in window)){
-
-        showToast(
-            "This browser does not support notifications."
-        );
-
-        return;
-
-    }
-
-    if(Notification.permission !== "granted"){
-
-        const permission =
-            await Notification.requestPermission();
-
-        if(permission === "granted"){
-
-            sw.classList.add("on");
-
-            new Notification(
-                "GameHub",
-                {
-                    body:"Notifications are enabled."
-                }
-            );
-
-            showToast(
-                "Notifications enabled."
-            );
-
-        }else{
-
-            showToast(
-                "Notification permission was denied."
-            );
-
-        }
-
-    }else{
-
-        sw.classList.toggle("on");
-
-        showToast(
-            "Notification setting updated."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   CALL SYSTEM
-========================================================= */
-
-let socket = null;
-
-let myPlayerId = null;
-
-let currentCallTarget = null;
-
-let peerConnection = null;
-
-let localStream = null;
-
-let pendingOffer = null;
-
-let microphoneEnabled = true;
-
-let cameraEnabled = true;
-
-
-/* =========================================================
+/* =========================
    WEBSOCKET
-========================================================= */
+========================= */
 
 function connectSocket(){
 
-    const protocol =
-        location.protocol === "https:"
-        ? "wss:"
-        : "ws:";
+  if(!player.name){
+    return;
+  }
 
-    /*
-       Cloudflare Worker backend.
-    */
+  if(
+    socket &&
+    (
+      socket.readyState === WebSocket.OPEN ||
+      socket.readyState === WebSocket.CONNECTING
+    )
+  ){
+    return;
+  }
 
-    const backendHost =
-        "gamehub.s2reetyt.workers.dev";
+  const wsUrl =
+    API
+      .replace("https://","wss://")
+      .replace("http://","ws://") +
+    "/ws?room=main&name=" +
+    encodeURIComponent(player.name);
 
-    const wsURL =
-        protocol +
-        "//" +
-        backendHost +
-        "/ws?room=main&name=" +
-        encodeURIComponent(
-            localStorage.getItem("gamehub_name") || "Andrew"
-        );
+  try{
+    socket = new WebSocket(wsUrl);
+  }catch(error){
+    console.error(error);
+    return;
+  }
 
-    try{
+  socket.addEventListener(
+    "open",
+    () => {
 
-        socket =
-            new WebSocket(wsURL);
+      $("friendStatus").textContent =
+        "Connected";
 
-        socket.onopen = () => {
+      toast("Connected to GameHub");
 
-            document.getElementById(
-                "serverStatus"
-            ).textContent =
-                "CONNECTED";
-
-            showToast(
-                "Connected to GameHub."
-            );
-
-        };
-
-
-        socket.onmessage = event => {
-
-            try{
-
-                const data =
-                    JSON.parse(event.data);
-
-                handleSocketMessage(data);
-
-            }catch(error){
-
-                console.error(
-                    "GameHub message error:",
-                    error
-                );
-
-            }
-
-        };
-
-
-        socket.onclose = () => {
-
-            document.getElementById(
-                "serverStatus"
-            ).textContent =
-                "OFFLINE";
-
-        };
-
-
-        socket.onerror = () => {
-
-            document.getElementById(
-                "serverStatus"
-            ).textContent =
-                "OFFLINE";
-
-        };
-
-    }catch(error){
-
-        console.error(error);
-
+      addNotification(
+        "System",
+        "You are connected to GameHub."
+      );
     }
+  );
 
+  socket.addEventListener(
+    "message",
+    event => {
+
+      let data;
+
+      try{
+        data = JSON.parse(event.data);
+      }catch{
+        return;
+      }
+
+      handleSocketMessage(data);
+    }
+  );
+
+  socket.addEventListener(
+    "close",
+    () => {
+
+      $("friendStatus").textContent =
+        "Reconnecting...";
+
+      setTimeout(
+        connectSocket,
+        3000
+      );
+    }
+  );
 }
-
-
-/* =========================================================
-   SOCKET MESSAGE HANDLER
-========================================================= */
 
 function handleSocketMessage(data){
 
-    if(data.type === "connected"){
+  if(data.type === "connected"){
 
-        myPlayerId =
-            data.id;
+    player.id =
+      data.id || player.id;
 
-        return;
+    player.name =
+      data.name || player.name;
 
-    }
+    localStorage.setItem(
+      "gamehub_guest_id",
+      player.id
+    );
 
+    localStorage.setItem(
+      "gamehub_guest_name",
+      player.name
+    );
 
-    if(data.type === "chat"){
+    updateIdentityUI();
+  }
 
-        if(data.senderId !== myPlayerId){
+  if(data.type === "online"){
 
-            addMessage(
-                data.text,
-                false,
-                data.sender
-            );
+    players.clear();
 
+    (data.players || [])
+      .forEach(p => {
+
+        if(p.id !== player.id){
+          players.set(
+            p.id,
+            p
+          );
         }
+      });
 
-        return;
+    renderPlayers();
+    renderServers();
+  }
 
-    }
+  if(data.type === "presence"){
 
+    if(data.action === "join"){
 
-    if(data.type === "online"){
+      if(data.id !== player.id){
 
-        console.log(
-            "Online players:",
-            data.players
+        players.set(
+          data.id,
+          {
+            id:data.id,
+            name:data.name
+          }
         );
 
-        return;
-
-    }
-
-
-    if(data.type === "presence"){
-
-        if(data.action === "join"){
-
-            showToast(
-                data.name + " came online."
-            );
-
-        }
-
-        if(data.action === "leave"){
-
-            showToast(
-                data.name + " went offline."
-            );
-
-        }
-
-        return;
-
-    }
-
-
-    if(data.type === "call-offer"){
-
-        pendingOffer = data;
-
-        currentCallTarget =
-            data.sender;
-
-        document.getElementById(
-            "incomingName"
-        ).textContent =
-            data.senderName || "Player";
-
-        document.getElementById(
-            "incomingAvatar"
-        ).textContent =
-            (data.senderName || "?")
-                .charAt(0)
-                .toUpperCase();
-
-        document.getElementById(
-            "incoming"
-        ).classList.add("open");
-
-        return;
-
-    }
-
-
-    if(data.type === "call-answer"){
-
-        finishOutgoingCall(
-            data.answer
+        addNotification(
+          "Friend activity",
+          data.name + " came online."
         );
-
-        return;
-
+      }
     }
 
+    if(data.action === "leave"){
 
-    if(data.type === "ice-candidate"){
+      players.delete(data.id);
 
-        if(
-            peerConnection &&
-            data.candidate
-        ){
+      addNotification(
+        "Friend activity",
+        data.name + " went offline."
+      );
+    }
 
-            peerConnection
-                .addIceCandidate(
-                    new RTCIceCandidate(
-                        data.candidate
-                    )
-                )
-                .catch(console.error);
+    renderPlayers();
+    renderServers();
+  }
 
+  if(data.type === "chat"){
+
+    addMessage(
+      data.sender,
+      data.text,
+      data.senderId === player.id
+    );
+  }
+
+  if(data.type === "typing"){
+    // Reserved for typing indicators.
+  }
+
+  if(data.type === "call-offer"){
+
+    incomingOffer = data;
+
+    $("incomingName").textContent =
+      data.senderName || "Someone";
+
+    $("incomingAvatar").textContent =
+      (data.senderName || "?")
+        .charAt(0)
+        .toUpperCase();
+
+    $("incomingModal").classList.add("show");
+  }
+
+  if(data.type === "call-answer"){
+    finishPeerAnswer(data);
+  }
+
+  if(data.type === "ice-candidate"){
+    if(peer && data.candidate){
+      peer.addIceCandidate(
+        new RTCIceCandidate(
+          data.candidate
+        )
+      ).catch(() => {});
+    }
+  }
+
+  if(data.type === "call-end"){
+    closeCallUI();
+  }
+
+  if(data.type === "call-error"){
+    toast(data.error || "Call failed.");
+    closeCallUI();
+  }
+}
+
+/* =========================
+   CHAT
+========================= */
+
+$("chatForm").addEventListener(
+  "submit",
+  event => {
+
+    event.preventDefault();
+
+    const input =
+      $("chatInput");
+
+    const text =
+      input.value.trim();
+
+    if(!text){
+      return;
+    }
+
+    if(
+      !socket ||
+      socket.readyState !== WebSocket.OPEN
+    ){
+      toast("Not connected to GameHub.");
+      return;
+    }
+
+    socket.send(
+      JSON.stringify({
+        type:"chat",
+        text
+      })
+    );
+
+    input.value = "";
+  }
+);
+
+function addMessage(sender,text,mine){
+
+  const box =
+    $("messages");
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "msg" +
+    (mine ? " mine" : "");
+
+  div.innerHTML = `
+    <small>${escapeHtml(sender)}</small>
+    ${escapeHtml(text)}
+  `;
+
+  box.appendChild(div);
+
+  box.scrollTop =
+    box.scrollHeight;
+}
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+function addNotification(title,text){
+
+  notifications.unshift({
+    title,
+    text,
+    time:Date.now()
+  });
+
+  notifications =
+    notifications.slice(0,30);
+
+  localStorage.setItem(
+    "gamehub_notifications",
+    JSON.stringify(notifications)
+  );
+
+  renderNotifications();
+}
+
+function renderNotifications(){
+
+  if(!notifications.length){
+
+    $("notificationList").innerHTML =
+      `<div class="empty">
+        You're all caught up.
+      </div>`;
+
+    $("notifyBadge").style.display =
+      "none";
+
+    return;
+  }
+
+  $("notificationList").innerHTML =
+    notifications.map(n => `
+      <div class="notice">
+        <strong>${escapeHtml(n.title)}</strong>
+        <span>${escapeHtml(n.text)}</span>
+      </div>
+    `).join("");
+
+  const unread =
+    Math.min(
+      notifications.length,
+      99
+    );
+
+  $("notifyBadge").textContent =
+    unread;
+
+  $("notifyBadge").style.display =
+    "grid";
+}
+
+function clearNotifications(){
+
+  notifications = [];
+
+  localStorage.setItem(
+    "gamehub_notifications",
+    "[]"
+  );
+
+  renderNotifications();
+}
+
+/* =========================
+   WEB NOTIFICATIONS
+========================= */
+
+async function requestNotifications(){
+
+  if(!("Notification" in window)){
+    toast("Your browser does not support notifications.");
+    return;
+  }
+
+  const permission =
+    await Notification.requestPermission();
+
+  if(permission === "granted"){
+    new Notification(
+      "GameHub",
+      {
+        body:
+          "Notifications are enabled."
+      }
+    );
+
+    toast("Notifications enabled.");
+  }else{
+    toast("Notifications were not enabled.");
+  }
+}
+
+/* =========================
+   CALLING
+========================= */
+
+$("callBtn").onclick = () => {
+
+  const online =
+    [...players.values()];
+
+  if(!online.length){
+    toast("Nobody else is online right now.");
+    return;
+  }
+
+  startCall(online[0]);
+};
+
+async function startCall(target){
+
+  currentCallTarget =
+    target;
+
+  $("callTitle").textContent =
+    "Calling " + target.name;
+
+  $("callAvatar").textContent =
+    target.name
+      .charAt(0)
+      .toUpperCase();
+
+  $("callStatus").textContent =
+    "Calling...";
+
+  $("callModal").classList.add("show");
+
+  try{
+
+    localStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true,
+        video:false
+      });
+
+    peer =
+      createPeer();
+
+    localStream
+      .getTracks()
+      .forEach(track => {
+        peer.addTrack(
+          track,
+          localStream
+        );
+      });
+
+    const offer =
+      await peer.createOffer();
+
+    await peer.setLocalDescription(
+      offer
+    );
+
+    socket.send(
+      JSON.stringify({
+        type:"call-offer",
+        target:target.id,
+        offer
+      })
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    toast(
+      "Microphone permission is required for calls."
+    );
+
+    closeCallUI();
+  }
+}
+
+function createPeer(){
+
+  const connection =
+    new RTCPeerConnection({
+      iceServers:[
+        {
+          urls:"stun:stun.l.google.com:19302"
         }
+      ]
+    });
 
-        return;
+  connection.addEventListener(
+    "icecandidate",
+    event => {
 
+      if(
+        event.candidate &&
+        currentCallTarget &&
+        socket
+      ){
+        socket.send(
+          JSON.stringify({
+            type:"ice-candidate",
+            target:
+              currentCallTarget.id,
+            candidate:
+              event.candidate
+          })
+        );
+      }
     }
+  );
 
+  connection.addEventListener(
+    "connectionstatechange",
+    () => {
 
-    if(data.type === "call-end"){
+      if(
+        connection.connectionState ===
+        "connected"
+      ){
+        $("callStatus").textContent =
+          "Connected";
+      }
 
+      if(
+        [
+          "failed",
+          "disconnected",
+          "closed"
+        ].includes(
+          connection.connectionState
+        )
+      ){
         closeCallUI();
-
-        return;
-
+      }
     }
+  );
 
+  return connection;
 }
-
-
-/* =========================================================
-   CALL FRIEND
-========================================================= */
-
-function callFriend(name){
-
-    const onlineFriend =
-        friends.find(
-            f =>
-                f.name === name &&
-                f.online
-        );
-
-    if(!onlineFriend){
-
-        showToast(
-            "That friend is offline."
-        );
-
-        return;
-
-    }
-
-    /*
-       The real backend needs the player's
-       online WebSocket ID to call them.
-       This UI is ready for that system.
-    */
-
-    showToast(
-        "Calling " + name + "..."
-    );
-
-    openCallUI(
-        name,
-        "Calling..."
-    );
-
-}
-
-
-/* =========================================================
-   OPEN CALL UI
-========================================================= */
-
-function openCallUI(name,state){
-
-    document.getElementById(
-        "callName"
-    ).textContent =
-        name;
-
-    document.getElementById(
-        "callAvatar"
-    ).textContent =
-        name.charAt(0).toUpperCase();
-
-    document.getElementById(
-        "callState"
-    ).textContent =
-        state;
-
-    document.getElementById(
-        "callModal"
-    ).classList.add("open");
-
-}
-
-
-/* =========================================================
-   START WEBRTC
-========================================================= */
-
-async function createPeerConnection(targetId){
-
-    peerConnection =
-        new RTCPeerConnection({
-
-            iceServers:[
-                {
-                    urls:
-                        "stun:stun.l.google.com:19302"
-                }
-            ]
-
-        });
-
-
-    peerConnection.onicecandidate =
-        event => {
-
-            if(
-                event.candidate &&
-                socket &&
-                socket.readyState === WebSocket.OPEN
-            ){
-
-                socket.send(
-                    JSON.stringify({
-
-                        type:"ice-candidate",
-
-                        target:targetId,
-
-                        candidate:
-                            event.candidate
-
-                    })
-                );
-
-            }
-
-        };
-
-
-    peerConnection.ontrack =
-        event => {
-
-            const video =
-                document.getElementById(
-                    "remoteVideo"
-                );
-
-            video.srcObject =
-                event.streams[0];
-
-            video.style.display =
-                "block";
-
-        };
-
-
-    try{
-
-        localStream =
-            await navigator.mediaDevices
-                .getUserMedia({
-                    audio:true,
-                    video:true
-                });
-
-        localStream
-            .getTracks()
-            .forEach(track => {
-
-                peerConnection
-                    .addTrack(
-                        track,
-                        localStream
-                    );
-
-            });
-
-        const localVideo =
-            document.getElementById(
-                "localVideo"
-            );
-
-        localVideo.srcObject =
-            localStream;
-
-        localVideo.style.display =
-            "block";
-
-    }catch(error){
-
-        console.warn(
-            "Camera/microphone unavailable:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   FINISH OUTGOING CALL
-========================================================= */
-
-async function finishOutgoingCall(answer){
-
-    if(!peerConnection) return;
-
-    await peerConnection
-        .setRemoteDescription(
-            new RTCSessionDescription(answer)
-        );
-
-    document.getElementById(
-        "callState"
-    ).textContent =
-        "Connected";
-
-}
-
-
-/* =========================================================
-   ANSWER
-========================================================= */
 
 async function answerCall(){
 
-    document.getElementById(
-        "incoming"
-    ).classList.remove("open");
+  if(!incomingOffer){
+    return;
+  }
 
-    if(!pendingOffer){
+  const data =
+    incomingOffer;
 
-        showToast(
-            "The call is no longer available."
+  $("incomingModal")
+    .classList.remove("show");
+
+  currentCallTarget = {
+    id:data.sender,
+    name:data.senderName
+  };
+
+  $("callTitle").textContent =
+    "Call with " +
+    data.senderName;
+
+  $("callAvatar").textContent =
+    data.senderName
+      .charAt(0)
+      .toUpperCase();
+
+  $("callStatus").textContent =
+    "Connecting...";
+
+  $("callModal").classList.add("show");
+
+  try{
+
+    localStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true,
+        video:false
+      });
+
+    peer =
+      createPeer();
+
+    localStream
+      .getTracks()
+      .forEach(track => {
+        peer.addTrack(
+          track,
+          localStream
         );
+      });
 
-        return;
-
-    }
-
-    openCallUI(
-        pendingOffer.senderName || "Player",
-        "Connecting..."
+    await peer.setRemoteDescription(
+      new RTCSessionDescription(
+        data.offer
+      )
     );
 
-    await createPeerConnection(
-        pendingOffer.sender
+    const answer =
+      await peer.createAnswer();
+
+    await peer.setLocalDescription(
+      answer
     );
 
-    try{
+    socket.send(
+      JSON.stringify({
+        type:"call-answer",
+        target:data.sender,
+        answer
+      })
+    );
 
-        await peerConnection
-            .setRemoteDescription(
-                new RTCSessionDescription(
-                    pendingOffer.offer
-                )
-            );
+    incomingOffer = null;
 
-        const answer =
-            await peerConnection
-                .createAnswer();
+  }catch(error){
 
-        await peerConnection
-            .setLocalDescription(answer);
+    console.error(error);
 
-        if(
-            socket &&
-            socket.readyState === WebSocket.OPEN
-        ){
+    toast(
+      "Could not answer the call."
+    );
 
-            socket.send(
-                JSON.stringify({
-
-                    type:"call-answer",
-
-                    target:
-                        pendingOffer.sender,
-
-                    answer
-
-                })
-            );
-
-        }
-
-        document.getElementById(
-            "callState"
-        ).textContent =
-            "Connected";
-
-    }catch(error){
-
-        console.error(error);
-
-        showToast(
-            "Could not answer the call."
-        );
-
-    }
-
+    closeCallUI();
+  }
 }
 
+async function finishPeerAnswer(data){
 
-/* =========================================================
-   DECLINE
-========================================================= */
+  if(
+    !peer ||
+    !data.answer
+  ){
+    return;
+  }
+
+  try{
+
+    await peer.setRemoteDescription(
+      new RTCSessionDescription(
+        data.answer
+      )
+    );
+
+    $("callStatus").textContent =
+      "Connected";
+
+  }catch(error){
+    console.error(error);
+  }
+}
 
 function declineCall(){
 
-    if(
-        pendingOffer &&
-        socket &&
-        socket.readyState === WebSocket.OPEN
-    ){
+  if(
+    incomingOffer &&
+    socket &&
+    socket.readyState === WebSocket.OPEN
+  ){
 
-        socket.send(
-            JSON.stringify({
+    socket.send(
+      JSON.stringify({
+        type:"call-end",
+        target:
+          incomingOffer.sender
+      })
+    );
+  }
 
-                type:"call-end",
+  incomingOffer = null;
 
-                target:
-                    pendingOffer.sender
-
-            })
-        );
-
-    }
-
-    pendingOffer = null;
-
-    document.getElementById(
-        "incoming"
-    ).classList.remove("open");
-
+  $("incomingModal")
+    .classList.remove("show");
 }
-
-
-/* =========================================================
-   END CALL
-========================================================= */
 
 function endCall(){
 
-    if(
-        currentCallTarget &&
-        socket &&
-        socket.readyState === WebSocket.OPEN
-    ){
+  if(
+    currentCallTarget &&
+    socket &&
+    socket.readyState === WebSocket.OPEN
+  ){
 
-        socket.send(
-            JSON.stringify({
+    socket.send(
+      JSON.stringify({
+        type:"call-end",
+        target:
+          currentCallTarget.id
+      })
+    );
+  }
 
-                type:"call-end",
-
-                target:
-                    currentCallTarget
-
-            })
-        );
-
-    }
-
-    closeCallUI();
-
+  closeCallUI();
 }
-
-
-/* =========================================================
-   CLOSE CALL UI
-========================================================= */
 
 function closeCallUI(){
 
-    if(peerConnection){
+  if(peer){
+    peer.close();
+    peer = null;
+  }
 
-        peerConnection.close();
+  if(localStream){
 
-        peerConnection =
-            null;
+    localStream
+      .getTracks()
+      .forEach(track =>
+        track.stop()
+      );
 
-    }
+    localStream = null;
+  }
 
-    if(localStream){
+  currentCallTarget = null;
+  incomingOffer = null;
 
-        localStream
-            .getTracks()
-            .forEach(track =>
-                track.stop()
-            );
+  $("callModal")
+    .classList.remove("show");
 
-        localStream =
-            null;
-
-    }
-
-    const localVideo =
-        document.getElementById(
-            "localVideo"
-        );
-
-    const remoteVideo =
-        document.getElementById(
-            "remoteVideo"
-        );
-
-    localVideo.srcObject =
-        null;
-
-    remoteVideo.srcObject =
-        null;
-
-    localVideo.style.display =
-        "none";
-
-    remoteVideo.style.display =
-        "none";
-
-    document.getElementById(
-        "callModal"
-    ).classList.remove("open");
-
-    pendingOffer = null;
-
-    currentCallTarget = null;
-
+  $("incomingModal")
+    .classList.remove("show");
 }
 
+/* =========================
+   UTILITIES
+========================= */
 
-/* =========================================================
-   MUTE
-========================================================= */
+function toast(message){
 
-function toggleMute(){
+  const box =
+    $("toast");
 
-    microphoneEnabled =
-        !microphoneEnabled;
+  box.textContent =
+    message;
 
-    if(localStream){
+  box.classList.add("show");
 
-        localStream
-            .getAudioTracks()
-            .forEach(track => {
+  clearTimeout(
+    box._timer
+  );
 
-                track.enabled =
-                    microphoneEnabled;
-
-            });
-
-    }
-
-    showToast(
-        microphoneEnabled
-        ? "Microphone on"
-        : "Microphone muted"
+  box._timer =
+    setTimeout(
+      () =>
+        box.classList.remove("show"),
+      2800
     );
-
 }
 
+function escapeHtml(value){
 
-/* =========================================================
-   CAMERA
-========================================================= */
-
-function toggleCamera(){
-
-    cameraEnabled =
-        !cameraEnabled;
-
-    if(localStream){
-
-        localStream
-            .getVideoTracks()
-            .forEach(track => {
-
-                track.enabled =
-                    cameraEnabled;
-
-            });
-
-    }
-
-    showToast(
-        cameraEnabled
-        ? "Camera on"
-        : "Camera off"
-    );
-
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
+/* =========================
+   STARTUP
+========================= */
 
-/* =========================================================
-   TOAST
-========================================================= */
+async function start(){
 
-let toastTimer = null;
+  $("bootStatus").textContent =
+    "Creating your GameHub identity...";
 
-function showToast(message){
+  await createGuestIdentity();
 
-    const toast =
-        document.getElementById("toast");
+  $("bootStatus").textContent =
+    "Loading games...";
 
-    toast.textContent =
-        message;
+  renderGames();
+  renderNotifications();
+  renderPlayers();
+  renderServers();
 
-    toast.classList.add("show");
+  $("bootStatus").textContent =
+    "Connecting to GameHub...";
 
-    clearTimeout(toastTimer);
+  connectSocket();
 
-    toastTimer =
-        setTimeout(() => {
-
-            toast.classList.remove("show");
-
-        },2400);
-
+  setTimeout(
+    () => {
+      $("boot").classList.add("hide");
+    },
+    1700
+  );
 }
 
-
-/* =========================================================
-   SECURITY / HTML HELPERS
-========================================================= */
-
-function escapeHTML(value){
-
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-
-}
-
-
-function escapeAttr(value){
-
-    return String(value)
-        .replaceAll("\\","\\\\")
-        .replaceAll("'","\\'")
-        .replaceAll('"','&quot;');
-
-}
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-document.addEventListener("keydown",event => {
-
-    if(event.key === "Escape"){
-
-        if(
-            document
-                .getElementById("gameModal")
-                .classList.contains("open")
-        ){
-
-            closeGame();
-
-        }
-
-    }
-
-});
-
-
-/* =========================================================
-   SAVE NAME
-========================================================= */
-
-if(!localStorage.getItem("gamehub_name")){
-
-    localStorage.setItem(
-        "gamehub_name",
-        "Andrew"
-    );
-
-}
-
-document.getElementById(
-    "sidebarName"
-).textContent =
-    localStorage.getItem(
-        "gamehub_name"
-    );
-
-
+start();
 </script>
 
 </body>
